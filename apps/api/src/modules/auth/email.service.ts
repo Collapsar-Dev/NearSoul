@@ -21,6 +21,20 @@ export class EmailService {
       if (e.APP_ENV === 'development') this.logger.log(`[dev email] to=${mail.to} subject="${mail.subject}"\n${mail.text}`);
       return;
     }
+    if (e.EMAIL_PROVIDER === 'brevo') {
+      const m = /^(.*)<(.+)>$/.exec(e.EMAIL_FROM.trim());
+      const sender = m ? { name: m[1]!.trim(), email: m[2]!.trim() } : { name: 'NearSoul', email: e.EMAIL_FROM.trim() };
+      const r = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: { 'api-key': e.BREVO_API_KEY ?? '', 'content-type': 'application/json', accept: 'application/json' },
+        body: JSON.stringify({ sender, to: [{ email: mail.to }], subject: mail.subject, textContent: mail.text }),
+      });
+      if (!r.ok) {
+        this.logger.error(`Email provider error status=${r.status}`);
+        throw new Error('EMAIL_SEND_FAILED');
+      }
+      return;
+    }
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { authorization: `Bearer ${e.RESEND_API_KEY}`, 'content-type': 'application/json' },

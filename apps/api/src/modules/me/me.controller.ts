@@ -2,11 +2,12 @@ import { Body, Controller, Get, HttpCode, Patch, Post } from '@nestjs/common';
 import { z } from 'zod';
 import { CurrentUser, RequireGate, type AuthUser } from '../../common/auth';
 import { parse } from '../../common/zod';
+import { AuthService } from '../auth/auth.service';
 import { MeService } from './me.service';
 
 @Controller('v1/me')
 export class MeController {
-  constructor(private readonly me: MeService) {}
+  constructor(private readonly me: MeService, private readonly auth: AuthService) {}
 
   @Get()
   get(@CurrentUser() user: AuthUser) {
@@ -72,9 +73,18 @@ export class MeController {
     return this.me.completeOnboarding(user.id);
   }
 
+  @Post('sensitive-code')
+  @HttpCode(202)
+  async sensitiveCode(@CurrentUser() user: AuthUser) {
+    await this.auth.requestSensitiveCode(user.id);
+    return { status: 'sent' };
+  }
+
   @Post('delete')
   @HttpCode(202)
-  async delete(@CurrentUser() user: AuthUser) {
+  async delete(@CurrentUser() user: AuthUser, @Body() body: unknown) {
+    const { code } = parse(z.object({ code: z.string().trim().max(12) }).strict(), body);
+    await this.auth.verifySensitiveCode(user.id, code);
     await this.me.requestDeletion(user.id);
     return { status: 'deletion_requested' };
   }

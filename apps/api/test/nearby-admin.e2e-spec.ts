@@ -4,7 +4,7 @@ import { authenticator } from 'otplib';
 import { DemoService } from '../src/modules/alpha/demo.service';
 import { RetentionService } from '../src/modules/jobs/retention.service';
 import { NearbyService } from '../src/modules/nearby/nearby.service';
-import { bearer, createTestApp, onboard, resetDb, type TestCtx } from './helpers/app';
+import { bearer, createTestApp, lastCode, onboard, resetDb, type TestCtx } from './helpers/app';
 
 const FORBIDDEN_GEO = /"(lat|lng|h3Cell|cell|distanceM|distance_m)"\s*:/;
 
@@ -178,7 +178,8 @@ describe('Admin (§15, SAFE-004) and deletion (ACC-003)', () => {
 
   it('deletion job removes the account, photos and ends matches', async () => {
     const a = await onboard(ctx, 'anna@example.com');
-    await ctx.http.post('/v1/me/delete').set(bearer(a.token)).expect(202);
+    await ctx.http.post('/v1/me/sensitive-code').set(bearer(a.token)).expect(202);
+    await ctx.http.post('/v1/me/delete').set(bearer(a.token)).send({ code: lastCode(ctx, 'anna@example.com') }).expect(202);
     await ctx.app.get(RetentionService).processDeletions();
     expect(await ctx.prisma.user.count({ where: { id: a.userId } })).toBe(0);
     expect(await ctx.prisma.photo.count({ where: { userId: a.userId } })).toBe(0);

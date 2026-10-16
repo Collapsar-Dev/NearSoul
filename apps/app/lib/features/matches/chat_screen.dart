@@ -43,6 +43,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool _loading = true;
   Object? _error;
   StreamSubscription<RealtimeEvent>? _sub;
+  Timer? _poll;
 
   Api get _api => ref.read(apiProvider);
 
@@ -50,6 +51,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void initState() {
     super.initState();
     _load();
+    // E21: REST polling fallback when the realtime socket is unavailable (proxies, flaky networks).
+    _poll = Timer.periodic(const Duration(seconds: 10), (_) {
+      if (!ref.read(realtimeProvider).connected && mounted && !_loading) _refreshMessages();
+    });
     _sub = ref.read(realtimeProvider).events.listen((e) {
       if (e.data['matchId'] != widget.matchId) return;
       if (e.name == 'message.new') {
@@ -73,7 +78,25 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   void dispose() {
     _sub?.cancel();
+    _poll?.cancel();
     super.dispose();
+  }
+
+  Future<void> _refreshMessages() async {
+    try {
+      final res = await _api.get<Map<String, dynamic>>('/v1/matches/${widget.matchId}/messages');
+      final fresh = (res['items'] as List).cast<Map<String, dynamic>>().map(_fromJson).toList();
+      final known = _msgs.map((m) => m.id).toSet();
+      final added = fresh.where((m) => !known.contains(m.id) && !_msgs.any((x) => x.clientId == m.clientId)).toList();
+      if (added.isNotEmpty || res['ended'] == true) {
+        setState(() {
+          _msgs.addAll(added);
+          _ended = res['ended'] == true;
+        });
+        _markRead();
+        _toBottom();
+      }
+    } catch (_) {}
   }
 
   _Msg _fromJson(Map<String, dynamic> m) => _Msg(

@@ -12,6 +12,7 @@ import { INTERESTS } from '../src/content/seed-data';
 
 const env = process.env.APP_ENV ?? 'development';
 if (!['alpha', 'development'].includes(env)) {
+  // Production must never contain demo profiles (ALPHA-002).
   console.error(`Refusing to seed demo profiles in APP_ENV=${env}.`);
   process.exit(1);
 }
@@ -59,8 +60,13 @@ async function avatar(initial: string, r: () => number, variant: number): Promis
 
 async function main() {
   const prisma = new PrismaClient();
-  const storage = new StorageService();
+  const storage = new StorageService(prisma);
   const r = rng(20261016);
+  if (!process.argv.includes('--force') && (await prisma.user.count({ where: { isDemo: true } })) > 0) {
+    console.log('Demo profiles already exist (use --force to recreate).');
+    await prisma.$disconnect();
+    return;
+  }
   const old = await prisma.user.findMany({ where: { isDemo: true }, include: { photos: true } });
   for (const u of old) for (const p of u.photos) await storage.delete(p.storageKey).catch(() => undefined);
   await prisma.user.deleteMany({ where: { isDemo: true } });

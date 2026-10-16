@@ -557,10 +557,33 @@ class DeleteAccountScreen extends ConsumerWidget {
                 ]),
               );
               if (ok != true) return;
+              final api = ref.read(apiProvider);
               try {
-                await ref.read(apiProvider).post('/v1/me/delete');
-              } catch (_) {}
-              await ref.read(apiProvider).clear();
+                await api.post('/v1/me/sensitive-code');
+              } catch (e) {
+                if (context.mounted) showSnack(context, errorText(context, e));
+              }
+              if (!context.mounted) return;
+              final codeCtl = TextEditingController();
+              final code = await showDialog<String>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: Text(l.codeTitle),
+                  content: TextField(controller: codeCtl, keyboardType: TextInputType.number, maxLength: 6, decoration: InputDecoration(labelText: l.codeLabel)),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.cancel)),
+                    FilledButton(onPressed: () => Navigator.pop(ctx, codeCtl.text.trim()), child: Text(l.deleteConfirm)),
+                  ],
+                ),
+              );
+              if (code == null || code.isEmpty) return;
+              try {
+                await api.post('/v1/me/delete', {'code': code});
+              } catch (e) {
+                if (context.mounted) showSnack(context, errorText(context, e));
+                return;
+              }
+              await api.clear();
               ref.invalidate(sessionProvider);
             },
             child: Text(l.deleteConfirm),

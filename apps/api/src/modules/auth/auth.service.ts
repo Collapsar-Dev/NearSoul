@@ -137,6 +137,29 @@ export class AuthService {
     return { accessToken: next.accessToken, refreshToken: next.refreshToken, expiresIn: next.expiresIn };
   }
 
+  /** AUTH-005: a fresh code for high-risk actions (account deletion, email change). */
+  async requestSensitiveCode(userId: string): Promise<void> {
+    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+    const recent = await this.prisma.authCode.findFirst({ where: { email: user.email, purpose: 'sensitive_action', createdAt: { gte: new Date(Date.now() - RESEND_COOLDOWN_MS) } } });
+    if (recent) throw tooMany(60);
+    const code = sixDigitCode();
+    await this.prisma.authCode.updateMany({ where: { email: user.email, purpose: 'sensitive_action', usedAt: null }, data: { usedAt: new Date() } });
+    await this.prisma.authCode.create({ data: { email: user.email, purpose: 'sensitive_action', codeHash: this.codeHash(user.email, code), expiresAt: new Date(Date.now() + CODE_TTL_MS) } });
+    await this.email.send({ to: user.email, subject: `${code} confirms your NearSoul request`, text: `Your confirmation code is ${code}. It expires in 10 minutes.\n\nIf you didn't ask to delete your account or change your email, ignore this email and consider signing out of all devices.` });
+  }
+
+  async verifySensitiveCode(userId: string, code: string): Promise<void> {
+    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+    const record = await this.prisma.authCode.findFirst({ where: { email: user.email, purpose: 'sensitive_action', usedAt: null }, orderBy: { createdAt: 'desc' } });
+    const invalid = new AppError(400, 'INVALID_CODE', 'That code is wrong or has expired.');
+    if (!record || record.expiresAt < new Date() || record.attempts >= MAX_ATTEMPTS) throw invalid;
+    if (!/^\d{6}$/.test(code) || !safeEqualHex(record.codeHash, this.codeHash(user.email, code))) {
+      await this.prisma.authCode.update({ where: { id: record.id }, data: { attempts: { increment: 1 } } });
+      throw invalid;
+    }
+    await this.prisma.authCode.update({ where: { id: record.id }, data: { usedAt: new Date() } });
+  }
+
   async logout(sessionId: string): Promise<void> {
     await this.prisma.session.updateMany({ where: { id: sessionId, revokedAt: null }, data: { revokedAt: new Date() } });
     await this.prisma.deviceToken.deleteMany({ where: { sessionId } });

@@ -8,6 +8,7 @@ class Realtime {
   io.Socket? _socket;
   final _events = StreamController<RealtimeEvent>.broadcast();
   Stream<RealtimeEvent> get events => _events.stream;
+  bool get connected => _socket?.connected ?? false;
 
   void connect(String token) {
     _socket?.dispose();

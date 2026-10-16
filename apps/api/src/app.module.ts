@@ -59,7 +59,7 @@ import { StorageService } from './modules/storage/storage.service';
   ],
   providers: [
     PrismaService, RateLimiter, EmailService, AuthService, InvitesService, MeService, EngineService, CardService,
-    StorageService, ProfileService, SubjectsService, ProfileViewService, DailySetService, LikesService, ChatService,
+    { provide: StorageService, useFactory: (p: PrismaService) => new StorageService(p), inject: [PrismaService] }, ProfileService, SubjectsService, ProfileViewService, DailySetService, LikesService, ChatService,
     RealtimeGateway, PushService, NotificationsService, ReportsService, SafetyService, NearbyService, DemoService,
     RetentionService, AdminAuthService,
     { provide: AiProvider, useClass: AnthropicProvider },

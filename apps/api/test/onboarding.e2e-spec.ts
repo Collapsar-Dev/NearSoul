@@ -1,4 +1,4 @@
-import { bearer, createTestApp, passGateAndScan, quickScanAnswers, resetDb, signIn, type TestCtx } from './helpers/app';
+import { bearer, createTestApp, lastCode, passGateAndScan, quickScanAnswers, resetDb, signIn, type TestCtx } from './helpers/app';
 
 describe('Onboarding, engine and card (ONB-001..003, ENG-002/005/008/010)', () => {
   let ctx: TestCtx;
@@ -115,9 +115,11 @@ describe('Onboarding, engine and card (ONB-001..003, ENG-002/005/008/010)', () =
     expect(r.body.error.details.missing).toEqual(['shareLevel', 'basics', 'photos', 'interests']);
   });
 
-  it('account deletion signs out and hides the user immediately', async () => {
+  it('account deletion needs a fresh email code, then signs out and hides the user (AUTH-005, ACC-003)', async () => {
     const { token, refreshToken } = await signIn(ctx, 'bye@example.com');
-    await ctx.http.post('/v1/me/delete').set(bearer(token)).expect(202);
+    expect((await ctx.http.post('/v1/me/delete').set(bearer(token)).send({ code: '123456' })).body.error.code).toBe('INVALID_CODE');
+    await ctx.http.post('/v1/me/sensitive-code').set(bearer(token)).expect(202);
+    await ctx.http.post('/v1/me/delete').set(bearer(token)).send({ code: lastCode(ctx, 'bye@example.com') }).expect(202);
     await ctx.http.get('/v1/me').set(bearer(token)).expect(401);
     await ctx.http.post('/v1/auth/refresh').send({ refreshToken }).expect(401);
   });

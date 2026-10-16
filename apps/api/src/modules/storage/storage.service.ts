@@ -1,6 +1,7 @@
 import { GetObjectCommand, PutObjectCommand, DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { env } from '../../config/env';
@@ -12,6 +13,13 @@ const URL_TTL_SEC = 600; // PRD D9: signed URLs live 10 minutes
 @Injectable()
 export class StorageService {
   private s3: S3Client | null = null;
+
+  constructor(@Optional() private readonly prisma?: PrismaClient) {}
+
+  private db(): PrismaClient {
+    if (!this.prisma) throw new Error('STORAGE_DRIVER=db needs a Prisma client');
+    return this.prisma;
+  }
 
   private client(): S3Client {
     const e = env();
@@ -32,6 +40,11 @@ export class StorageService {
   }
 
   async put(key: string, body: Buffer, contentType: string): Promise<void> {
+    if (env().STORAGE_DRIVER === 'db') {
+      const data = new Uint8Array(body);
+      await this.db().media.upsert({ where: { key }, create: { key, data, contentType }, update: { data, contentType } });
+      return;
+    }
     if (env().STORAGE_DRIVER === 'local') {
       const p = this.localPath(key);
       await mkdir(dirname(p), { recursive: true });
@@ -42,6 +55,10 @@ export class StorageService {
   }
 
   async delete(key: string): Promise<void> {
+    if (env().STORAGE_DRIVER === 'db') {
+      await this.db().media.deleteMany({ where: { key } });
+      return;
+    }
     if (env().STORAGE_DRIVER === 'local') {
       await rm(this.localPath(key), { force: true });
       return;
@@ -50,7 +67,7 @@ export class StorageService {
   }
 
   async signedUrl(key: string, now = Date.now()): Promise<string> {
-    if (env().STORAGE_DRIVER === 'local') {
+    if (env().STORAGE_DRIVER === 'local' || env().STORAGE_DRIVER === 'db') {
       const exp = Math.floor(now / 1000) + URL_TTL_SEC;
       const sig = hmac(env().JWT_SECRET, `media:${key}:${exp}`);
       return `${env().PUBLIC_API_URL}/v1/media/${encodeURIComponent(key)}?exp=${exp}&sig=${sig}`;
@@ -58,11 +75,15 @@ export class StorageService {
     return getSignedUrl(this.client(), new GetObjectCommand({ Bucket: env().S3_BUCKET, Key: key }), { expiresIn: URL_TTL_SEC });
   }
 
-  /** Local driver only: verify a signed media URL and read the file. */
+  /** Local/db drivers: verify a signed media URL and read the bytes. */
   async readLocalSigned(key: string, exp: number, sig: string): Promise<Buffer | null> {
-    if (env().STORAGE_DRIVER !== 'local') return null;
+    if (env().STORAGE_DRIVER === 's3') return null;
     if (!Number.isFinite(exp) || exp * 1000 < Date.now()) return null;
     if (!/^[0-9a-f]{64}$/.test(sig) || !safeEqualHex(sig, hmac(env().JWT_SECRET, `media:${key}:${exp}`))) return null;
+    if (env().STORAGE_DRIVER === 'db') {
+      const row = await this.db().media.findUnique({ where: { key } });
+      return row ? Buffer.from(row.data) : null;
+    }
     try {
       return await readFile(this.localPath(key));
     } catch {

@@ -583,3 +583,13 @@ model PairOutcome {
   @@unique([userLow, userHigh])
   @@map("pair_outcomes")
 }
+
+/// Media bytes for STORAGE_DRIVER=db (free-tier alpha without object storage). Private; served only via signed URLs.
+model Media {
+  key         String   @id
+  data        Bytes
+  contentType String   @map("content_type")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("media")
+}

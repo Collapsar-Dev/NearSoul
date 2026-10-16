@@ -12,14 +12,16 @@ const EnvSchema = z.object({
   APP_ORIGINS: z.string().default('http://localhost:8080'),
   COOKIE_DOMAIN: z.string().optional(),
   INVITE_ONLY: bool.default('false'),
-  EMAIL_PROVIDER: z.enum(['console', 'resend']).default('console'),
+  EMAIL_PROVIDER: z.enum(['console', 'resend', 'brevo']).default('console'),
+  BREVO_API_KEY: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().default('NearSoul <hello@nearsoul.app>'),
   AI_ENABLED: bool.default('false'),
   ANTHROPIC_API_KEY: z.string().optional(),
   AI_MODEL_WRITER: z.string().default('claude-haiku-4-5-20251001'),
   AI_DAILY_BUDGET_USD: z.coerce.number().default(10),
-  STORAGE_DRIVER: z.enum(['local', 's3']).default('local'),
+  STORAGE_DRIVER: z.enum(['local', 's3', 'db']).default('local'),
+  WEB_DIST_DIR: z.string().optional(),
   LOCAL_STORAGE_DIR: z.string().default('.data/storage'),
   PUBLIC_API_URL: z.string().default('http://localhost:3000'),
   APP_PUBLIC_URL: z.string().default('http://localhost:8080'),
@@ -49,6 +51,8 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
     if (env.EMAIL_PROVIDER === 'console') throw new Error('EMAIL_PROVIDER=console is not allowed outside development/test');
     if (env.STORAGE_DRIVER === 'local') throw new Error('STORAGE_DRIVER=local is not allowed outside development/test');
   }
+  if (env.EMAIL_PROVIDER === 'brevo' && !env.BREVO_API_KEY) throw new Error('EMAIL_PROVIDER=brevo requires BREVO_API_KEY');
+  if (env.EMAIL_PROVIDER === 'resend' && !env.RESEND_API_KEY) throw new Error('EMAIL_PROVIDER=resend requires RESEND_API_KEY');
   if (env.AI_ENABLED && !env.ANTHROPIC_API_KEY) throw new Error('AI_ENABLED requires ANTHROPIC_API_KEY');
   return env;
 }
