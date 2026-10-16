@@ -1,3 +1,4 @@
+import { AnalyticsService } from '../analytics/analytics.service';
 import { Controller, Get, Headers, Param, ParseUUIDPipe } from '@nestjs/common';
 import { CurrentUser, RequireGate, type AuthUser } from '../../common/auth';
 import { notFound } from '../../common/errors';
@@ -17,6 +18,7 @@ export class DiscoveryController {
     private readonly views: ProfileViewService,
     private readonly engine: EngineService,
     private readonly prisma: PrismaService,
+    private readonly analytics: AnalyticsService,
   ) {}
 
   @Get('daily-set')
@@ -33,6 +35,7 @@ export class DiscoveryController {
       const view = await this.views.build(viewer, s, this.subjects.compat(viewer, s, cfg), locale);
       cards.push({ ...view, action: facts.liked.has(id) ? 'like' : facts.passed.has(id) ? 'pass' : null });
     }
+    this.analytics.track(user.id, 'daily_set_viewed', { count: cards.length });
     return { date, refreshAt, remaining: cards.filter((c) => !c.action).length, cards };
   }
 

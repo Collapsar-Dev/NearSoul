@@ -1,3 +1,4 @@
+import { AnalyticsService } from '../analytics/analytics.service';
 import { Injectable, Logger } from '@nestjs/common';
 import JSZip from 'jszip';
 import { AppError, notFound } from '../../common/errors';
@@ -22,12 +23,14 @@ export class ExportService {
     private readonly storage: StorageService,
     private readonly email: EmailService,
     private readonly soulCrypto: SoulCryptoService,
+    private readonly analytics: AnalyticsService,
   ) {}
 
   async request(userId: string): Promise<{ id: string; status: string }> {
     const recent = await this.prisma.dataExportJob.findFirst({ where: { userId, status: { in: ['pending', 'ready'] }, createdAt: { gte: new Date(Date.now() - COOLDOWN_MS) } } });
     if (recent) throw new AppError(429, 'EXPORT_LIMIT', 'You can request one export every 7 days.', { retry_after: Math.ceil((recent.createdAt.getTime() + COOLDOWN_MS - Date.now()) / 1000) });
     const job = await this.prisma.dataExportJob.create({ data: { userId } });
+    this.analytics.track(userId, 'export_requested');
     void this.process(job.id).catch((e: Error) => this.logger.error({ msg: 'export failed', err: e.message }));
     return { id: job.id, status: job.status };
   }

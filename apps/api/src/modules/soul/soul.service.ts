@@ -1,3 +1,4 @@
+import { AnalyticsService } from '../analytics/analytics.service';
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 import { z } from 'zod/v4';
@@ -65,6 +66,7 @@ export class SoulService {
     private readonly ai: AiProvider,
     private readonly engine: EngineService,
     private readonly limiter: RateLimiter,
+    private readonly analytics: AnalyticsService,
   ) {}
 
   /** Feature flag + separate AI Self-Discovery consent. */
@@ -110,6 +112,7 @@ export class SoulService {
     const session = await this.prisma.soulSession.create({
       data: { userId, topicKey, topicVersion: topic.version, promptVersion: GUIDE_PROMPT_VERSION, resumeUntil: new Date(Date.now() + RESUME_DAYS * 86_400_000) },
     });
+    this.analytics.track(userId, 'soul_session_started', { topic: topicKey });
     // The opening question is prewritten: no AI call for message 1 (SOUL-002).
     await this.prisma.soulMessage.create({ data: { sessionId: session.id, role: 'guide', bodyEnc: await this.crypto.encrypt(userId, tr(topic.opening, locale)) } });
     return this.get(userId, session.id, locale);
@@ -280,6 +283,7 @@ export class SoulService {
       data: { status: 'finished', finishedAt: new Date(), summaryEnc: await this.crypto.encrypt(userId, w.summary), questionEnc: await this.crypto.encrypt(userId, w.question_to_sit_with) },
     });
     await this.prisma.soulMessage.updateMany({ where: { sessionId }, data: { purgeAt } });
+    this.analytics.track(userId, 'soul_session_finished', { topic: s.topicKey, turns: s.turnCount });
     return this.wrapView(userId, sessionId, locale);
   }
 
@@ -320,6 +324,7 @@ export class SoulService {
         ...(input.text ? { textEnc: await this.crypto.encrypt(userId, input.text), userEdited: true } : {}),
       },
     });
+    this.analytics.track(userId, 'soul_insight_reviewed', { action: input.status ?? 'edit', category: updated.category, visibility: updated.visibility });
     const applies = updated.status === 'kept' && updated.visibility === 'matching' && updated.traitKey && updated.traitValue !== null;
     if (applies) {
       await this.prisma.layerOverride.upsert({

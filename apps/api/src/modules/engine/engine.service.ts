@@ -1,3 +1,4 @@
+import { AnalyticsService } from '../analytics/analytics.service';
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { env } from '../../config/env';
 import type { Prisma } from '@prisma/client';
@@ -29,7 +30,7 @@ export class EngineService implements OnApplicationBootstrap {
   private readonly logger = new Logger('Engine');
   private configCache: { at: number; cfg: MatchConfig } | null = null;
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private readonly analytics: AnalyticsService) {}
 
   /** ENG-008: an ENGINE_VERSION bump recomputes stored profiles in the background, in batches. */
   onApplicationBootstrap(): void {
@@ -85,7 +86,15 @@ export class EngineService implements OnApplicationBootstrap {
       create: { userId, itemKey, itemVersion: item.version, value: value as Prisma.InputJsonValue },
       update: { itemVersion: item.version, value: value as Prisma.InputJsonValue, answeredAt: new Date() },
     });
-    return this.recompute(userId);
+    const before = await this.prisma.soulProfileRow.findUnique({ where: { userId }, select: { profile: true } });
+    const was = before?.profile as unknown as SoulProfile | undefined;
+    const now = await this.recompute(userId);
+    if (now.quickScanComplete && !was?.quickScanComplete) {
+      this.analytics.track(userId, 'quick_scan_completed', { engine_version: now.engineVersion });
+      this.analytics.track(userId, 'archetype_assigned', { archetype: now.archetype });
+    }
+    if ((now.deepPartsCompleted ?? 0) > (was?.deepPartsCompleted ?? 0)) this.analytics.track(userId, 'deep_part_completed', { part: now.deepPartsCompleted });
+    return now;
   }
 
   async progress(userId: string) {

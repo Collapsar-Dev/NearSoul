@@ -45,6 +45,8 @@ const EnvSchema = z.object({
   CRISIS_TEXTS_APPROVED: bool.default('false'),
   /** First admin for hosts without a shell (free Render): created once on boot if no admin exists. */
   ADMIN_BOOTSTRAP_EMAIL: z.string().email().optional(),
+  POSTHOG_KEY: z.string().optional(),
+  POSTHOG_HOST: z.string().url().default('https://eu.i.posthog.com'),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

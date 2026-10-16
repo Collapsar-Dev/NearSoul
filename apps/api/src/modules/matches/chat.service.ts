@@ -1,3 +1,4 @@
+import { AnalyticsService } from '../analytics/analytics.service';
 import { Injectable } from '@nestjs/common';
 import { AppError, badRequest, notFound } from '../../common/errors';
 import { PrismaService } from '../../common/prisma.service';
@@ -22,6 +23,7 @@ export class ChatService {
     private readonly storage: StorageService,
     private readonly notifications: NotificationsService,
     private readonly rt: RealtimeGateway,
+    private readonly analytics: AnalyticsService,
   ) {}
 
   /** Returns the active match if `userId` participates, else 404 (never 403: no information leak). */
@@ -146,12 +148,18 @@ export class ChatService {
     const p = { userLow: m.userLow, userHigh: m.userHigh };
     const outcome = await this.prisma.pairOutcome.findUnique({ where: { userLow_userHigh: p } });
     if (!outcome) return;
-    if (!outcome.firstMsgAt) await this.prisma.pairOutcome.update({ where: { userLow_userHigh: p }, data: { firstMsgAt: new Date() } });
+    if (!outcome.firstMsgAt) {
+      await this.prisma.pairOutcome.update({ where: { userLow_userHigh: p }, data: { firstMsgAt: new Date() } });
+      this.analytics.track(senderId, 'first_message_sent', { tier: outcome.tier });
+    }
     if (!outcome.tenMsgsAt) {
       const counts = await this.prisma.message.groupBy({ by: ['senderId'], where: { matchId }, _count: true });
-      if (counts.length === 2 && counts.every((c) => c._count >= 10)) await this.prisma.pairOutcome.update({ where: { userLow_userHigh: p }, data: { tenMsgsAt: new Date() } });
+      if (counts.length === 2 && counts.every((c) => c._count >= 10)) {
+        await this.prisma.pairOutcome.update({ where: { userLow_userHigh: p }, data: { tenMsgsAt: new Date() } });
+        this.analytics.track(m.userLow, 'conversation_reached_10_messages', { tier: outcome.tier });
+        this.analytics.track(m.userHigh, 'conversation_reached_10_messages', { tier: outcome.tier });
+      }
     }
-    void senderId;
   }
 
   private view(m: { id: string; clientMessageId: string; body: string; senderId: string; createdAt: Date; readAt: Date | null }, viewerId: string) {

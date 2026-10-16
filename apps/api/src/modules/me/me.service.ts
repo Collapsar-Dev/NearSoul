@@ -1,3 +1,4 @@
+import { AnalyticsService } from '../analytics/analytics.service';
 import { Injectable } from '@nestjs/common';
 import { env } from '../../config/env';
 import { badRequest, forbidden } from '../../common/errors';
@@ -15,7 +16,7 @@ export const OPTIONAL_CONSENTS = ['product_emails', 'analytics', 'ai_writing', '
 
 @Injectable()
 export class MeService {
-  constructor(private readonly prisma: PrismaService, private readonly soulCrypto: SoulCryptoService) {}
+  constructor(private readonly prisma: PrismaService, private readonly soulCrypto: SoulCryptoService, private readonly analytics: AnalyticsService) {}
 
   async me(userId: string) {
     const u = await this.prisma.user.findUniqueOrThrow({
@@ -89,6 +90,7 @@ export class MeService {
       return { allowed: false };
     }
     await this.prisma.user.update({ where: { id: userId }, data: { dob, ageGatePassedAt: new Date(), onboardingStep: 'consents' } });
+    this.analytics.track(userId, 'age_gate_passed');
     return { allowed: true, age };
   }
 
@@ -101,6 +103,7 @@ export class MeService {
       throw badRequest('ALPHA_TERMS_REQUIRED', 'Please accept the test-version terms.');
     }
     if (rows.length) await this.prisma.consent.createMany({ data: rows });
+    for (const r of rows.filter((x) => x.granted)) this.analytics.track(userId, 'consent_given', { category: r.type });
     return this.latestConsents(userId);
   }
 
@@ -111,10 +114,12 @@ export class MeService {
       // Cached pair reports involving this user must be regenerated (RPT-003).
       this.prisma.report.deleteMany({ where: { type: 'pair', OR: [{ ownerId: userId }, { otherId: userId }] } }),
     ]);
+    this.analytics.track(userId, 'share_level_set', { level });
   }
 
   async updateSettings(userId: string, data: Partial<{ discoveryEnabled: boolean; hideDistance: boolean; readReceipts: boolean; cardVisibility: 'everyone' | 'matches_only' | 'hidden'; flexibleFallback: boolean; locale: 'en' | 'ru'; timezone: string }>) {
     await this.prisma.user.update({ where: { id: userId }, data });
+    if (data.discoveryEnabled !== undefined) this.analytics.track(userId, data.discoveryEnabled ? 'discovery_enabled' : 'discovery_disabled');
     if (data.discoveryEnabled === false) {
       // GEO-001: turning discovery off deletes the stored location.
       await this.prisma.userLocation.deleteMany({ where: { userId } });
@@ -130,12 +135,14 @@ export class MeService {
       .map(([k]) => k);
     if (missing.length) throw badRequest('ONBOARDING_INCOMPLETE', 'A few steps are still missing.', { missing });
     await this.prisma.user.update({ where: { id: userId }, data: { status: 'active', onboardingStep: 'done' } });
+    this.analytics.track(userId, 'profile_completed');
     return { status: 'active' };
   }
 
   /** ACC-003: immediately invisible + signed out; the deletion job removes the data. */
   async requestDeletion(userId: string) {
     // SOUL-007: crypto-shred Soul Talk data before anything else.
+    this.analytics.track(userId, 'account_deletion_requested');
     await this.soulCrypto.destroy(userId);
     await this.prisma.$transaction([
       this.prisma.user.update({ where: { id: userId }, data: { status: 'deletion_requested', deletionRequestedAt: new Date(), discoveryEnabled: false } }),

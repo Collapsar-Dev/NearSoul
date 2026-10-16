@@ -10,6 +10,7 @@ import { RateLimiter } from './common/rate-limit';
 import { AdminAuthService } from './modules/admin/admin.auth';
 import { AdminBootstrap } from './modules/admin/admin.bootstrap';
 import { AdminController } from './modules/admin/admin.controller';
+import { AnalyticsService } from './modules/analytics/analytics.service';
 import { AiProvider, AnthropicProvider } from './modules/ai/ai.provider';
 import { CardController } from './modules/ai/card.controller';
 import { CardService } from './modules/ai/card.service';
@@ -67,7 +68,7 @@ import { StorageService } from './modules/storage/storage.service';
     PrismaService, RateLimiter, EmailService, AuthService, InvitesService, MeService, EngineService, CardService,
     { provide: StorageService, useFactory: (p: PrismaService) => new StorageService(p), inject: [PrismaService] }, ProfileService, SubjectsService, ProfileViewService, DailySetService, LikesService, ChatService,
     RealtimeGateway, PushService, NotificationsService, ReportsService, SafetyService, NearbyService, DemoService,
-    RetentionService, AdminAuthService, AdminBootstrap, ExportService, SoulCryptoService, SoulService,
+    RetentionService, AdminAuthService, AdminBootstrap, ExportService, AnalyticsService, SoulCryptoService, SoulService,
     { provide: AiProvider, useClass: AnthropicProvider },
     { provide: APP_GUARD, useClass: AuthGuard },
     { provide: APP_FILTER, useClass: ErrorFilter },

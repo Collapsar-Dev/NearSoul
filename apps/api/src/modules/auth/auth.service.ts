@@ -1,3 +1,4 @@
+import { AnalyticsService } from '../analytics/analytics.service';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'node:crypto';
@@ -33,6 +34,7 @@ export class AuthService {
     private readonly email: EmailService,
     private readonly limiter: RateLimiter,
     private readonly invites: InvitesService,
+    private readonly analytics: AnalyticsService,
   ) {}
 
   private codeHash(email: string, code: string) {
@@ -107,6 +109,7 @@ export class AuthService {
         if (env().INVITE_ONLY && input.inviteCode) await this.invites.redeem(tx, input.inviteCode, created.id);
         return created;
       });
+      this.analytics.track(user.id, 'account_created', { platform: input.platform ?? 'unknown' });
     }
     await this.prisma.authCode.update({ where: { id: record.id }, data: { usedAt: new Date() } });
     const tokens = await this.issue(user.id, randomUUID(), input.deviceId, input.platform);

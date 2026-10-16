@@ -1,3 +1,4 @@
+import { AnalyticsService } from '../analytics/analytics.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { randomInt } from 'node:crypto';
@@ -34,6 +35,7 @@ export class NearbyService {
     private readonly engine: EngineService,
     private readonly views: ProfileViewService,
     private readonly notifications: NotificationsService,
+    private readonly analytics: AnalyticsService,
   ) {}
 
   private async activeSession(userId: string, now = new Date()) {
@@ -73,6 +75,7 @@ export class NearbyService {
     await this.prisma.nearbySession.create({
       data: { userId, radiusM: input.radiusM, activity: input.activity ?? null, openUntil: new Date(Date.now() + input.durationMin * 60_000) },
     });
+    this.analytics.track(userId, 'open_to_meet_started', { count: input.durationMin });
     await this.matchFor(userId);
     return this.status(userId);
   }
@@ -150,6 +153,8 @@ export class NearbyService {
     for (const a of due) {
       const claimed = await this.prisma.nearbyAlert.updateMany({ where: { id: a.id, sentAt: null }, data: { sentAt: now } });
       if (!claimed.count) continue;
+      this.analytics.track(a.userA, 'nearby_alert_sent');
+      this.analytics.track(a.userB, 'nearby_alert_sent');
       for (const [me, other] of [[a.userA, a.userB], [a.userB, a.userA]] as const) {
         const u = await this.prisma.user.findUnique({ where: { id: me }, select: { locale: true } });
         const locale = (u?.locale === 'ru' ? 'ru' : 'en') as Locale;

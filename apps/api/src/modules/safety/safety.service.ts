@@ -1,3 +1,4 @@
+import { AnalyticsService } from '../analytics/analytics.service';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { notFound } from '../../common/errors';
@@ -14,7 +15,7 @@ const AUTO_HIDE_REPORTERS = 3;
 /** SAFE-001/002/003. */
 @Injectable()
 export class SafetyService {
-  constructor(private readonly prisma: PrismaService, private readonly limiter: RateLimiter, private readonly rt: RealtimeGateway) {}
+  constructor(private readonly prisma: PrismaService, private readonly limiter: RateLimiter, private readonly rt: RealtimeGateway, private readonly analytics: AnalyticsService) {}
 
   /** Instant, permanent, both directions. The blocked user is not notified. */
   async block(blockerId: string, blockedId: string) {
@@ -26,6 +27,7 @@ export class SafetyService {
     } catch (err) {
       if (!(err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002')) throw err;
     }
+    this.analytics.track(blockerId, 'block_created');
     const match = await this.prisma.match.findUnique({ where: { userLow_userHigh: pair(blockerId, blockedId) } });
     if (match && !match.endedAt) {
       await this.prisma.$transaction([
@@ -63,6 +65,7 @@ export class SafetyService {
         urgent: URGENT.has(input.category),
       },
     });
+    this.analytics.track(reporterId, 'report_submitted', { category: input.category });
     if (input.alsoBlock !== false) await this.block(reporterId, input.userId);
     await this.autoHide(input.userId);
     return { id: report.id, status: report.status };

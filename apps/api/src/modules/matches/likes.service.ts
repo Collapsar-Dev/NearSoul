@@ -1,3 +1,4 @@
+import { AnalyticsService } from '../analytics/analytics.service';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { eligibility } from '../../engine';
@@ -26,6 +27,7 @@ export class LikesService {
     private readonly engine: EngineService,
     private readonly notifications: NotificationsService,
     private readonly rt: RealtimeGateway,
+    private readonly analytics: AnalyticsService,
   ) {}
 
   async act(actorId: string, targetId: string, action: 'like' | 'pass', source: 'daily' | 'nearby' | 'profile') {
@@ -55,6 +57,7 @@ export class LikesService {
       create: { actorId, targetId, action, source },
       update: { action, source, createdAt: new Date() },
     });
+    this.analytics.track(actorId, action === 'like' ? 'like_sent' : 'pass_sent', { source });
     if (action === 'pass') return { action, match: null };
 
     const reverse = await this.prisma.like.findUnique({ where: { actorId_targetId: { actorId: targetId, targetId: actorId } } });
@@ -86,6 +89,8 @@ export class LikesService {
     }
     if (created) {
       await this.prisma.pairOutcome.updateMany({ where: p, data: { matchedAt: new Date() } });
+      this.analytics.track(a, 'match_created', { source });
+      this.analytics.track(b, 'match_created', { source });
       for (const [me, other] of [[a, b], [b, a]] as const) {
         await this.notifications.notify(me, 'new_match', { matchId: match.id, userId: other, source });
         this.rt.emit(me, 'match.new', { matchId: match.id, userId: other, source });

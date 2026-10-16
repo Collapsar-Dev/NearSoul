@@ -12,7 +12,7 @@ describe('Data export (ACC-002)', () => {
 
   it('builds a ZIP with the user data and photos, emails a 24 h link, and limits to one per 7 days', async () => {
     const u = await onboard(ctx, 'anna@example.com');
-    const r = await ctx.http.post('/v1/me/export').set(bearer(u.token)).expect(202);
+    await ctx.http.post('/v1/me/export').set(bearer(u.token)).expect(202);
     let status = await ctx.http.get('/v1/me/export').set(bearer(u.token)).expect(200);
     for (let i = 0; i < 20 && status.body.status !== 'ready'; i++) {
       await new Promise((res) => setTimeout(res, 200));
