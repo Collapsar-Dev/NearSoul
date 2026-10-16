@@ -10,6 +10,21 @@ import { resetEnvCache } from '../../src/config/env';
 import { QUICK_SCAN_ITEMS } from '../../src/engine';
 import { AiProvider, FakeAiProvider } from '../../src/modules/ai/ai.provider';
 import { EmailService } from '../../src/modules/auth/email.service';
+import { PushService, type DeliveryResult, type PushMessage, type PushTransport, type WebPushSubscription } from '../../src/modules/notifications/push.service';
+
+/** Records push deliveries instead of calling Web Push / FCM. */
+export class FakePushTransport implements PushTransport {
+  sent: { kind: 'web' | 'fcm'; target: string; msg: PushMessage }[] = [];
+  result: DeliveryResult = 'ok';
+  async webPush(sub: WebPushSubscription, payload: string): Promise<DeliveryResult> {
+    this.sent.push({ kind: 'web', target: sub.endpoint, msg: JSON.parse(payload) as PushMessage });
+    return this.result;
+  }
+  async fcm(token: string, msg: PushMessage): Promise<DeliveryResult> {
+    this.sent.push({ kind: 'fcm', target: token, msg });
+    return this.result;
+  }
+}
 
 export interface TestCtx {
   app: INestApplication;
@@ -18,6 +33,8 @@ export interface TestCtx {
   email: EmailService;
   ai: FakeAiProvider;
   limiter: RateLimiter;
+  push: FakePushTransport;
+  pushService: PushService;
 }
 
 export async function createTestApp(envOverrides: Record<string, string> = {}): Promise<TestCtx> {
@@ -28,7 +45,12 @@ export async function createTestApp(envOverrides: Record<string, string> = {}): 
   const app = moduleRef.createNestApplication({ logger: false });
   configureApp(app);
   await app.init();
+  const pushService = app.get(PushService);
+  const push = new FakePushTransport();
+  pushService.transport = push;
   return {
+    push,
+    pushService,
     app,
     http: request(app.getHttpServer()),
     prisma: app.get(PrismaService),
@@ -54,6 +76,9 @@ export async function resetDb(ctx: TestCtx): Promise<void> {
   ctx.ai.calls = [];
   ctx.ai.replies = [];
   ctx.ai.converseCalls = [];
+  await ctx.pushService.flush();
+  ctx.push.sent = [];
+  ctx.push.result = 'ok';
 }
 
 export function lastCode(ctx: TestCtx, email: string): string {

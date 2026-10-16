@@ -11,7 +11,7 @@ import type { Locale } from '../../content/texts';
 import { EngineService } from '../engine/engine.service';
 import { ProfileViewService } from '../discovery/profile-view.service';
 import { SubjectsService } from '../discovery/subjects.service';
-import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationsService, pushText } from '../notifications/notifications.service';
 import { BAND_LABEL, bandFor, distanceM, RADIUS_OPTIONS_M, snap, type Band } from './geo';
 
 const FRESH_MS = 15 * 60_000;
@@ -158,7 +158,7 @@ export class NearbyService {
       for (const [me, other] of [[a.userA, a.userB], [a.userB, a.userA]] as const) {
         const u = await this.prisma.user.findUnique({ where: { id: me }, select: { locale: true } });
         const locale = (u?.locale === 'ru' ? 'ru' : 'en') as Locale;
-        await this.notifications.notify(me, 'nearby_alert', { alertId: a.id, userId: other, band: a.band }, { bodyOverride: `Open NearSoul to see who. ${BAND_LABEL[a.band as Band][locale]}.` });
+        await this.notifications.notify(me, 'nearby_alert', { alertId: a.id, userId: other, band: a.band }, { bodyOverride: `${pushText('nearby_alert', locale).body} ${BAND_LABEL[a.band as Band][locale]}.` });
       }
     }
     return due.length;

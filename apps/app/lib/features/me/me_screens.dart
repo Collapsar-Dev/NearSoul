@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/api.dart';
 import '../../core/config.dart';
+import '../../core/push.dart';
 import '../../core/responsive.dart';
 import '../../core/session.dart';
 import '../../core/widgets/common.dart';
@@ -151,6 +152,60 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   }
 }
 
+/// Push notifications on/off for this device (NOTIF-001).
+class PushTile extends ConsumerStatefulWidget {
+  const PushTile({super.key});
+
+  @override
+  ConsumerState<PushTile> createState() => _PushTileState();
+}
+
+class _PushTileState extends ConsumerState<PushTile> {
+  late PushState _state = ref.read(pushProvider).state();
+  bool _busy = false;
+
+  Future<void> _toggle(bool on) async {
+    final push = ref.read(pushProvider);
+    setState(() => _busy = true);
+    try {
+      if (on) {
+        final s = await push.enable();
+        if (mounted && s == PushState.on) showSnack(context, context.l.pushEnabled);
+      } else {
+        await push.disable();
+      }
+    } catch (e) {
+      if (mounted) showSnack(context, errorText(context, e));
+    } finally {
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _state = on ? push.state() : PushState.off;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l;
+    final hint = switch (_state) {
+      PushState.on => l.pushOnHint,
+      PushState.off => l.pushOffHint,
+      PushState.blocked => l.pushBlocked,
+      PushState.unsupported => l.pushUnsupported,
+    };
+    final available = _state == PushState.on || _state == PushState.off;
+    return SwitchListTile(
+      secondary: const Icon(Icons.notifications_outlined),
+      title: Text(l.pushNotifications),
+      subtitle: Text(hint),
+      value: _state == PushState.on,
+      onChanged: available && !_busy ? _toggle : null,
+    );
+  }
+}
+
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -173,6 +228,7 @@ class SettingsScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l.settings)),
       body: FocusColumn(
         child: ListView(children: [
+          const PushTile(),
           SwitchListTile(title: Text(l.discoverySetting), value: s['discoveryEnabled'] == true, onChanged: (v) => update({'discoveryEnabled': v})),
           SwitchListTile(title: Text(l.hideDistance), value: s['hideDistance'] == true, onChanged: (v) => update({'hideDistance': v})),
           SwitchListTile(title: Text(l.readReceipts), value: s['readReceipts'] == true, onChanged: (v) => update({'readReceipts': v})),

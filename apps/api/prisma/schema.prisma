@@ -726,3 +726,12 @@ model BillingEvent {
 
   @@map("billing_events")
 }
+
+/// Server-generated secrets that must stay stable across deploys (e.g. Web Push VAPID keys) when not set via env.
+model AppSecret {
+  key       String   @id
+  value     String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("app_secrets")
+}

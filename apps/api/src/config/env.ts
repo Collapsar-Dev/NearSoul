@@ -48,6 +48,12 @@ const EnvSchema = z.object({
   POSTHOG_KEY: z.string().optional(),
   /** Value RevenueCat sends in the Authorization header of webhooks (set in the RevenueCat dashboard). */
   REVENUECAT_WEBHOOK_AUTH: z.string().min(16).optional(),
+  // Web Push (VAPID). Optional: generated once and stored in app_secrets when unset.
+  VAPID_PUBLIC_KEY: z.string().optional(),
+  VAPID_PRIVATE_KEY: z.string().optional(),
+  VAPID_SUBJECT: z.string().default('mailto:hello@nearsoul.app'),
+  // FCM HTTP v1 service account (JSON) for the Android/iOS apps.
+  FCM_SERVICE_ACCOUNT_JSON: z.string().optional(),
   POSTHOG_HOST: z.string().url().default('https://eu.i.posthog.com'),
 });
 

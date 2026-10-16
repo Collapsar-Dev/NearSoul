@@ -6,14 +6,39 @@ import { PushService } from './push.service';
 
 export type NotificationType = 'new_match' | 'new_message' | 'daily_set_ready' | 'nearby_alert' | 'open_ending' | 'report_update';
 
-const PUSH_TEXT: Record<NotificationType, { title: string; body: string }> = {
-  new_match: { title: 'It’s a match! 🎉', body: 'Open NearSoul to say hi.' },
-  new_message: { title: 'NearSoul', body: 'You have a new message' },
-  daily_set_ready: { title: 'NearSoul', body: 'Your Today’s Souls are ready ✨' },
-  nearby_alert: { title: 'Someone compatible is nearby ✨', body: 'Open NearSoul to see who.' },
-  open_ending: { title: 'NearSoul', body: 'Your Open to meet window ends in 10 minutes.' },
-  report_update: { title: 'NearSoul', body: 'There’s an update on your report.' },
+type PushLocale = 'en' | 'ru';
+
+const PUSH_TEXT: Record<NotificationType, Record<PushLocale, { title: string; body: string }>> = {
+  new_match: {
+    en: { title: 'It’s a match! 🎉', body: 'Open NearSoul to say hi.' },
+    ru: { title: 'Это взаимно! 🎉', body: 'Откройте NearSoul и поздоровайтесь.' },
+  },
+  new_message: {
+    en: { title: 'NearSoul', body: 'You have a new message' },
+    ru: { title: 'NearSoul', body: 'У вас новое сообщение' },
+  },
+  daily_set_ready: {
+    en: { title: 'NearSoul', body: 'Your Today’s Souls are ready ✨' },
+    ru: { title: 'NearSoul', body: 'Ваши «Души дня» готовы ✨' },
+  },
+  nearby_alert: {
+    en: { title: 'Someone compatible is nearby ✨', body: 'Open NearSoul to see who.' },
+    ru: { title: 'Рядом кто-то совместимый ✨', body: 'Откройте NearSoul, чтобы узнать, кто это.' },
+  },
+  open_ending: {
+    en: { title: 'NearSoul', body: 'Your Open to meet window ends in 10 minutes.' },
+    ru: { title: 'NearSoul', body: 'Режим «Открыт к встрече» закончится через 10 минут.' },
+  },
+  report_update: {
+    en: { title: 'NearSoul', body: 'There’s an update on your report.' },
+    ru: { title: 'NearSoul', body: 'По вашей жалобе есть новости.' },
+  },
 };
+
+/** Generic, lock-screen-safe push text (NOTIF-001). */
+export function pushText(type: NotificationType, locale: string): { title: string; body: string } {
+  return PUSH_TEXT[type][locale === 'ru' ? 'ru' : 'en'];
+}
 
 /** In-app notification centre (PLAT-006, NOTIF-001) + realtime + push. Payloads carry ids, never private content. */
 @Injectable()
@@ -24,8 +49,9 @@ export class NotificationsService {
     const n = await this.prisma.notification.create({ data: { userId, type, payload: payload as Prisma.InputJsonValue } });
     this.rt.emit(userId, 'notification.new', { id: n.id, type, payload, createdAt: n.createdAt });
     if (opts.push !== false) {
-      const text = PUSH_TEXT[type];
-      await this.push.send(userId, { title: text.title, body: opts.bodyOverride ?? text.body, data: { type, ...payload } });
+      const u = await this.prisma.user.findUnique({ where: { id: userId }, select: { locale: true } });
+      const text = pushText(type, u?.locale ?? 'en');
+      this.push.send(userId, { title: text.title, body: opts.bodyOverride ?? text.body, data: { type, ...payload } });
     }
     return n;
   }

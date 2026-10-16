@@ -142,6 +142,8 @@ export class AuthService {
     }
     const next = await this.issue(session.userId, session.familyId, session.deviceId ?? undefined, session.platform ?? undefined);
     await this.prisma.session.update({ where: { id: session.id }, data: { revokedAt: new Date(), replacedById: next.sessionId } });
+    // Push subscriptions belong to the device, not to one refresh token: carry them over.
+    await this.prisma.deviceToken.updateMany({ where: { sessionId: session.id }, data: { sessionId: next.sessionId } });
     await this.prisma.user.update({ where: { id: session.userId }, data: { lastActiveAt: new Date() } });
     return { accessToken: next.accessToken, refreshToken: next.refreshToken, expiresIn: next.expiresIn };
   }
@@ -176,5 +178,6 @@ export class AuthService {
 
   async logoutAll(userId: string): Promise<void> {
     await this.prisma.session.updateMany({ where: { userId, revokedAt: null }, data: { revokedAt: new Date() } });
+    await this.prisma.deviceToken.deleteMany({ where: { session: { userId } } });
   }
 }

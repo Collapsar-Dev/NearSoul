@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api.dart';
+import 'push.dart';
 import 'realtime.dart';
 import 'token_store.dart';
 
@@ -65,6 +67,7 @@ class SessionNotifier extends Notifier<SessionState> {
     });
     await _api.setTokens(data);
     await reloadMe();
+    unawaited(ref.read(pushProvider).refresh().catchError((_) {}));
   }
 
   Future<Me> reloadMe() async {

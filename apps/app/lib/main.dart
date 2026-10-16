@@ -4,6 +4,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'core/push.dart';
 import 'core/router.dart';
 import 'core/session.dart';
 import 'core/theme.dart';
@@ -16,11 +17,23 @@ void main() {
   if (kIsWeb) SemanticsBinding.instance.ensureSemantics();
 }
 
-class NearSoulApp extends ConsumerWidget {
+class NearSoulApp extends ConsumerStatefulWidget {
   const NearSoulApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NearSoulApp> createState() => _NearSoulAppState();
+}
+
+class _NearSoulAppState extends ConsumerState<NearSoulApp> {
+  @override
+  void initState() {
+    super.initState();
+    // A tapped push notification while the app is open: go to the screen it is about.
+    PushController.onOpen((path) => ref.read(routerProvider).go(path));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
     final locale = ref.watch(localeProvider);
     return MaterialApp.router(

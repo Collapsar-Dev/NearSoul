@@ -332,5 +332,11 @@
   "paywallSoon": "Покупки откроются после беты.",
   "soulPlus": "Soul+",
   "soulPlusActive": "Активна до {date}",
-  "soulPlusInactive": "Не активна"
+  "soulPlusInactive": "Не активна",
+  "pushNotifications": "Push-уведомления",
+  "pushOnHint": "Включены в этом браузере. В тексте нет имён и сообщений.",
+  "pushOffHint": "Узнавайте о взаимных симпатиях и новых сообщениях.",
+  "pushBlocked": "Заблокированы в настройках браузера. Разрешите уведомления для этого сайта.",
+  "pushUnsupported": "Здесь недоступны. На iPhone сначала добавьте NearSoul на экран «Домой».",
+  "pushEnabled": "Уведомления включены"
 }

@@ -2095,6 +2095,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not active'**
   String get soulPlusInactive;
+
+  /// No description provided for @pushNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notifications'**
+  String get pushNotifications;
+
+  /// No description provided for @pushOnHint.
+  ///
+  /// In en, this message translates to:
+  /// **'On for this browser. Texts never show names or messages.'**
+  String get pushOnHint;
+
+  /// No description provided for @pushOffHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Get notified about matches and new messages.'**
+  String get pushOffHint;
+
+  /// No description provided for @pushBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked in browser settings. Allow notifications for this site to turn them on.'**
+  String get pushBlocked;
+
+  /// No description provided for @pushUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available here. On iPhone, add NearSoul to the Home Screen first.'**
+  String get pushUnsupported;
+
+  /// No description provided for @pushEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are on'**
+  String get pushEnabled;
 }
 
 class _AppLocalizationsDelegate

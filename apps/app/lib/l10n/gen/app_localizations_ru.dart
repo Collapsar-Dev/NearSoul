@@ -1095,4 +1095,26 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get soulPlusInactive => 'Не активна';
+
+  @override
+  String get pushNotifications => 'Push-уведомления';
+
+  @override
+  String get pushOnHint =>
+      'Включены в этом браузере. В тексте нет имён и сообщений.';
+
+  @override
+  String get pushOffHint =>
+      'Узнавайте о взаимных симпатиях и новых сообщениях.';
+
+  @override
+  String get pushBlocked =>
+      'Заблокированы в настройках браузера. Разрешите уведомления для этого сайта.';
+
+  @override
+  String get pushUnsupported =>
+      'Здесь недоступны. На iPhone сначала добавьте NearSoul на экран «Домой».';
+
+  @override
+  String get pushEnabled => 'Уведомления включены';
 }

@@ -492,5 +492,11 @@
       }
     }
   },
-  "soulPlusInactive": "Not active"
+  "soulPlusInactive": "Not active",
+  "pushNotifications": "Push notifications",
+  "pushOnHint": "On for this browser. Texts never show names or messages.",
+  "pushOffHint": "Get notified about matches and new messages.",
+  "pushBlocked": "Blocked in browser settings. Allow notifications for this site to turn them on.",
+  "pushUnsupported": "Not available here. On iPhone, add NearSoul to the Home Screen first.",
+  "pushEnabled": "Notifications are on"
 }

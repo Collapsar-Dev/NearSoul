@@ -1092,4 +1092,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get soulPlusInactive => 'Not active';
+
+  @override
+  String get pushNotifications => 'Push notifications';
+
+  @override
+  String get pushOnHint =>
+      'On for this browser. Texts never show names or messages.';
+
+  @override
+  String get pushOffHint => 'Get notified about matches and new messages.';
+
+  @override
+  String get pushBlocked =>
+      'Blocked in browser settings. Allow notifications for this site to turn them on.';
+
+  @override
+  String get pushUnsupported =>
+      'Not available here. On iPhone, add NearSoul to the Home Screen first.';
+
+  @override
+  String get pushEnabled => 'Notifications are on';
 }
