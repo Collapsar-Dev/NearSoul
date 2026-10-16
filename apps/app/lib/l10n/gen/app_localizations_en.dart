@@ -929,4 +929,115 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get facets => 'Facets';
+
+  @override
+  String get soulTalkIntroTitle => 'Get to know yourself';
+
+  @override
+  String get soulTalkIntroBody =>
+      'Short, guided conversations about what you want, what gives you energy and how you connect. Only you can see them.';
+
+  @override
+  String get soulNotTherapy => 'This is self-reflection, not therapy.';
+
+  @override
+  String get soulPrivacy =>
+      'Your Soul Talk is private and encrypted. Nobody at NearSoul can read it. Conversations are deleted after 90 days unless you choose to keep them.';
+
+  @override
+  String get soulConsentCta => 'I agree, let\'s start';
+
+  @override
+  String get soulTopics => 'Topics';
+
+  @override
+  String get soulSuggested => 'Suggested for you';
+
+  @override
+  String get soulDoneBadge => 'Done';
+
+  @override
+  String get soulResume => 'Continue';
+
+  @override
+  String get soulEnd => 'End session';
+
+  @override
+  String get soulThinking => 'Thinking…';
+
+  @override
+  String get soulRetry => 'Something went wrong. Tap to try again.';
+
+  @override
+  String get soulWrapTitle => 'What you discovered today';
+
+  @override
+  String get soulKeep => 'Keep';
+
+  @override
+  String get soulDiscard => 'Discard';
+
+  @override
+  String soulBasedOn(String evidence) {
+    return 'Based on what you said: $evidence';
+  }
+
+  @override
+  String get soulVisPrivate => 'Only me';
+
+  @override
+  String get soulVisMatching => 'Use for matching';
+
+  @override
+  String get soulVisCard => 'Show on my card';
+
+  @override
+  String get soulQuestion => 'A question to sit with';
+
+  @override
+  String get soulMap => 'Soul Map';
+
+  @override
+  String get soulMapEmpty => 'Your map grows with every Soul Talk.';
+
+  @override
+  String get soulKeepConversations => 'Keep my conversations';
+
+  @override
+  String get soulDeleteAll => 'Delete all Soul Talk data';
+
+  @override
+  String get soulDeleteAllConfirm =>
+      'Delete all your Soul Talk conversations and insights? This can\'t be undone.';
+
+  @override
+  String get soulSafetyContinue => 'Continue';
+
+  @override
+  String get soulSafetyEnd => 'End session';
+
+  @override
+  String get soulTooShort =>
+      'This conversation was too short for insights. That\'s okay.';
+
+  @override
+  String get soulAffectsMatching => 'Can improve your matches';
+
+  @override
+  String get catValue => 'Values';
+
+  @override
+  String get catNeed => 'Needs';
+
+  @override
+  String get catPattern => 'Patterns';
+
+  @override
+  String get catStrength => 'Strengths';
+
+  @override
+  String get catPreference => 'Preferences';
+
+  @override
+  String get catGrowth => 'Growth';
 }

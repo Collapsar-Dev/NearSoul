@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { env } from '../../config/env';
 import { badRequest, forbidden } from '../../common/errors';
 import { PrismaService } from '../../common/prisma.service';
+import { SoulCryptoService } from '../soul/soul-crypto.service';
 
 export function ageOn(dob: Date, now: Date): number {
   let age = now.getUTCFullYear() - dob.getUTCFullYear();
@@ -10,11 +11,11 @@ export function ageOn(dob: Date, now: Date): number {
   return age;
 }
 
-export const OPTIONAL_CONSENTS = ['product_emails', 'analytics', 'ai_writing'] as const;
+export const OPTIONAL_CONSENTS = ['product_emails', 'analytics', 'ai_writing', 'ai_self_discovery'] as const;
 
 @Injectable()
 export class MeService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private readonly soulCrypto: SoulCryptoService) {}
 
   async me(userId: string) {
     const u = await this.prisma.user.findUniqueOrThrow({
@@ -54,6 +55,8 @@ export class MeService {
       },
       environment: env().APP_ENV,
       paywallEnabled: env().PAYWALL_ENABLED,
+      soulTalkEnabled: env().SOUL_TALK_ENABLED,
+      soulKeepConversations: u.soulKeepConversations,
     };
   }
 
@@ -132,6 +135,8 @@ export class MeService {
 
   /** ACC-003: immediately invisible + signed out; the deletion job removes the data. */
   async requestDeletion(userId: string) {
+    // SOUL-007: crypto-shred Soul Talk data before anything else.
+    await this.soulCrypto.destroy(userId);
     await this.prisma.$transaction([
       this.prisma.user.update({ where: { id: userId }, data: { status: 'deletion_requested', deletionRequestedAt: new Date(), discoveryEnabled: false } }),
       this.prisma.session.updateMany({ where: { userId, revokedAt: null }, data: { revokedAt: new Date() } }),

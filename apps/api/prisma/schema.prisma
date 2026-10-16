@@ -91,6 +91,7 @@ model User {
   analyticsId        String          @default(uuid()) @map("analytics_id")
   isDemo             Boolean         @default(false) @map("is_demo")
   hiddenByModeration Boolean         @default(false) @map("hidden_by_moderation")
+  soulKeepConversations Boolean      @default(false) @map("soul_keep_conversations")
   invitesLeft        Int             @default(0) @map("invites_left")
   createdAt          DateTime        @default(now()) @map("created_at")
   lastActiveAt       DateTime        @default(now()) @map("last_active_at")
@@ -112,6 +113,9 @@ model User {
   blocksReceived     Block[]         @relation("blocked")
   feedback           Feedback[]
   ratings            Rating[]
+  soulSessions       SoulSession[]
+  soulInsights       SoulInsight[]
+  dataKey            UserDataKey?
 
   @@index([status, discoveryEnabled])
   @@map("users")
@@ -273,6 +277,7 @@ model LayerOverride {
   traitKey  String   @map("trait_key")
   value     Json
   source    String
+  insightId String?  @map("insight_id") @db.Uuid
   updatedAt DateTime @default(now()) @map("updated_at")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -592,4 +597,88 @@ model Media {
   createdAt   DateTime @default(now()) @map("created_at")
 
   @@map("media")
+}
+
+// ---- Soul Talk (data class S3 "Intimate", PRD SOUL-007): all *_enc columns are AES-256-GCM ciphertext ----
+
+model UserDataKey {
+  userId     String   @id @map("user_id") @db.Uuid
+  wrappedKey String   @map("wrapped_key")
+  keyVersion Int      @default(1) @map("key_version")
+  createdAt  DateTime @default(now()) @map("created_at")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_data_keys")
+}
+
+model SoulSession {
+  id               String        @id @default(uuid(7)) @db.Uuid
+  userId           String        @map("user_id") @db.Uuid
+  topicKey         String        @map("topic_key")
+  topicVersion     Int           @default(1) @map("topic_version")
+  status           String        @default("active") // active | finished | abandoned | paused_safety
+  turnCount        Int           @default(0) @map("turn_count")
+  summaryEnc       String?       @map("summary_enc")
+  questionEnc      String?       @map("question_enc")
+  model            String?
+  promptVersion    String        @map("prompt_version")
+  tokensIn         Int           @default(0) @map("tokens_in")
+  tokensOut        Int           @default(0) @map("tokens_out")
+  startedAt        DateTime      @default(now()) @map("started_at")
+  finishedAt       DateTime?     @map("finished_at")
+  resumeUntil      DateTime      @map("resume_until")
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages         SoulMessage[]
+  insights         SoulInsight[]
+
+  @@index([userId, startedAt])
+  @@map("soul_sessions")
+}
+
+model SoulMessage {
+  id             String      @id @default(uuid(7)) @db.Uuid
+  sessionId      String      @map("session_id") @db.Uuid
+  role           String // user | guide | system_fixed
+  bodyEnc        String      @map("body_enc")
+  idempotencyKey String?     @map("idempotency_key")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  purgeAt        DateTime?   @map("purge_at")
+  session        SoulSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, idempotencyKey])
+  @@index([sessionId, createdAt])
+  @@index([purgeAt])
+  @@map("soul_messages")
+}
+
+model SoulInsight {
+  id          String      @id @default(uuid(7)) @db.Uuid
+  userId      String      @map("user_id") @db.Uuid
+  sessionId   String      @map("session_id") @db.Uuid
+  category    String
+  textEnc     String      @map("text_enc")
+  evidenceEnc String      @map("evidence_enc")
+  traitKey    String?     @map("trait_key")
+  traitValue  Json?       @map("trait_value")
+  status      String      @default("proposed") // proposed | kept | discarded
+  visibility  String      @default("private") // private | matching | card
+  userEdited  Boolean     @default(false) @map("user_edited")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session     SoulSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@map("soul_insights")
+}
+
+/// Safety triggers: category + time only, never content (SOUL-006).
+model SafetyEvent {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  category  String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([category, createdAt])
+  @@map("safety_events")
 }

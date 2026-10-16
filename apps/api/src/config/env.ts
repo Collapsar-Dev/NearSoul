@@ -34,6 +34,15 @@ const EnvSchema = z.object({
   LAUNCH_CITY: z.string().default('amsterdam'),
   DAILY_SET_SIZE: z.coerce.number().int().min(1).max(50).default(15),
   TERMS_VERSION: z.string().default('2026-10-alpha'),
+  SOUL_TALK_ENABLED: bool.default('false'),
+  /** base64 of 32 random bytes; wraps per-user data keys (SOUL-007). Required when Soul Talk is enabled outside dev/test. */
+  SOUL_MASTER_KEY: z.string().optional(),
+  SOUL_MODEL: z.string().default('claude-sonnet-5-5'),
+  SOUL_SAFETY_MODEL: z.string().default('claude-haiku-4-5-20251001'),
+  SOUL_TRANSCRIPT_TTL_DAYS: z.coerce.number().int().min(1).default(90),
+  /** JSON: { "NL": [{ "name": "113 Zelfmoordpreventie", "phone": "0800-0113", "url": "https://www.113.nl" }], "default": [...] } */
+  CRISIS_RESOURCES: z.string().optional(),
+  CRISIS_TEXTS_APPROVED: bool.default('false'),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
@@ -53,6 +62,11 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
   }
   if (env.EMAIL_PROVIDER === 'brevo' && !env.BREVO_API_KEY) throw new Error('EMAIL_PROVIDER=brevo requires BREVO_API_KEY');
   if (env.EMAIL_PROVIDER === 'resend' && !env.RESEND_API_KEY) throw new Error('EMAIL_PROVIDER=resend requires RESEND_API_KEY');
+  if (env.SOUL_TALK_ENABLED && !['development', 'test'].includes(env.APP_ENV)) {
+    if (!env.SOUL_MASTER_KEY || Buffer.from(env.SOUL_MASTER_KEY, 'base64').length !== 32) throw new Error('SOUL_TALK_ENABLED requires SOUL_MASTER_KEY (base64, 32 bytes)');
+    // SOUL-006: Soul Talk can't reach real users until the founder approved the crisis message and resources.
+    if (!env.CRISIS_TEXTS_APPROVED || !env.CRISIS_RESOURCES) throw new Error('SOUL_TALK_ENABLED requires CRISIS_RESOURCES and CRISIS_TEXTS_APPROVED=true');
+  }
   if (env.AI_ENABLED && !env.ANTHROPIC_API_KEY) throw new Error('AI_ENABLED requires ANTHROPIC_API_KEY');
   return env;
 }

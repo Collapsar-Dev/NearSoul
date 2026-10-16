@@ -8,6 +8,7 @@ import '../../core/widgets/soul_widgets.dart';
 import '../onboarding/quick_scan_screen.dart';
 import '../onboarding/reveal_screen.dart';
 import '../shell.dart';
+import 'soul_talk_screens.dart';
 
 /// S27/S28 Soul tab: who you are.
 class SoulScreen extends ConsumerStatefulWidget {
@@ -80,7 +81,20 @@ class _SoulScreenState extends ConsumerState<SoulScreen> {
               },
             ),
             const SizedBox(height: 24),
-            Card(child: ListTile(leading: const Icon(Icons.forum_outlined), title: Text(l.soulTalk), trailing: Chip(label: Text(l.comingSoon)))),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.forum_outlined),
+                title: Text(l.soulTalk),
+                subtitle: Text(l.soulTalkIntroTitle),
+                trailing: ref.watch(sessionProvider).me?.json['soulTalkEnabled'] == true ? const Icon(Icons.chevron_right) : Chip(label: Text(l.comingSoon)),
+                onTap: ref.watch(sessionProvider).me?.json['soulTalkEnabled'] == true
+                    ? () async {
+                        await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SoulTalkScreen()));
+                        setState(() => _f = _fetch());
+                      }
+                    : null,
+              ),
+            ),
             const SizedBox(height: 8),
             _DeepCard(
               progress: (data.length > 2 ? (data[2] as Map<String, dynamic>)['deepParts'] as List : const []).cast<Map<String, dynamic>>(),

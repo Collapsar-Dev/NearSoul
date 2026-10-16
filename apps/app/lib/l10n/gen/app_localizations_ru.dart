@@ -932,4 +932,115 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get facets => 'Грани';
+
+  @override
+  String get soulTalkIntroTitle => 'Узнай себя';
+
+  @override
+  String get soulTalkIntroBody =>
+      'Короткие беседы о том, чего ты хочешь, что даёт тебе энергию и как ты общаешься. Их видишь только ты.';
+
+  @override
+  String get soulNotTherapy => 'Это самоанализ, а не терапия.';
+
+  @override
+  String get soulPrivacy =>
+      'Soul Talk приватен и зашифрован. Никто в NearSoul не может его прочитать. Беседы удаляются через 90 дней, если ты не решишь их сохранить.';
+
+  @override
+  String get soulConsentCta => 'Согласен(на), начнём';
+
+  @override
+  String get soulTopics => 'Темы';
+
+  @override
+  String get soulSuggested => 'Рекомендуем';
+
+  @override
+  String get soulDoneBadge => 'Пройдено';
+
+  @override
+  String get soulResume => 'Продолжить';
+
+  @override
+  String get soulEnd => 'Завершить';
+
+  @override
+  String get soulThinking => 'Думаю…';
+
+  @override
+  String get soulRetry => 'Что-то пошло не так. Нажми, чтобы повторить.';
+
+  @override
+  String get soulWrapTitle => 'Что ты открыл(а) сегодня';
+
+  @override
+  String get soulKeep => 'Оставить';
+
+  @override
+  String get soulDiscard => 'Убрать';
+
+  @override
+  String soulBasedOn(String evidence) {
+    return 'Из твоих слов: $evidence';
+  }
+
+  @override
+  String get soulVisPrivate => 'Только я';
+
+  @override
+  String get soulVisMatching => 'Учитывать в подборе';
+
+  @override
+  String get soulVisCard => 'Показать в карточке';
+
+  @override
+  String get soulQuestion => 'Вопрос для размышления';
+
+  @override
+  String get soulMap => 'Карта души';
+
+  @override
+  String get soulMapEmpty => 'Карта растёт с каждой беседой.';
+
+  @override
+  String get soulKeepConversations => 'Хранить мои беседы';
+
+  @override
+  String get soulDeleteAll => 'Удалить все данные Soul Talk';
+
+  @override
+  String get soulDeleteAllConfirm =>
+      'Удалить все беседы и инсайты Soul Talk? Это нельзя отменить.';
+
+  @override
+  String get soulSafetyContinue => 'Продолжить';
+
+  @override
+  String get soulSafetyEnd => 'Завершить';
+
+  @override
+  String get soulTooShort =>
+      'Беседа была слишком короткой для выводов. Это нормально.';
+
+  @override
+  String get soulAffectsMatching => 'Может улучшить подбор';
+
+  @override
+  String get catValue => 'Ценности';
+
+  @override
+  String get catNeed => 'Потребности';
+
+  @override
+  String get catPattern => 'Закономерности';
+
+  @override
+  String get catStrength => 'Сильные стороны';
+
+  @override
+  String get catPreference => 'Предпочтения';
+
+  @override
+  String get catGrowth => 'Рост';
 }

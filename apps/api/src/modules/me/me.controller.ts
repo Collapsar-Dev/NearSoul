@@ -51,7 +51,7 @@ export class MeController {
       z.object({
         terms: z.boolean().optional(),
         alphaTerms: z.boolean().optional(),
-        optional: z.object({ product_emails: z.boolean(), analytics: z.boolean(), ai_writing: z.boolean() }).partial().strict().optional(),
+        optional: z.object({ product_emails: z.boolean(), analytics: z.boolean(), ai_writing: z.boolean(), ai_self_discovery: z.boolean() }).partial().strict().optional(),
       }).strict(),
       body,
     );

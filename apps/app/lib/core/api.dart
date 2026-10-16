@@ -115,7 +115,8 @@ class Api {
   }
 
   Future<T> get<T>(String path, {Map<String, dynamic>? query}) => _wrap(() => dio.get(path, queryParameters: query));
-  Future<T> post<T>(String path, [Object? body]) => _wrap(() => dio.post(path, data: body ?? {}));
+  Future<T> post<T>(String path, [Object? body, Map<String, String>? headers]) =>
+      _wrap(() => dio.post(path, data: body ?? {}, options: headers == null ? null : Options(headers: headers)));
   Future<T> put<T>(String path, [Object? body]) => _wrap(() => dio.put(path, data: body ?? {}));
   Future<T> patch<T>(String path, [Object? body]) => _wrap(() => dio.patch(path, data: body ?? {}));
   Future<T> delete<T>(String path) => _wrap(() => dio.delete(path));

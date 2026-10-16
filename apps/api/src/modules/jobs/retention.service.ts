@@ -4,6 +4,7 @@ import { env } from '../../config/env';
 import { PrismaService } from '../../common/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
+import { SoulService } from '../soul/soul.service';
 
 const MOD_RETENTION_DAYS = 90;
 
@@ -12,7 +13,7 @@ const MOD_RETENTION_DAYS = 90;
 export class RetentionService {
   private readonly logger = new Logger('Retention');
 
-  constructor(private readonly prisma: PrismaService, private readonly storage: StorageService, private readonly rt: RealtimeGateway) {}
+  constructor(private readonly prisma: PrismaService, private readonly storage: StorageService, private readonly rt: RealtimeGateway, private readonly soul: SoulService) {}
 
   async processDeletions(): Promise<number> {
     const users = await this.prisma.user.findMany({ where: { status: 'deletion_requested' }, select: { id: true }, take: 50 });
@@ -39,6 +40,7 @@ export class RetentionService {
     await this.prisma.notification.deleteMany({ where: { createdAt: { lt: cutoff } } });
     await this.prisma.authCode.deleteMany({ where: { createdAt: { lt: new Date(now.getTime() - 86_400_000) } } });
     await this.prisma.session.deleteMany({ where: { revokedAt: { lt: new Date(now.getTime() - 30 * 86_400_000) } } });
+    await this.soul.purge(now);
   }
 
   @Interval(10 * 60_000)

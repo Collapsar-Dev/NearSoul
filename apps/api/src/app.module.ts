@@ -45,6 +45,9 @@ import { ReferenceController } from './modules/reference/reference.controller';
 import { ReportsController } from './modules/reports/reports.controller';
 import { ReportsService } from './modules/reports/reports.service';
 import { SafetyController } from './modules/safety/safety.controller';
+import { SoulCryptoService } from './modules/soul/soul-crypto.service';
+import { SoulController } from './modules/soul/soul.controller';
+import { SoulService } from './modules/soul/soul.service';
 import { SafetyService } from './modules/safety/safety.service';
 import { MediaController } from './modules/storage/media.controller';
 import { StorageService } from './modules/storage/storage.service';
@@ -55,13 +58,13 @@ import { StorageService } from './modules/storage/storage.service';
     HealthController, AuthController, InvitesController, MeController, EngineController, CardController,
     ProfileController, ReferenceController, MediaController, DiscoveryController, MatchesController,
     NotificationsController, ReportsController, SafetyController, FeedbackController, NearbyController,
-    AlphaController, AdminController,
+    AlphaController, AdminController, SoulController,
   ],
   providers: [
     PrismaService, RateLimiter, EmailService, AuthService, InvitesService, MeService, EngineService, CardService,
     { provide: StorageService, useFactory: (p: PrismaService) => new StorageService(p), inject: [PrismaService] }, ProfileService, SubjectsService, ProfileViewService, DailySetService, LikesService, ChatService,
     RealtimeGateway, PushService, NotificationsService, ReportsService, SafetyService, NearbyService, DemoService,
-    RetentionService, AdminAuthService,
+    RetentionService, AdminAuthService, SoulCryptoService, SoulService,
     { provide: AiProvider, useClass: AnthropicProvider },
     { provide: APP_GUARD, useClass: AuthGuard },
     { provide: APP_FILTER, useClass: ErrorFilter },

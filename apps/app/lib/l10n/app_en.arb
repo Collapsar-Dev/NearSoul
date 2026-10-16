@@ -427,5 +427,47 @@
   },
   "deepPartDone": "Part complete! New facets unlocked.",
   "deepAllDone": "All parts done. Your profile now uses all 116 questions.",
-  "facets": "Facets"
+  "facets": "Facets",
+  "soulTalkIntroTitle": "Get to know yourself",
+  "soulTalkIntroBody": "Short, guided conversations about what you want, what gives you energy and how you connect. Only you can see them.",
+  "soulNotTherapy": "This is self-reflection, not therapy.",
+  "soulPrivacy": "Your Soul Talk is private and encrypted. Nobody at NearSoul can read it. Conversations are deleted after 90 days unless you choose to keep them.",
+  "soulConsentCta": "I agree, let's start",
+  "soulTopics": "Topics",
+  "soulSuggested": "Suggested for you",
+  "soulDoneBadge": "Done",
+  "soulResume": "Continue",
+  "soulEnd": "End session",
+  "soulThinking": "Thinking…",
+  "soulRetry": "Something went wrong. Tap to try again.",
+  "soulWrapTitle": "What you discovered today",
+  "soulKeep": "Keep",
+  "soulDiscard": "Discard",
+  "soulBasedOn": "Based on what you said: {evidence}",
+  "@soulBasedOn": {
+    "placeholders": {
+      "evidence": {
+        "type": "String"
+      }
+    }
+  },
+  "soulVisPrivate": "Only me",
+  "soulVisMatching": "Use for matching",
+  "soulVisCard": "Show on my card",
+  "soulQuestion": "A question to sit with",
+  "soulMap": "Soul Map",
+  "soulMapEmpty": "Your map grows with every Soul Talk.",
+  "soulKeepConversations": "Keep my conversations",
+  "soulDeleteAll": "Delete all Soul Talk data",
+  "soulDeleteAllConfirm": "Delete all your Soul Talk conversations and insights? This can't be undone.",
+  "soulSafetyContinue": "Continue",
+  "soulSafetyEnd": "End session",
+  "soulTooShort": "This conversation was too short for insights. That's okay.",
+  "soulAffectsMatching": "Can improve your matches",
+  "catValue": "Values",
+  "catNeed": "Needs",
+  "catPattern": "Patterns",
+  "catStrength": "Strengths",
+  "catPreference": "Preferences",
+  "catGrowth": "Growth"
 }

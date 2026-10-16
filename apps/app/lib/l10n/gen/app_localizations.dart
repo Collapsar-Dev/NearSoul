@@ -1789,6 +1789,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Facets'**
   String get facets;
+
+  /// No description provided for @soulTalkIntroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Get to know yourself'**
+  String get soulTalkIntroTitle;
+
+  /// No description provided for @soulTalkIntroBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Short, guided conversations about what you want, what gives you energy and how you connect. Only you can see them.'**
+  String get soulTalkIntroBody;
+
+  /// No description provided for @soulNotTherapy.
+  ///
+  /// In en, this message translates to:
+  /// **'This is self-reflection, not therapy.'**
+  String get soulNotTherapy;
+
+  /// No description provided for @soulPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Soul Talk is private and encrypted. Nobody at NearSoul can read it. Conversations are deleted after 90 days unless you choose to keep them.'**
+  String get soulPrivacy;
+
+  /// No description provided for @soulConsentCta.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree, let\'s start'**
+  String get soulConsentCta;
+
+  /// No description provided for @soulTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Topics'**
+  String get soulTopics;
+
+  /// No description provided for @soulSuggested.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested for you'**
+  String get soulSuggested;
+
+  /// No description provided for @soulDoneBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get soulDoneBadge;
+
+  /// No description provided for @soulResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get soulResume;
+
+  /// No description provided for @soulEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'End session'**
+  String get soulEnd;
+
+  /// No description provided for @soulThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking…'**
+  String get soulThinking;
+
+  /// No description provided for @soulRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Tap to try again.'**
+  String get soulRetry;
+
+  /// No description provided for @soulWrapTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What you discovered today'**
+  String get soulWrapTitle;
+
+  /// No description provided for @soulKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get soulKeep;
+
+  /// No description provided for @soulDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get soulDiscard;
+
+  /// No description provided for @soulBasedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on what you said: {evidence}'**
+  String soulBasedOn(String evidence);
+
+  /// No description provided for @soulVisPrivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Only me'**
+  String get soulVisPrivate;
+
+  /// No description provided for @soulVisMatching.
+  ///
+  /// In en, this message translates to:
+  /// **'Use for matching'**
+  String get soulVisMatching;
+
+  /// No description provided for @soulVisCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Show on my card'**
+  String get soulVisCard;
+
+  /// No description provided for @soulQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'A question to sit with'**
+  String get soulQuestion;
+
+  /// No description provided for @soulMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Soul Map'**
+  String get soulMap;
+
+  /// No description provided for @soulMapEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Your map grows with every Soul Talk.'**
+  String get soulMapEmpty;
+
+  /// No description provided for @soulKeepConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep my conversations'**
+  String get soulKeepConversations;
+
+  /// No description provided for @soulDeleteAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all Soul Talk data'**
+  String get soulDeleteAll;
+
+  /// No description provided for @soulDeleteAllConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all your Soul Talk conversations and insights? This can\'t be undone.'**
+  String get soulDeleteAllConfirm;
+
+  /// No description provided for @soulSafetyContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get soulSafetyContinue;
+
+  /// No description provided for @soulSafetyEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'End session'**
+  String get soulSafetyEnd;
+
+  /// No description provided for @soulTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation was too short for insights. That\'s okay.'**
+  String get soulTooShort;
+
+  /// No description provided for @soulAffectsMatching.
+  ///
+  /// In en, this message translates to:
+  /// **'Can improve your matches'**
+  String get soulAffectsMatching;
+
+  /// No description provided for @catValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Values'**
+  String get catValue;
+
+  /// No description provided for @catNeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs'**
+  String get catNeed;
+
+  /// No description provided for @catPattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Patterns'**
+  String get catPattern;
+
+  /// No description provided for @catStrength.
+  ///
+  /// In en, this message translates to:
+  /// **'Strengths'**
+  String get catStrength;
+
+  /// No description provided for @catPreference.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get catPreference;
+
+  /// No description provided for @catGrowth.
+  ///
+  /// In en, this message translates to:
+  /// **'Growth'**
+  String get catGrowth;
 }
 
 class _AppLocalizationsDelegate
