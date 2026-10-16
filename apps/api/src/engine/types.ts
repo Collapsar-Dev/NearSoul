@@ -2,7 +2,7 @@
  * Soul Engine types (PRD 08-soul-engine). Pure data, no I/O.
  */
 
-export const ENGINE_VERSION = '2.0.0';
+export const ENGINE_VERSION = '2.1.0';
 
 export type Domain = 'O' | 'C' | 'E' | 'A' | 'S';
 /** Neuroticism is measured by items but only Emotional Stability (S = 100 − N) is exposed. */
@@ -86,6 +86,10 @@ export interface SoulProfile {
   engineVersion: string;
   normsVersion: string;
   domains: Record<Domain, DimensionResult>;
+  /** 29 facets after Deep Personality (N facets stored inverted as S1–S6). Missing until answered. */
+  facets: Record<string, DimensionResult>;
+  /** Number of Deep Personality parts fully answered (0–4). */
+  deepPartsCompleted: number;
   relationship: RelationshipLayer;
   values: ValuesLayer;
   lifestyle: LifestyleLayer;
@@ -123,7 +127,7 @@ export interface NormTable {
 }
 
 export interface DepthInputs {
-  deepPartsCompleted: number;
+  deepPartsCompleted?: number;
   keptInsights: number;
   extraLevelsCompleted: number;
 }

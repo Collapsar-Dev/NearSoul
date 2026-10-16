@@ -910,4 +910,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notAvailableYet => 'Not available yet';
+
+  @override
+  String get deepIntro =>
+      '4 short parts, about 4 minutes each. Each part unlocks more facets of your personality.';
+
+  @override
+  String deepPart(int n) {
+    return 'Part $n of 4';
+  }
+
+  @override
+  String get deepPartDone => 'Part complete! New facets unlocked.';
+
+  @override
+  String get deepAllDone =>
+      'All parts done. Your profile now uses all 116 questions.';
+
+  @override
+  String get facets => 'Facets';
 }

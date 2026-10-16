@@ -267,3 +267,40 @@ export const NEED_TEXT: Record<string, L> = {
   RESPECT_SPACE: { en: 'Respect for your personal time.', ru: 'Уважение к твоему личному времени.' },
   REASSURE: { en: 'Small, regular signs of interest.', ru: 'Небольшие регулярные знаки интереса.' },
 };
+
+/** Facet names and both positive poles (Deep Personality). N facets are shown inverted (S1–S6), never as clinical labels. */
+export const FACET_TEXT: Record<string, { name: L; low: L; high: L }> = {
+  O1: { name: { en: 'Imagination', ru: 'Воображение' }, low: { en: 'Down-to-earth', ru: 'Практичность' }, high: { en: 'Dreamy', ru: 'Мечтательность' } },
+  O2: { name: { en: 'Love of art', ru: 'Любовь к искусству' }, low: { en: 'Practical tastes', ru: 'Практичный вкус' }, high: { en: 'Art lover', ru: 'Ценитель искусства' } },
+  O3: { name: { en: 'Emotional awareness', ru: 'Чуткость к эмоциям' }, low: { en: 'Even-keeled', ru: 'Ровность' }, high: { en: 'Emotionally vivid', ru: 'Яркие эмоции' } },
+  O4: { name: { en: 'Adventurousness', ru: 'Тяга к новому' }, low: { en: 'Likes the familiar', ru: 'Любит привычное' }, high: { en: 'Seeks variety', ru: 'Ищет разнообразие' } },
+  O5: { name: { en: 'Intellectual curiosity', ru: 'Интеллектуальное любопытство' }, low: { en: 'Hands-on', ru: 'Практик' }, high: { en: 'Loves ideas', ru: 'Любит идеи' } },
+  C1: { name: { en: 'Self-efficacy', ru: 'Уверенность в делах' }, low: { en: 'Still learning', ru: 'В процессе роста' }, high: { en: 'Capable', ru: 'Справляется' } },
+  C2: { name: { en: 'Orderliness', ru: 'Порядок' }, low: { en: 'Relaxed about mess', ru: 'Спокоен к беспорядку' }, high: { en: 'Tidy', ru: 'Аккуратность' } },
+  C3: { name: { en: 'Sense of duty', ru: 'Ответственность' }, low: { en: 'Flexible with rules', ru: 'Гибкость с правилами' }, high: { en: 'Keeps promises', ru: 'Держит слово' } },
+  C4: { name: { en: 'Drive', ru: 'Целеустремлённость' }, low: { en: 'Content', ru: 'Удовлетворённость' }, high: { en: 'Ambitious', ru: 'Амбициозность' } },
+  C5: { name: { en: 'Self-discipline', ru: 'Самодисциплина' }, low: { en: 'Goes with the flow', ru: 'Плывёт по течению' }, high: { en: 'Follows through', ru: 'Доводит до конца' } },
+  C6: { name: { en: 'Thoughtfulness', ru: 'Обдуманность' }, low: { en: 'Spontaneous', ru: 'Спонтанность' }, high: { en: 'Careful', ru: 'Осмотрительность' } },
+  E1: { name: { en: 'Friendliness', ru: 'Дружелюбие' }, low: { en: 'Reserved', ru: 'Сдержанность' }, high: { en: 'Warm with people', ru: 'Тепло с людьми' } },
+  E2: { name: { en: 'Love of company', ru: 'Любовь к компаниям' }, low: { en: 'Small circles', ru: 'Узкий круг' }, high: { en: 'Big gatherings', ru: 'Большие компании' } },
+  E3: { name: { en: 'Assertiveness', ru: 'Напористость' }, low: { en: 'Easy-going', ru: 'Покладистость' }, high: { en: 'Takes the lead', ru: 'Берёт инициативу' } },
+  E4: { name: { en: 'Pace of life', ru: 'Темп жизни' }, low: { en: 'Unhurried', ru: 'Неспешность' }, high: { en: 'Always on the go', ru: 'Всегда в движении' } },
+  E5: { name: { en: 'Thrill seeking', ru: 'Жажда острых ощущений' }, low: { en: 'Calm pleasures', ru: 'Спокойные радости' }, high: { en: 'Adventure lover', ru: 'Любитель приключений' } },
+  E6: { name: { en: 'Cheerfulness', ru: 'Жизнерадостность' }, low: { en: 'Serious', ru: 'Серьёзность' }, high: { en: 'Joyful', ru: 'Радостность' } },
+  A1: { name: { en: 'Trust', ru: 'Доверие' }, low: { en: 'Cautious with trust', ru: 'Осторожность в доверии' }, high: { en: 'Trusting', ru: 'Доверчивость' } },
+  A2: { name: { en: 'Straightforwardness', ru: 'Прямота' }, low: { en: 'Strategic', ru: 'Стратегичность' }, high: { en: 'Fair and honest', ru: 'Честность' } },
+  A3: { name: { en: 'Helpfulness', ru: 'Отзывчивость' }, low: { en: 'Focused on own path', ru: 'Сфокусированность на своём' }, high: { en: 'Generous', ru: 'Щедрость' } },
+  A4: { name: { en: 'Cooperation', ru: 'Сотрудничество' }, low: { en: 'Stands ground', ru: 'Отстаивает своё' }, high: { en: 'Peace-keeping', ru: 'Миролюбие' } },
+  A5: { name: { en: 'Modesty', ru: 'Скромность' }, low: { en: 'Self-assured', ru: 'Уверенность в себе' }, high: { en: 'Humble', ru: 'Скромный' } },
+  A6: { name: { en: 'Compassion', ru: 'Сострадание' }, low: { en: 'Clear-headed', ru: 'Трезвый взгляд' }, high: { en: 'Tender-hearted', ru: 'Мягкое сердце' } },
+  S1: { name: { en: 'Calm', ru: 'Спокойствие' }, low: { en: 'Thinks ahead about risks', ru: 'Заранее думает о рисках' }, high: { en: 'Rarely worried', ru: 'Редко тревожится' } },
+  S2: { name: { en: 'Even temper', ru: 'Ровный характер' }, low: { en: 'Passionate', ru: 'Горячность' }, high: { en: 'Slow to anger', ru: 'Редко злится' } },
+  S3: { name: { en: 'Steady mood', ru: 'Устойчивое настроение' }, low: { en: 'Deeply reflective', ru: 'Глубоко переживает' }, high: { en: 'Upbeat', ru: 'Бодрость духа' } },
+  S4: { name: { en: 'Social ease', ru: 'Лёгкость в общении' }, low: { en: 'Takes time to open up', ru: 'Раскрывается постепенно' }, high: { en: 'At ease with new people', ru: 'Легко с новыми людьми' } },
+  S5: { name: { en: 'Self-control', ru: 'Самоконтроль' }, low: { en: 'Enjoys indulging', ru: 'Любит себя баловать' }, high: { en: 'Resists temptation', ru: 'Устойчив к соблазнам' } },
+  S6: { name: { en: 'Resilience', ru: 'Стрессоустойчивость' }, low: { en: 'Feels pressure strongly', ru: 'Остро чувствует давление' }, high: { en: 'Cool under pressure', ru: 'Спокойствие под давлением' } },
+};
+
+export const FACET_DOMAIN: Record<string, 'O' | 'C' | 'E' | 'A' | 'S'> = Object.fromEntries(
+  Object.keys(FACET_TEXT).map((k) => [k, k[0] as 'O' | 'C' | 'E' | 'A' | 'S']),
+);

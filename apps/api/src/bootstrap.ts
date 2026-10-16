@@ -40,7 +40,8 @@ export function configureApp(app: INestApplication): void {
     const reserved = /^\/(v1|admin|ws|health|ready|socket\.io)(\/|$)/;
     app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
       if (reserved.test(req.path) || (req.method !== 'GET' && req.method !== 'HEAD')) return next();
-      express.static(webDir, { index: false, maxAge: req.path.includes('.') ? '1h' : 0 })(req, res, () => {
+      // Flutter file names are not content-hashed: always revalidate (ETag) so a deploy is picked up immediately.
+      express.static(webDir, { index: false, setHeaders: (r) => r.setHeader('cache-control', 'no-cache') })(req, res, () => {
         res.setHeader('cache-control', 'no-cache');
         res.sendFile(join(webDir, 'index.html'));
       });

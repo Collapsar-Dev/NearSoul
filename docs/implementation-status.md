@@ -5,7 +5,7 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 ## Evidence (commands run on 2026-10-16)
 | Command | Result |
 |---|---|
-| `cd apps/api && npx jest` | 10 suites, 155 tests passed (engine unit + property tests; integration tests on real Postgres) |
+| `cd apps/api && npx jest` | 11 suites, 163 tests passed (engine unit + property tests; integration tests on real Postgres) |
 | GitHub Actions CI (run 38901751005) | API, Flutter (web + APK), Windows, macOS green; Linux desktop fixed (libsecret) |
 | Render start command on an empty DB (APP_ENV=alpha, STORAGE_DRIVER=db) | migrations, seeds, 48 demo profiles, web + admin served, /ready ok |
 | Same-origin realtime chat check | demo reply delivered over the socket in < 2 s, localized |
@@ -28,7 +28,7 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 | M6 Reports | TESTED | RPT-001..003 with deterministic templates (CR-7); paywall gating tested in both flag states |
 | M7 Nearby Now | TESTED (server) / IMPLEMENTED (app) | GEO-001..007, ALPHA-003 simulator. Not yet tested with two physical phones |
 | A1 Alpha release | IN PROGRESS | render.yaml ready (free tier, open registration). Waiting for the founder: Render Blueprint + Brevo sender/API key. Later: own domain, R2, Anthropic key, APK signing, admin account |
-| M8 Deep Personality & Soul Talk | NOT STARTED | Blocked on approved crisis texts for Soul Talk |
+| M8 Deep Personality & Soul Talk | IN PROGRESS | Deep Personality (ENG-003) TESTED: 116 IPIP-NEO-120 items in 4 parts, 29 facets, domains switch to deep scores, background recompute on ENGINE_VERSION bump. Soul Talk not started (needs approved crisis texts) |
 | M9 Payments & ops | NOT STARTED | |
 
 ## Known gaps before inviting friends

@@ -3,6 +3,7 @@
  */
 import { CONSISTENCY_PAIRS, ITEMS_BY_KEY, QUICK_SCAN_ITEMS, REQUIRED_QUICK_SCAN_KEYS, type ItemDef } from './items';
 import { deriveArchetype } from './archetype';
+import { DEEP_ITEMS, DEEP_PART_KEYS, FACETS } from './deep-items';
 import {
   DOMAINS,
   ENGINE_VERSION,
@@ -86,7 +87,7 @@ export function isStraightLining(answers: Answers): boolean {
 
 export function depthOf(quickScanComplete: boolean, d: DepthInputs): number {
   const quick = quickScanComplete ? 40 : 0;
-  const deep = Math.min(4, Math.max(0, d.deepPartsCompleted)) * 7.5;
+  const deep = Math.min(4, Math.max(0, d.deepPartsCompleted ?? 0)) * 7.5;
   const insights = Math.min(15, Math.max(0, d.keptInsights) * 3);
   const levels = Math.min(2, Math.max(0, d.extraLevelsCompleted)) * 7.5;
   return Math.round(quick + deep + insights + levels);
@@ -149,6 +150,43 @@ function numeric(answers: Answers, trait: string, overrides?: LayerOverrides): D
   return { score: r.value, band: bandFor(r.value, null), confidence: r.value === null ? 0 : 1, source: r.source };
 }
 
+/** Deep parts whose every item has an entry (a skip counts as answered). */
+export function deepPartsCompleted(answers: Answers): number {
+  return ([1, 2, 3, 4] as const).filter((p) => DEEP_PART_KEYS[p].every((k) => answers[k] !== undefined)).length;
+}
+
+const deepValue = (answers: Answers, key: string, keyed: 1 | -1): number | null => {
+  const v = answers[key]?.value;
+  return typeof v === 'number' ? (keyed === -1 ? 6 - v : v) : null;
+};
+
+function meanScore(values: number[], expected: number): DimensionResult {
+  const ratio = values.length / expected;
+  if (values.length === 0 || ratio < MIN_ANSWERED_RATIO) return { score: null, band: null, confidence: round2(ratio), source: 'deep' };
+  return { score: toScore(values.reduce((a, b) => a + b, 0) / values.length), band: null, confidence: round2(ratio), source: 'deep' };
+}
+
+/** ENG-003: facet scores (≥ 2 of 4 items). Neuroticism facets are stored inverted as S1–S6. */
+export function scoreFacets(answers: Answers): Record<string, DimensionResult> {
+  const out: Record<string, DimensionResult> = {};
+  for (const f of FACETS) {
+    const items = DEEP_ITEMS.filter((i) => i.facet === f);
+    const values = items.map((i) => deepValue(answers, i.key, i.keyed)).filter((v): v is number => v !== null);
+    const r = meanScore(values, items.length);
+    if (r.score === null && values.length === 0) continue;
+    const key = f[0] === 'N' ? `S${f[1]}` : f;
+    const score = r.score === null ? null : f[0] === 'N' ? 100 - r.score : r.score;
+    out[key] = { ...r, score, band: bandFor(score, null) };
+  }
+  return out;
+}
+
+/** Domain score from all Deep items of the domain (used once every Deep part is complete). */
+function deepDomain(answers: Answers, domain: MeasuredDomain): DimensionResult {
+  const items = DEEP_ITEMS.filter((i) => i.domain === domain);
+  return meanScore(items.map((i) => deepValue(answers, i.key, i.keyed)).filter((v): v is number => v !== null), items.length);
+}
+
 export interface ScoreOptions {
   overrides?: LayerOverrides;
   norms?: NormTable;
@@ -159,7 +197,12 @@ export interface ScoreOptions {
 export function scoreProfile(answers: Answers, opts: ScoreOptions = {}): SoulProfile {
   const flags = consistencyFlags(answers);
   const straight = isStraightLining(answers);
+  const deepParts = deepPartsCompleted(answers);
   const measured = (d: MeasuredDomain) => {
+    if (deepParts === 4) {
+      const deep = deepDomain(answers, d);
+      if (deep.score !== null) return deep;
+    }
     const r = scoreDomain(answers, d, flags.includes(d));
     return straight ? { ...r, confidence: round2(r.confidence * 0.7) } : r;
   };
@@ -188,6 +231,8 @@ export function scoreProfile(answers: Answers, opts: ScoreOptions = {}): SoulPro
     engineVersion: ENGINE_VERSION,
     normsVersion: opts.norms?.version ?? THEORETICAL_NORMS_VERSION,
     domains,
+    facets: scoreFacets(answers),
+    deepPartsCompleted: deepParts,
     relationship: {
       closeness_comfort: numeric(answers, 'closeness_comfort', ov),
       reassurance_need: numeric(answers, 'reassurance_need', ov),
@@ -214,7 +259,7 @@ export function scoreProfile(answers: Answers, opts: ScoreOptions = {}): SoulPro
     },
     dealbreakers,
     quality: { consistencyFlags: flags.map((d) => (d === 'N' ? 'S' : d)) as Domain[], straightLining: straight },
-    depth: depthOf(quickScanComplete, opts.depth ?? { deepPartsCompleted: 0, keptInsights: 0, extraLevelsCompleted: 0 }),
+    depth: depthOf(quickScanComplete, { keptInsights: 0, extraLevelsCompleted: 0, ...opts.depth, deepPartsCompleted: deepParts }),
     quickScanComplete,
   } as Omit<SoulProfile, 'archetype'>;
 

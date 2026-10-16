@@ -16,6 +16,7 @@ exports[`scoring (ENG-005) matches the golden snapshot for a reference persona 1
     },
   },
   "dealbreakers": [],
+  "deepPartsCompleted": 0,
   "depth": 40,
   "domains": {
     "A": {
@@ -49,7 +50,8 @@ exports[`scoring (ENG-005) matches the golden snapshot for a reference persona 1
       "source": "quick_scan",
     },
   },
-  "engineVersion": "2.0.0",
+  "engineVersion": "2.1.0",
+  "facets": {},
   "lifestyle": {
     "activity_level": {
       "source": "quick_scan",

@@ -12,3 +12,5 @@ Deviations made during implementation, with reasons. The founder accepts or reje
 | CR-6 | D1 freezed/json_serializable | **Hand-written light models / JSON maps** in Flutter | Avoids a build_runner step for the alpha | Proposed |
 | CR-7 | §14.3 report writer | Alpha reports use **deterministic localized templates** from engine codes (no AI prose yet) | Zero AI cost and fully predictable for the friends test; the AI writer can be layered on later | Proposed |
 | CR-8 | Mini-IPIP ru | IPIP items are shown **in English with a note** in the Russian UI | No approved Russian translation yet (founder decision in §20) | Needs decision |
+| CR-9 | ENG-003 IPIP-NEO-120 | **O6 Liberalism (4 political items) excluded**; Deep Personality has 116 items, Openness uses O1–O5 | Political opinions are GDPR art. 9 special-category data and ENG-016 forbids such features | Proposed |
+| CR-10 | §8.5 facet names | N facets shown inverted with positive names (Calm, Even temper, Steady mood, Social ease, Self-control, Resilience) | PRD forbids clinical labels ("Depression", "Anxiety") | Proposed |

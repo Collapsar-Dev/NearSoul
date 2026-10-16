@@ -26,9 +26,9 @@ const LAYER_EDITABLE = z.object({
 export class EngineController {
   constructor(private readonly engine: EngineService) {}
 
-  @Get('engine/questionnaires/quick_scan')
-  questionnaire(@Headers('accept-language') lang?: string) {
-    return this.engine.questionnaire(localeFrom(lang));
+  @Get('engine/questionnaires/:id')
+  questionnaire(@Param('id') id: string, @Headers('accept-language') lang?: string) {
+    return this.engine.questionnaire(localeFrom(lang), id);
   }
 
   @Put('engine/answers/:itemKey')

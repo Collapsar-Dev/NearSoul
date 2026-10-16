@@ -1759,6 +1759,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not available yet'**
   String get notAvailableYet;
+
+  /// No description provided for @deepIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'4 short parts, about 4 minutes each. Each part unlocks more facets of your personality.'**
+  String get deepIntro;
+
+  /// No description provided for @deepPart.
+  ///
+  /// In en, this message translates to:
+  /// **'Part {n} of 4'**
+  String deepPart(int n);
+
+  /// No description provided for @deepPartDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Part complete! New facets unlocked.'**
+  String get deepPartDone;
+
+  /// No description provided for @deepAllDone.
+  ///
+  /// In en, this message translates to:
+  /// **'All parts done. Your profile now uses all 116 questions.'**
+  String get deepAllDone;
+
+  /// No description provided for @facets.
+  ///
+  /// In en, this message translates to:
+  /// **'Facets'**
+  String get facets;
 }
 
 class _AppLocalizationsDelegate

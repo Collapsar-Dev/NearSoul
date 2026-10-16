@@ -124,3 +124,40 @@ describe('Onboarding, engine and card (ONB-001..003, ENG-002/005/008/010)', () =
     await ctx.http.post('/v1/auth/refresh').send({ refreshToken }).expect(401);
   });
 });
+
+describe('Deep Personality API (ENG-003)', () => {
+  let ctx: TestCtx;
+  beforeAll(async () => {
+    ctx = await createTestApp();
+  });
+  afterAll(async () => ctx.app.close());
+  beforeEach(async () => resetDb(ctx));
+
+  it('serves 4 parts, tracks progress, adds depth and facets to the full report', async () => {
+    const { token } = await signIn(ctx, 'deep@example.com');
+    await passGateAndScan(ctx, token, quickScanAnswers());
+    const q = await ctx.http.get('/v1/engine/questionnaires/deep_1').set(bearer(token)).expect(200);
+    const items = q.body.blocks[0].items as { key: string }[];
+    expect(items).toHaveLength(29);
+    await ctx.http.get('/v1/engine/questionnaires/deep_9').set(bearer(token)).expect(404);
+    let i = 0;
+    for (const it of items) await ctx.http.put(`/v1/engine/answers/${it.key}`).set(bearer(token)).send({ value: [1, 5, 3, 4, 2][i++ % 5] }).expect(200);
+    const p = await ctx.http.get('/v1/engine/progress').set(bearer(token)).expect(200);
+    expect(p.body.deepParts[0]).toEqual({ part: 1, total: 29, answered: 29 });
+    const r = await ctx.http.get('/v1/reports/self').set(bearer(token)).expect(200);
+    expect(r.body.depth).toBe(48);
+    expect(r.body.deepPartsCompleted).toBe(1);
+    const allFacets = r.body.domains.flatMap((d: { facets: { key: string }[] }) => d.facets);
+    expect(allFacets.length).toBeGreaterThan(0);
+    expect(allFacets.some((f: { key: string }) => f.key.startsWith('N'))).toBe(false);
+    expect(JSON.stringify(r.body)).not.toMatch(/Depression|Anxiety|Neuroticism/);
+  });
+
+  it('recomputes profiles saved by an older engine version', async () => {
+    const { token, userId } = await signIn(ctx, 'old@example.com');
+    await passGateAndScan(ctx, token, quickScanAnswers());
+    await ctx.prisma.soulProfileRow.update({ where: { userId }, data: { engineVersion: '1.0.0' } });
+    const { EngineService } = await import('../src/modules/engine/engine.service');
+    expect(await ctx.app.get(EngineService).recomputeOutdated()).toBe(1);
+  });
+});

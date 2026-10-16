@@ -101,6 +101,22 @@ class DomainRow extends StatelessWidget {
           const SizedBox(height: 6),
           Text(domain['dating'] as String, style: TextStyle(color: scheme.secondary, fontStyle: FontStyle.italic)),
         ],
+        if (showDating && (domain['facets'] as List?)?.isNotEmpty == true) ...[
+          const SizedBox(height: 10),
+          Text(context.l.facets, style: Theme.of(context).textTheme.labelLarge),
+          const SizedBox(height: 4),
+          for (final f in (domain['facets'] as List).cast<Map<String, dynamic>>())
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Row(children: [
+                Expanded(child: Text(f['name'] as String)),
+                Text(
+                  switch (f['band']) { 'low' => f['low'] as String, 'high' => f['high'] as String, _ => '${f['low']} ↔ ${f['high']}' },
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: scheme.secondary),
+                ),
+              ]),
+            ),
+        ],
         if ((domain['confidence'] as num? ?? 1) < 0.75) ...[
           const SizedBox(height: 4),
           Text(context.l.lowConfidence, style: Theme.of(context).textTheme.bodySmall),

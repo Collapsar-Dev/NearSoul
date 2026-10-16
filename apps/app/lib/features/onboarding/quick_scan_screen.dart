@@ -8,8 +8,13 @@ import '../../core/widgets/common.dart';
 
 /// ENG-002 Quick Scan: one question per screen, saved one by one, resumable.
 class QuickScanScreen extends ConsumerStatefulWidget {
-  const QuickScanScreen({super.key, this.retake = false});
+  const QuickScanScreen({super.key, this.retake = false, this.questionnaire = 'quick_scan'});
   final bool retake;
+
+  /// 'quick_scan' or 'deep_1'..'deep_4' (Deep Personality, ENG-003).
+  final String questionnaire;
+
+  bool get isDeep => questionnaire.startsWith('deep_');
 
   @override
   ConsumerState<QuickScanScreen> createState() => _QuickScanScreenState();
@@ -49,7 +54,7 @@ class _QuickScanScreenState extends ConsumerState<QuickScanScreen> {
     });
     try {
       final api = ref.read(apiProvider);
-      final q = await api.get<Map<String, dynamic>>('/v1/engine/questionnaires/quick_scan');
+      final q = await api.get<Map<String, dynamic>>('/v1/engine/questionnaires/${widget.questionnaire}');
       final progress = await api.get<Map<String, dynamic>>('/v1/engine/progress');
       final items = <_Item>[];
       for (final b in (q['blocks'] as List).cast<Map<String, dynamic>>()) {
@@ -63,7 +68,8 @@ class _QuickScanScreenState extends ConsumerState<QuickScanScreen> {
         _items = items;
         _likert = (q['likertLabels'] as List).cast<String>();
         _index = widget.retake ? 0 : (firstOpen < 0 ? items.length - 1 : firstOpen);
-        _intro = answered.isEmpty || widget.retake;
+        final partStarted = items.any((i) => answered.contains(i.key));
+        _intro = widget.isDeep ? !partStarted : (answered.isEmpty || widget.retake);
         _loading = false;
       });
     } catch (e) {
@@ -93,6 +99,7 @@ class _QuickScanScreenState extends ConsumerState<QuickScanScreen> {
 
   String _blockTitle(String b) {
     final l = context.l;
+    if (b.startsWith('P')) return l.deepPart(int.parse(b.substring(1)));
     return switch (b) { 'A' => l.blockA, 'B' => l.blockB, 'C' => l.blockC, 'D' => l.blockD, _ => l.blockX };
   }
 
@@ -132,6 +139,13 @@ class _QuickScanScreenState extends ConsumerState<QuickScanScreen> {
       showSnack(context, context.l.offline);
       return;
     }
+    if (widget.isDeep) {
+      if (mounted) {
+        showSnack(context, context.l.deepPartDone);
+        Navigator.of(context).pop(true);
+      }
+      return;
+    }
     await ref.read(sessionProvider.notifier).reloadMe();
     if (widget.retake && mounted) Navigator.of(context).pop(true);
   }
@@ -149,14 +163,15 @@ class _QuickScanScreenState extends ConsumerState<QuickScanScreen> {
     if (_error != null) return Scaffold(body: ErrorState(error: _error!, onRetry: _load));
     if (_intro) {
       return Scaffold(
+        appBar: Navigator.of(context).canPop() ? AppBar() : null,
         body: SafeArea(
           child: FocusColumn(
             child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               Icon(Icons.auto_awesome, size: 72, color: Theme.of(context).colorScheme.secondary),
               const SizedBox(height: 24),
-              Text(l.scanIntroTitle, style: Theme.of(context).textTheme.headlineMedium, textAlign: TextAlign.center),
+              Text(widget.isDeep ? '${l.deepPersonality} · ${_blockTitle(_items.first.block)}' : l.scanIntroTitle, style: Theme.of(context).textTheme.headlineMedium, textAlign: TextAlign.center),
               const SizedBox(height: 12),
-              Text(l.scanIntroBody, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyLarge),
+              Text(widget.isDeep ? l.deepIntro : l.scanIntroBody, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyLarge),
               const SizedBox(height: 32),
               SizedBox(width: double.infinity, child: FilledButton(onPressed: () => setState(() => _intro = false), child: Text(l.scanStart))),
             ]),
@@ -195,7 +210,7 @@ class _QuickScanScreenState extends ConsumerState<QuickScanScreen> {
                     const SizedBox(height: 16),
                     Text(l.scanProgress(_index + 1, _items.length), style: Theme.of(context).textTheme.labelMedium),
                     const SizedBox(height: 12),
-                    if (item.type == 'likert5' && item.block == 'A') Text(l.scanHowAccurate, style: Theme.of(context).textTheme.bodyMedium),
+                    if (item.type == 'likert5' && (item.block == 'A' || item.block.startsWith('P'))) Text(l.scanHowAccurate, style: Theme.of(context).textTheme.bodyMedium),
                     const SizedBox(height: 8),
                     Text(item.json['prompt'] as String, style: Theme.of(context).textTheme.headlineSmall),
                     if (item.json['translated'] == false)

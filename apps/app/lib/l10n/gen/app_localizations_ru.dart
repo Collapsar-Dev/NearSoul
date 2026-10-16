@@ -913,4 +913,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notAvailableYet => 'Пока недоступно';
+
+  @override
+  String get deepIntro =>
+      '4 коротких части, примерно по 4 минуты. Каждая открывает новые грани твоей личности.';
+
+  @override
+  String deepPart(int n) {
+    return 'Часть $n из 4';
+  }
+
+  @override
+  String get deepPartDone => 'Часть пройдена! Открыты новые грани.';
+
+  @override
+  String get deepAllDone =>
+      'Все части пройдены. Профиль теперь строится по 116 вопросам.';
+
+  @override
+  String get facets => 'Грани';
 }

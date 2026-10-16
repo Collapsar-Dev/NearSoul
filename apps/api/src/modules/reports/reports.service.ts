@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { buildPairReportData, buildPairTeaser, buildSelfReportData, DOMAINS } from '../../engine';
 import {
-  ARCHETYPES, ARCHETYPE_DISCLAIMER, BAND_TEXT, careLabel, codeText, DOMAIN_META, FIRST_DATE_IDEAS, NEED_TEXT, REFLECT_QUESTIONS, SELF_CODES, STARTERS, STRENGTHS, tr, valueLabel, type L, type Locale,
+  ARCHETYPES, ARCHETYPE_DISCLAIMER, BAND_TEXT, careLabel, FACET_DOMAIN, FACET_TEXT, codeText, DOMAIN_META, FIRST_DATE_IDEAS, NEED_TEXT, REFLECT_QUESTIONS, SELF_CODES, STARTERS, STRENGTHS, tr, valueLabel, type L, type Locale,
 } from '../../content/texts';
 import { env } from '../../config/env';
 import { badRequest } from '../../common/errors';
@@ -51,6 +51,14 @@ export class ReportsService {
         confidence: p.domains[d].confidence,
         summary: t ? tr(t.summary, locale) : null,
         ...(full ? { dating: t ? tr(t.dating, locale) : null } : {}),
+        // Facets are part of the full report (RPT-001 section 2), available after Deep Personality parts.
+        ...(full
+          ? {
+              facets: Object.entries(p.facets ?? {})
+                .filter(([k]) => FACET_DOMAIN[k] === d)
+                .map(([k, f]) => ({ key: k, name: tr(FACET_TEXT[k]!.name, locale), low: tr(FACET_TEXT[k]!.low, locale), high: tr(FACET_TEXT[k]!.high, locale), band: f.band, score: f.score })),
+            }
+          : {}),
       };
     });
     const free = {
@@ -61,6 +69,7 @@ export class ReportsService {
       values: (p.values.values.value ?? []).map((v) => valueLabel(v, locale)),
       quality: p.quality,
       depth: p.depth,
+      deepPartsCompleted: p.deepPartsCompleted ?? 0,
     };
     if (!full) {
       return { ...free, full: false, freeDuringBeta, locked: [{ key: 'needs', count: data.needs.length }, { key: 'growth', count: data.growthEdges.length }, { key: 'reflect', count: REFLECT_QUESTIONS.length }] };

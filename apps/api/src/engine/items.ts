@@ -5,10 +5,11 @@
  * IPIP items (https://ipip.ori.org). Item texts must be verified against the official source
  * before production use (see docs/engine/sources.md).
  */
+import { DEEP_ITEMS } from './deep-items';
 import type { MeasuredDomain } from './types';
 
 export type ItemType = 'likert5' | 'single' | 'multi';
-export type ItemBlock = 'A' | 'B' | 'C' | 'D' | 'X';
+export type ItemBlock = 'A' | 'B' | 'C' | 'D' | 'X' | 'P1' | 'P2' | 'P3' | 'P4';
 
 export interface LocalizedText {
   en: string;
@@ -23,7 +24,7 @@ export interface ItemOption {
 
 export interface ItemDef {
   key: string;
-  instrument: 'mini_ipip' | 'ns_custom';
+  instrument: 'mini_ipip' | 'ns_custom' | 'ipip_neo_120';
   version: number;
   block: ItemBlock;
   /** Trait the item measures. For Big Five items this is the measured domain. */
@@ -233,6 +234,22 @@ export const QUICK_SCAN_ITEMS: readonly ItemDef[] = [
 ];
 
 export const ITEMS_BY_KEY: ReadonlyMap<string, ItemDef> = new Map(QUICK_SCAN_ITEMS.map((i) => [i.key, i]));
+
+/** Deep Personality items in the shared ItemDef shape (English only until an approved translation exists). */
+export const DEEP_ITEM_DEFS: readonly ItemDef[] = DEEP_ITEMS.map((d) => ({
+  key: d.key,
+  instrument: 'ipip_neo_120',
+  version: 1,
+  block: `P${d.part}` as ItemBlock,
+  trait: d.facet,
+  domain: d.domain,
+  keyed: d.keyed,
+  type: 'likert5',
+  prompt: { en: `${d.text}.`, ru: null },
+}));
+
+/** Every answerable item (Quick Scan + Deep Personality). */
+export const ALL_ITEMS_BY_KEY: ReadonlyMap<string, ItemDef> = new Map([...QUICK_SCAN_ITEMS, ...DEEP_ITEM_DEFS].map((i) => [i.key, i]));
 
 /** Items required for the Quick Scan to count as complete (all non-optional ones). */
 export const REQUIRED_QUICK_SCAN_KEYS: readonly string[] = QUICK_SCAN_ITEMS.filter((i) => !i.optional).map((i) => i.key);

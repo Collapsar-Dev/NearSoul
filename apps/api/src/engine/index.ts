@@ -1,6 +1,7 @@
 /** Soul Engine public API (PRD 08-soul-engine). */
 export * from './types';
 export * from './items';
+export * from './deep-items';
 export * from './scoring';
 export * from './archetype';
 export * from './match-config';

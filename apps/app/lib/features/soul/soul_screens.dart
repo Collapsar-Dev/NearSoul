@@ -22,7 +22,7 @@ class _SoulScreenState extends ConsumerState<SoulScreen> {
 
   Future<List<dynamic>> _fetch() async {
     final api = ref.read(apiProvider);
-    return Future.wait([api.get<Map<String, dynamic>>('/v1/reports/self'), api.get<dynamic>('/v1/me/card')]);
+    return Future.wait([api.get<Map<String, dynamic>>('/v1/reports/self'), api.get<dynamic>('/v1/me/card'), api.get<Map<String, dynamic>>('/v1/engine/progress')]);
   }
 
   @override
@@ -82,7 +82,13 @@ class _SoulScreenState extends ConsumerState<SoulScreen> {
             const SizedBox(height: 24),
             Card(child: ListTile(leading: const Icon(Icons.forum_outlined), title: Text(l.soulTalk), trailing: Chip(label: Text(l.comingSoon)))),
             const SizedBox(height: 8),
-            Card(child: ListTile(leading: const Icon(Icons.psychology_outlined), title: Text(l.deepPersonality), trailing: Chip(label: Text(l.comingSoon)))),
+            _DeepCard(
+              progress: (data.length > 2 ? (data[2] as Map<String, dynamic>)['deepParts'] as List : const []).cast<Map<String, dynamic>>(),
+              onOpen: (part) async {
+                await Navigator.of(context).push(MaterialPageRoute(builder: (_) => QuickScanScreen(questionnaire: 'deep_$part')));
+                setState(() => _f = _fetch());
+              },
+            ),
             const SizedBox(height: 32),
           ]);
           if (wide) {
@@ -149,6 +155,43 @@ class _SelfReportScreenState extends ConsumerState<SelfReportScreen> {
             ]),
           );
         },
+      ),
+    );
+  }
+}
+
+/// Deep Personality parts with progress (ENG-003).
+class _DeepCard extends StatelessWidget {
+  const _DeepCard({required this.progress, required this.onOpen});
+  final List<Map<String, dynamic>> progress;
+  final Future<void> Function(int part) onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l;
+    final done = progress.where((p) => p['answered'] == p['total']).length;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [const Icon(Icons.psychology_outlined), const SizedBox(width: 8), Text(l.deepPersonality, style: Theme.of(context).textTheme.titleMedium)]),
+          const SizedBox(height: 6),
+          Text(done == 4 ? l.deepAllDone : l.deepIntro, style: Theme.of(context).textTheme.bodySmall),
+          const SizedBox(height: 12),
+          for (final p in progress)
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: SizedBox(
+                width: 32,
+                height: 32,
+                child: CircularProgressIndicator(value: (p['answered'] as int) / (p['total'] as int), strokeWidth: 4, backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest),
+              ),
+              title: Text(l.deepPart(p['part'] as int)),
+              subtitle: Text('${p['answered']}/${p['total']}'),
+              trailing: p['answered'] == p['total'] ? const Icon(Icons.check_circle, color: Colors.green) : const Icon(Icons.chevron_right),
+              onTap: p['answered'] == p['total'] ? null : () => onOpen(p['part'] as int),
+            ),
+        ]),
       ),
     );
   }

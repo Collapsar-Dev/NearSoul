@@ -415,5 +415,17 @@
   "downloadIos": "iPhone (TestFlight)",
   "downloadDesktop": "Desktop apps (Windows, macOS, Linux)",
   "downloadDesktopHint": "Test builds are unsigned. On macOS: right-click the app → Open.",
-  "notAvailableYet": "Not available yet"
+  "notAvailableYet": "Not available yet",
+  "deepIntro": "4 short parts, about 4 minutes each. Each part unlocks more facets of your personality.",
+  "deepPart": "Part {n} of 4",
+  "@deepPart": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "deepPartDone": "Part complete! New facets unlocked.",
+  "deepAllDone": "All parts done. Your profile now uses all 116 questions.",
+  "facets": "Facets"
 }

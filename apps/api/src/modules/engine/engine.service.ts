@@ -1,8 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import { env } from '../../config/env';
 import type { Prisma } from '@prisma/client';
 import {
   DEFAULT_MATCH_CONFIG,
-  ITEMS_BY_KEY,
+  ALL_ITEMS_BY_KEY,
+  DEEP_ITEM_DEFS,
+  DEEP_PART_KEYS,
+  ENGINE_VERSION,
   LIKERT_ACCURACY_LABELS,
   QUICK_SCAN_ITEMS,
   REQUIRED_QUICK_SCAN_KEYS,
@@ -21,20 +25,42 @@ const pick = (t: { en: string; ru: string | null }, locale: Locale) => ({ text: 
 
 /** Engine application service: persistence around the pure Soul Engine (ENG-001..008). */
 @Injectable()
-export class EngineService {
+export class EngineService implements OnApplicationBootstrap {
+  private readonly logger = new Logger('Engine');
   private configCache: { at: number; cfg: MatchConfig } | null = null;
 
   constructor(private readonly prisma: PrismaService) {}
 
-  questionnaire(locale: Locale) {
-    const blocks = ['A', 'B', 'C', 'D', 'X'] as const;
+  /** ENG-008: an ENGINE_VERSION bump recomputes stored profiles in the background, in batches. */
+  onApplicationBootstrap(): void {
+    if (env().APP_ENV === 'test') return;
+    void this.recomputeOutdated().catch((e: Error) => this.logger.error({ msg: 'engine recompute failed', err: e.message }));
+  }
+
+  async recomputeOutdated(batch = 100): Promise<number> {
+    let total = 0;
+    for (;;) {
+      const rows = await this.prisma.soulProfileRow.findMany({ where: { engineVersion: { not: ENGINE_VERSION } }, select: { userId: true }, take: batch });
+      if (!rows.length) break;
+      for (const r of rows) await this.recompute(r.userId);
+      total += rows.length;
+    }
+    if (total) this.logger.log({ msg: 'profiles recomputed', count: total, engineVersion: ENGINE_VERSION });
+    return total;
+  }
+
+  questionnaire(locale: Locale, id = 'quick_scan') {
+    const deep = /^deep_([1-4])$/.exec(id);
+    if (id !== 'quick_scan' && !deep) throw notFound('Unknown questionnaire');
+    const blocks = deep ? ([`P${deep[1]}`] as const) : (['A', 'B', 'C', 'D', 'X'] as const);
+    const source = deep ? DEEP_ITEM_DEFS : QUICK_SCAN_ITEMS;
     return {
-      id: 'quick_scan',
+      id,
       version: 1,
       likertLabels: LIKERT_ACCURACY_LABELS.map((l) => pick(l, locale).text),
       blocks: blocks.map((b) => ({
         key: b,
-        items: QUICK_SCAN_ITEMS.filter((i) => i.block === b).map((i) => ({
+        items: source.filter((i) => i.block === b).map((i) => ({
           key: i.key,
           type: i.type,
           prompt: pick(i.prompt, locale).text,
@@ -50,7 +76,7 @@ export class EngineService {
   }
 
   async saveAnswer(userId: string, itemKey: string, value: unknown) {
-    const item = ITEMS_BY_KEY.get(itemKey);
+    const item = ALL_ITEMS_BY_KEY.get(itemKey);
     if (!item) throw notFound('Unknown question');
     const err = validateAnswer(item, value);
     if (err) throw badRequest(err, 'That answer is not valid for this question.');
@@ -66,8 +92,14 @@ export class EngineService {
     const answered = await this.prisma.engineAnswer.findMany({ where: { userId }, select: { itemKey: true } });
     const keys = new Set(answered.map((a) => a.itemKey));
     const next = QUICK_SCAN_ITEMS.find((i) => !keys.has(i.key))?.key ?? null;
+    const deepParts = ([1, 2, 3, 4] as const).map((p) => ({
+      part: p,
+      total: DEEP_PART_KEYS[p].length,
+      answered: DEEP_PART_KEYS[p].filter((k) => keys.has(k)).length,
+    }));
     return {
       answered: [...keys],
+      deepParts,
       required: REQUIRED_QUICK_SCAN_KEYS.length,
       requiredAnswered: REQUIRED_QUICK_SCAN_KEYS.filter((k) => keys.has(k)).length,
       nextItem: next,
