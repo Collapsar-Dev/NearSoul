@@ -94,6 +94,18 @@ describe('Auth (AUTH-001..004, ALPHA-001)', () => {
     await ctx.http.post('/v1/auth/refresh').send({ refreshToken }).expect(401);
   });
 
+  it('a failed email send returns a clear error and does not consume the resend quota', async () => {
+    const original = ctx.email.send.bind(ctx.email);
+    ctx.email.send = async () => {
+      throw new Error('EMAIL_SEND_FAILED');
+    };
+    const r = await ctx.http.post('/v1/auth/code').send({ email: 'down@example.com' });
+    expect(r.status).toBe(503);
+    expect(r.body.error.code).toBe('EMAIL_UNAVAILABLE');
+    ctx.email.send = original;
+    await ctx.http.post('/v1/auth/code').send({ email: 'down@example.com' }).expect(202);
+  });
+
   it('rejects unknown fields (no mass assignment)', async () => {
     const r = await ctx.http.post('/v1/auth/code').send({ email: 'a@example.com', role: 'admin' });
     expect(r.status).toBe(400);

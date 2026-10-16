@@ -78,6 +78,16 @@ describe('Discovery, likes, matches, chat (ENG-011/014, LIKE-001..004, CHAT-001)
     expect(set.body.refreshAt).toBeDefined();
   });
 
+  it('rebuilds the daily set when every candidate has left', async () => {
+    const a = await onboard(ctx, 'anna@example.com');
+    const b = await onboard(ctx, 'ben@example.com', { gender: 'man', interestedIn: ['woman'] });
+    await ctx.http.get('/v1/daily-set').set(bearer(a.token)).expect(200);
+    await ctx.prisma.user.update({ where: { id: b.userId }, data: { status: 'suspended' } });
+    const c = await onboard(ctx, 'carl@example.com', { gender: 'man', interestedIn: ['woman'] });
+    const set = await ctx.http.get('/v1/daily-set').set(bearer(a.token)).expect(200);
+    expect(set.body.cards.map((x: { id: string }) => x.id)).toEqual([c.userId]);
+  });
+
   it('exposes only allowlisted public fields (contract test)', async () => {
     const a = await onboard(ctx, 'anna@example.com');
     const b = await onboard(ctx, 'ben@example.com', { gender: 'man', interestedIn: ['woman'] });

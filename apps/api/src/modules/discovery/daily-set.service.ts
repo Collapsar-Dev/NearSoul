@@ -38,7 +38,13 @@ export class DailySetService {
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { timezone: true } });
     const date = dailyKey(now, user.timezone);
     const existing = await this.prisma.dailySet.findUnique({ where: { userId_date: { userId, date } } });
-    const ids = existing?.candidateIds ?? (await this.generate(userId, date, now));
+    let ids = existing?.candidateIds ?? null;
+    if (ids && ids.length > 0) {
+      // If every candidate has since left (deleted, suspended, hidden), rebuild instead of showing an empty day.
+      const alive = await this.prisma.user.count({ where: { id: { in: ids }, status: 'active', hiddenByModeration: false } });
+      if (alive === 0) ids = null;
+    }
+    ids ??= await this.generate(userId, date, now);
     return { date, ids, refreshAt: nextRefresh(now, user.timezone) };
   }
 

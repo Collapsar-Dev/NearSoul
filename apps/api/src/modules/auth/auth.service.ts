@@ -59,14 +59,20 @@ export class AuthService {
     const code = sixDigitCode();
     // Only one live code per email: older ones are invalidated.
     await this.prisma.authCode.updateMany({ where: { email, purpose: 'login', usedAt: null }, data: { usedAt: new Date() } });
-    await this.prisma.authCode.create({
+    const record = await this.prisma.authCode.create({
       data: { email, purpose: 'login', codeHash: this.codeHash(email, code), expiresAt: new Date(Date.now() + CODE_TTL_MS) },
     });
-    await this.email.send({
-      to: email,
-      subject: `${code} is your NearSoul code`,
-      text: `Your NearSoul sign-in code is ${code}.\n\nIt expires in 10 minutes. If you didn't ask for it, you can ignore this email.`,
-    });
+    try {
+      await this.email.send({
+        to: email,
+        subject: `${code} is your NearSoul code`,
+        text: `Your NearSoul sign-in code is ${code}.\n\nIt expires in 10 minutes. If you didn't ask for it, you can ignore this email.`,
+      });
+    } catch {
+      // Don't burn the user's resend quota on a provider outage.
+      await this.prisma.authCode.delete({ where: { id: record.id } });
+      throw new AppError(503, 'EMAIL_UNAVAILABLE', 'We couldn’t send the email right now. Please try again in a minute.');
+    }
   }
 
   /** AUTH-002: verify the code, create the account if new (invite required when INVITE_ONLY). */
