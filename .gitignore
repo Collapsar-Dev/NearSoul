@@ -1,0 +1,16 @@
+node_modules/
+dist/*
+!dist/NearSoul-PRD-v3.1-full.md
+.env
+.env.*
+!.env.example
+coverage/
+*.log
+.DS_Store
+# Flutter
+apps/app/.dart_tool/
+apps/app/build/
+apps/app/.flutter-plugins*
+apps/app/.packages
+# build outputs
+apps/*/dist/
