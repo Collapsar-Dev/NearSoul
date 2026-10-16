@@ -2131,6 +2131,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Notifications are on'**
   String get pushEnabled;
+
+  /// No description provided for @notifyTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'What to notify me about'**
+  String get notifyTypes;
+
+  /// No description provided for @notifyNewMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'New matches'**
+  String get notifyNewMatch;
+
+  /// No description provided for @notifyNewMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'New messages'**
+  String get notifyNewMessage;
+
+  /// No description provided for @notifyDailySet.
+  ///
+  /// In en, this message translates to:
+  /// **'Today’s Souls are ready (12:00)'**
+  String get notifyDailySet;
+
+  /// No description provided for @notifyNearby.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone compatible nearby'**
+  String get notifyNearby;
+
+  /// No description provided for @notifyOpenEnding.
+  ///
+  /// In en, this message translates to:
+  /// **'Open to meet is ending'**
+  String get notifyOpenEnding;
+
+  /// No description provided for @notifyReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates on my reports'**
+  String get notifyReport;
+
+  /// No description provided for @notifyRulesNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiet from 23:00 to 08:00, except messages. At most one reminder a day. Everything still appears in the bell.'**
+  String get notifyRulesNote;
 }
 
 class _AppLocalizationsDelegate

@@ -1117,4 +1117,29 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pushEnabled => 'Уведомления включены';
+
+  @override
+  String get notifyTypes => 'О чём уведомлять';
+
+  @override
+  String get notifyNewMatch => 'Взаимные симпатии';
+
+  @override
+  String get notifyNewMessage => 'Новые сообщения';
+
+  @override
+  String get notifyDailySet => '«Души дня» готовы (12:00)';
+
+  @override
+  String get notifyNearby => 'Рядом кто-то совместимый';
+
+  @override
+  String get notifyOpenEnding => '«Открыт к встрече» заканчивается';
+
+  @override
+  String get notifyReport => 'Новости по моим жалобам';
+
+  @override
+  String get notifyRulesNote =>
+      'С 23:00 до 08:00 тихо, кроме сообщений. Не больше одного напоминания в день. Всё остальное по-прежнему видно в колокольчике.';
 }

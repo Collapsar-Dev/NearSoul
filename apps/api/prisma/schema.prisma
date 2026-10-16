@@ -93,6 +93,12 @@ model User {
   isDemo             Boolean         @default(false) @map("is_demo")
   hiddenByModeration Boolean         @default(false) @map("hidden_by_moderation")
   soulKeepConversations Boolean      @default(false) @map("soul_keep_conversations")
+  /// NOTIF-001 push toggles per type ({ type: false } turns a push off); missing = on.
+  notifyPrefs        Json            @default("{}") @map("notify_prefs")
+  /// Local date (YYYY-MM-DD) of the last non-conversation push, for the 1-per-day cap (§5.8).
+  lastReminderPushDay String?        @map("last_reminder_push_day")
+  /// Daily-set key (dailyKey) we last announced with daily_set_ready.
+  dailyAnnouncedKey  String?         @map("daily_announced_key")
   invitesLeft        Int             @default(0) @map("invites_left")
   createdAt          DateTime        @default(now()) @map("created_at")
   lastActiveAt       DateTime        @default(now()) @map("last_active_at")

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { CurrentUser, RequireGate, type AuthUser } from '../../common/auth';
 import { parse } from '../../common/zod';
 import { AuthService } from '../auth/auth.service';
+import { isValidTimezone, NOTIFICATION_TYPES } from '../notifications/push-policy';
 import { MeService } from './me.service';
 
 @Controller('v1/me')
@@ -24,7 +25,8 @@ export class MeController {
         cardVisibility: z.enum(['everyone', 'matches_only', 'hidden']),
         flexibleFallback: z.boolean(),
         locale: z.enum(['en', 'ru']),
-        timezone: z.string().min(3).max(64),
+        timezone: z.string().min(3).max(64).refine(isValidTimezone, 'Unknown timezone'),
+        notifications: z.object(Object.fromEntries(NOTIFICATION_TYPES.map((k) => [k, z.boolean()]))).partial().strict(),
       }).partial().strict(),
       body,
     );

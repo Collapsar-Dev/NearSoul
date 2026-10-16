@@ -498,5 +498,13 @@
   "pushOffHint": "Get notified about matches and new messages.",
   "pushBlocked": "Blocked in browser settings. Allow notifications for this site to turn them on.",
   "pushUnsupported": "Not available here. On iPhone, add NearSoul to the Home Screen first.",
-  "pushEnabled": "Notifications are on"
+  "pushEnabled": "Notifications are on",
+  "notifyTypes": "What to notify me about",
+  "notifyNewMatch": "New matches",
+  "notifyNewMessage": "New messages",
+  "notifyDailySet": "Today’s Souls are ready (12:00)",
+  "notifyNearby": "Someone compatible nearby",
+  "notifyOpenEnding": "Open to meet is ending",
+  "notifyReport": "Updates on my reports",
+  "notifyRulesNote": "Quiet from 23:00 to 08:00, except messages. At most one reminder a day. Everything still appears in the bell."
 }

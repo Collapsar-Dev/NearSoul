@@ -1,7 +1,9 @@
 import { AnalyticsService } from '../analytics/analytics.service';
 import { Injectable } from '@nestjs/common';
+import type { Prisma } from '@prisma/client';
 import { env } from '../../config/env';
 import { badRequest, forbidden } from '../../common/errors';
+import { NOTIFICATION_TYPES } from '../notifications/push-policy';
 import { PrismaService } from '../../common/prisma.service';
 import { SoulCryptoService } from '../soul/soul-crypto.service';
 
@@ -39,6 +41,8 @@ export class MeService {
         cardVisibility: u.cardVisibility,
         shareLevel: u.shareLevel,
         flexibleFallback: u.flexibleFallback,
+        timezone: u.timezone,
+        notifications: Object.fromEntries(NOTIFICATION_TYPES.map((k) => [k, (u.notifyPrefs as Record<string, boolean>)[k] !== false])),
       },
       consents,
       invitesLeft: u.invitesLeft,
@@ -117,8 +121,14 @@ export class MeService {
     this.analytics.track(userId, 'share_level_set', { level });
   }
 
-  async updateSettings(userId: string, data: Partial<{ discoveryEnabled: boolean; hideDistance: boolean; readReceipts: boolean; cardVisibility: 'everyone' | 'matches_only' | 'hidden'; flexibleFallback: boolean; locale: 'en' | 'ru'; timezone: string }>) {
-    await this.prisma.user.update({ where: { id: userId }, data });
+  async updateSettings(userId: string, data: Partial<{ discoveryEnabled: boolean; hideDistance: boolean; readReceipts: boolean; cardVisibility: 'everyone' | 'matches_only' | 'hidden'; flexibleFallback: boolean; locale: 'en' | 'ru'; timezone: string; notifications: Partial<Record<string, boolean>> }>) {
+    const { notifications, ...rest } = data;
+    let notifyPrefs: Prisma.InputJsonValue | undefined;
+    if (notifications) {
+      const cur = (await this.prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { notifyPrefs: true } })).notifyPrefs as Record<string, boolean>;
+      notifyPrefs = { ...cur, ...notifications };
+    }
+    await this.prisma.user.update({ where: { id: userId }, data: { ...rest, ...(notifyPrefs ? { notifyPrefs } : {}) } });
     if (data.discoveryEnabled !== undefined) this.analytics.track(userId, data.discoveryEnabled ? 'discovery_enabled' : 'discovery_disabled');
     if (data.discoveryEnabled === false) {
       // GEO-001: turning discovery off deletes the stored location.

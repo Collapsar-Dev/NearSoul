@@ -49,6 +49,7 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   url_launcher: ^6.3.3
+  flutter_timezone: ^5.1.1
 
 dev_dependencies:
   flutter_test:

@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { Interval } from '@nestjs/schedule';
 import { eligibility, rankDailySet, type CompatResult } from '../../engine';
 import { env } from '../../config/env';
 import { PrismaService } from '../../common/prisma.service';
 import { EngineService } from '../engine/engine.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { inQuietHours, localTime } from '../notifications/push-policy';
 import { SubjectsService, type Subject } from './subjects.service';
 
 const SEEN_DAYS = 30;
@@ -32,7 +35,50 @@ export function nextRefresh(now: Date, timezone: string): Date {
 
 @Injectable()
 export class DailySetService {
-  constructor(private readonly prisma: PrismaService, private readonly subjects: SubjectsService, private readonly engine: EngineService) {}
+  private readonly logger = new Logger('DailySet');
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly subjects: SubjectsService,
+    private readonly engine: EngineService,
+    private readonly notifications: NotificationsService,
+  ) {}
+
+  /**
+   * "Your Today's Souls are ready" (D16, NOTIF-001): once per daily key, after 12:00 local and before quiet hours,
+   * only when the new set actually has people in it and the person hasn't opened it yet.
+   */
+  async announceDue(now = new Date()): Promise<number> {
+    const users = await this.prisma.user.findMany({
+      where: { status: 'active', discoveryEnabled: true, isDemo: false, hiddenByModeration: false },
+      select: { id: true, timezone: true, dailyAnnouncedKey: true },
+    });
+    let sent = 0;
+    for (const u of users) {
+      const key = dailyKey(now, u.timezone);
+      const hour = localTime(now, u.timezone).hour;
+      if (u.dailyAnnouncedKey === key || hour < 12 || inQuietHours(hour)) continue;
+      const claimed = await this.prisma.user.updateMany({ where: { id: u.id, dailyAnnouncedKey: u.dailyAnnouncedKey }, data: { dailyAnnouncedKey: key } });
+      if (!claimed.count) continue;
+      if (await this.prisma.dailySet.findUnique({ where: { userId_date: { userId: u.id, date: key } } })) continue; // already opened today
+      const { ids } = await this.get(u.id, now);
+      if (!ids.length) continue;
+      await this.notifications.notify(u.id, 'daily_set_ready', { date: key });
+      sent++;
+      if (sent >= 500) break; // the rest go on the next tick
+    }
+    return sent;
+  }
+
+  @Interval(5 * 60_000)
+  async tickAnnounce() {
+    if (env().APP_ENV === 'test') return;
+    try {
+      await this.announceDue();
+    } catch (err) {
+      this.logger.error({ msg: 'daily announce failed', err: String(err) });
+    }
+  }
 
   async get(userId: string, now = new Date()): Promise<{ date: string; ids: string[]; refreshAt: Date }> {
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { timezone: true } });

@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto';
+import { DailySetService } from '../src/modules/discovery/daily-set.service';
+import { NotificationsService } from '../src/modules/notifications/notifications.service';
 import { bearer, createTestApp, onboard, resetDb, signIn, type TestCtx } from './helpers/app';
 
 const sub = (n: number, host = 'fcm.googleapis.com') =>
@@ -38,7 +40,9 @@ describe('Push notifications (NOTIF-001, Web Push + FCM)', () => {
   it('a match pushes generic, localized text to both people; message bodies never leave the server', async () => {
     const a = await onboard(ctx, 'anna@example.com');
     const b = await onboard(ctx, 'ben@example.com', { gender: 'man', interestedIn: ['woman'] });
-    await ctx.http.patch('/v1/me').set(bearer(b.token)).send({ locale: 'ru' }).expect(200);
+    // Fixed local afternoon so the test doesn't depend on the wall clock (quiet hours).
+    await ctx.http.patch('/v1/me').set(bearer(a.token)).send({ timezone: zoneAt(14) }).expect(200);
+    await ctx.http.patch('/v1/me').set(bearer(b.token)).send({ locale: 'ru', timezone: zoneAt(14) }).expect(200);
     await ctx.http.post('/v1/devices').set(bearer(a.token)).send({ token: sub(1), platform: 'web' }).expect(204);
     await ctx.http.post('/v1/devices').set(bearer(b.token)).send({ token: sub(2), platform: 'web' }).expect(204);
     await ctx.http.get('/v1/daily-set').set(bearer(a.token)).expect(200);
@@ -93,5 +97,82 @@ describe('Push notifications (NOTIF-001, Web Push + FCM)', () => {
     await ctx.pushService.flush();
     expect(ctx.push.sent).toHaveLength(0);
     expect(await ctx.prisma.deviceToken.count()).toBe(1);
+  });
+});
+
+/** An Etc/GMT zone where it is currently `hour` o'clock (Etc/GMT+N means UTC−N). */
+function zoneAt(hour: number, now = new Date()): string {
+  const offset = (((hour - now.getUTCHours()) % 24) + 36) % 24 - 12; // −12..+11
+  return offset === 0 ? 'Etc/GMT' : `Etc/GMT${offset > 0 ? '-' : '+'}${Math.abs(offset)}`;
+}
+
+describe('Notification rules (NOTIF-001 toggles, quiet hours, daily cap, daily_set_ready)', () => {
+  let ctx: TestCtx;
+  beforeAll(async () => {
+    ctx = await createTestApp();
+  });
+  afterAll(async () => ctx.app.close());
+  beforeEach(async () => resetDb(ctx));
+
+  async function pair() {
+    const a = await onboard(ctx, 'anna@example.com');
+    const b = await onboard(ctx, 'ben@example.com', { gender: 'man', interestedIn: ['woman'] });
+    await ctx.http.post('/v1/devices').set(bearer(a.token)).send({ token: sub(1), platform: 'web' }).expect(204);
+    await ctx.http.post('/v1/devices').set(bearer(b.token)).send({ token: sub(2), platform: 'web' }).expect(204);
+    return { a, b };
+  }
+
+  it('settings expose toggles; a type turned off still lands in the in-app centre but is not pushed', async () => {
+    const { a, b } = await pair();
+    const me = await ctx.http.patch('/v1/me').set(bearer(a.token)).send({ notifications: { new_match: false }, timezone: zoneAt(14) }).expect(200);
+    expect(me.body.settings.notifications).toMatchObject({ new_match: false, new_message: true });
+    await ctx.http.patch('/v1/me').set(bearer(b.token)).send({ timezone: zoneAt(14) }).expect(200);
+    await ctx.http.patch('/v1/me').set(bearer(a.token)).send({ timezone: 'Mars/Olympus' }).expect(400);
+    await ctx.http.patch('/v1/me').set(bearer(a.token)).send({ notifications: { marketing: true } }).expect(400);
+    await ctx.http.get('/v1/daily-set').set(bearer(a.token)).expect(200);
+    await ctx.http.get('/v1/daily-set').set(bearer(b.token)).expect(200);
+    await ctx.http.post('/v1/likes').set(bearer(a.token)).send({ targetId: b.userId, action: 'like' }).expect(200);
+    await ctx.http.post('/v1/likes').set(bearer(b.token)).send({ targetId: a.userId, action: 'like' }).expect(200);
+    await ctx.pushService.flush();
+    expect(await ctx.prisma.notification.count({ where: { type: 'new_match' } })).toBe(2);
+    expect(ctx.push.sent.filter((s) => s.msg.data.type === 'new_match').map((s) => s.target)).toEqual([expect.stringContaining('abc2')]);
+  });
+
+  it('quiet hours hold matches but let messages through', async () => {
+    const { a, b } = await pair();
+    for (const u of [a, b]) await ctx.http.patch('/v1/me').set(bearer(u.token)).send({ timezone: zoneAt(2) }).expect(200);
+    await ctx.http.get('/v1/daily-set').set(bearer(a.token)).expect(200);
+    await ctx.http.get('/v1/daily-set').set(bearer(b.token)).expect(200);
+    await ctx.http.post('/v1/likes').set(bearer(a.token)).send({ targetId: b.userId, action: 'like' }).expect(200);
+    const m = await ctx.http.post('/v1/likes').set(bearer(b.token)).send({ targetId: a.userId, action: 'like' }).expect(200);
+    await ctx.http.post(`/v1/matches/${m.body.match.id}/messages`).set(bearer(a.token)).send({ clientMessageId: randomUUID(), body: 'hi' }).expect(201);
+    await ctx.pushService.flush();
+    expect(ctx.push.sent.map((s) => s.msg.data.type)).toEqual(['new_message']);
+  });
+
+  it('announces Today’s Souls once per day after 12:00 local, and reminders share one push per day', async () => {
+    const { a, b } = await pair();
+    for (const u of [a, b]) await ctx.http.patch('/v1/me').set(bearer(u.token)).send({ timezone: zoneAt(13) }).expect(200);
+    const daily = ctx.app.get(DailySetService);
+    expect(await daily.announceDue()).toBe(2);
+    expect(await daily.announceDue()).toBe(0);
+    await ctx.pushService.flush();
+    expect(ctx.push.sent.filter((s) => s.msg.data.type === 'daily_set_ready')).toHaveLength(2);
+    expect(await ctx.prisma.notification.count({ where: { type: 'daily_set_ready' } })).toBe(2);
+
+    // A second non-conversation notification the same day is stored but not pushed.
+    ctx.push.sent = [];
+    await ctx.app.get(NotificationsService).notify(a.userId, 'open_ending', { sessionId: randomUUID() });
+    await ctx.pushService.flush();
+    expect(ctx.push.sent).toHaveLength(0);
+    expect(await ctx.prisma.notification.count({ where: { userId: a.userId, type: 'open_ending' } })).toBe(1);
+  });
+
+  it('does not announce before noon or to someone who already opened today’s set', async () => {
+    const { a, b } = await pair();
+    await ctx.http.patch('/v1/me').set(bearer(a.token)).send({ timezone: zoneAt(10) }).expect(200);
+    await ctx.http.patch('/v1/me').set(bearer(b.token)).send({ timezone: zoneAt(15) }).expect(200);
+    await ctx.http.get('/v1/daily-set').set(bearer(b.token)).expect(200);
+    expect(await ctx.app.get(DailySetService).announceDue()).toBe(0);
   });
 });

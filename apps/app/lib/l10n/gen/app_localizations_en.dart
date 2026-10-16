@@ -1113,4 +1113,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pushEnabled => 'Notifications are on';
+
+  @override
+  String get notifyTypes => 'What to notify me about';
+
+  @override
+  String get notifyNewMatch => 'New matches';
+
+  @override
+  String get notifyNewMessage => 'New messages';
+
+  @override
+  String get notifyDailySet => 'Today’s Souls are ready (12:00)';
+
+  @override
+  String get notifyNearby => 'Someone compatible nearby';
+
+  @override
+  String get notifyOpenEnding => 'Open to meet is ending';
+
+  @override
+  String get notifyReport => 'Updates on my reports';
+
+  @override
+  String get notifyRulesNote =>
+      'Quiet from 23:00 to 08:00, except messages. At most one reminder a day. Everything still appears in the bell.';
 }

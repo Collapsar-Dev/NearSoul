@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 import { PrismaService } from '../../common/prisma.service';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
+import { localTime, pushDecision, REMINDER_TYPES } from './push-policy';
 import { PushService } from './push.service';
 
 export type NotificationType = 'new_match' | 'new_message' | 'daily_set_ready' | 'nearby_alert' | 'open_ending' | 'report_update';
@@ -49,11 +50,27 @@ export class NotificationsService {
     const n = await this.prisma.notification.create({ data: { userId, type, payload: payload as Prisma.InputJsonValue } });
     this.rt.emit(userId, 'notification.new', { id: n.id, type, payload, createdAt: n.createdAt });
     if (opts.push !== false) {
-      const u = await this.prisma.user.findUnique({ where: { id: userId }, select: { locale: true } });
-      const text = pushText(type, u?.locale ?? 'en');
-      this.push.send(userId, { title: text.title, body: opts.bodyOverride ?? text.body, data: { type, ...payload } });
+      if (await this.mayPush(userId, type)) {
+        const u = await this.prisma.user.findUnique({ where: { id: userId }, select: { locale: true } });
+        const text = pushText(type, u?.locale ?? 'en');
+        this.push.send(userId, { title: text.title, body: opts.bodyOverride ?? text.body, data: { type, ...payload } });
+      }
     }
     return n;
+  }
+
+  /** Per-type toggles, quiet hours and the 1-per-day reminder cap (NOTIF-001, §5.8). */
+  private async mayPush(userId: string, type: NotificationType, now = new Date()): Promise<boolean> {
+    const u = await this.prisma.user.findUnique({ where: { id: userId }, select: { notifyPrefs: true, timezone: true, lastReminderPushDay: true } });
+    if (!u || pushDecision(type, u, now) !== 'send') return false;
+    if (!REMINDER_TYPES.has(type)) return true;
+    // Claim today's reminder slot atomically so two reminders at once can't both go out.
+    const today = localTime(now, u.timezone).date;
+    const claimed = await this.prisma.user.updateMany({
+      where: { id: userId, OR: [{ lastReminderPushDay: null }, { lastReminderPushDay: { not: today } }] },
+      data: { lastReminderPushDay: today },
+    });
+    return claimed.count === 1;
   }
 
   async list(userId: string, cursor?: string) {

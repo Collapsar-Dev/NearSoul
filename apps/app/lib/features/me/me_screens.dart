@@ -229,6 +229,30 @@ class SettingsScreen extends ConsumerWidget {
       body: FocusColumn(
         child: ListView(children: [
           const PushTile(),
+          ExpansionTile(
+            leading: const Icon(Icons.tune),
+            title: Text(l.notifyTypes),
+            children: [
+              for (final (key, label) in [
+                ('new_match', l.notifyNewMatch),
+                ('new_message', l.notifyNewMessage),
+                ('daily_set_ready', l.notifyDailySet),
+                ('nearby_alert', l.notifyNearby),
+                ('open_ending', l.notifyOpenEnding),
+                ('report_update', l.notifyReport),
+              ])
+                SwitchListTile(
+                  dense: true,
+                  title: Text(label),
+                  value: (s['notifications'] as Map?)?[key] != false,
+                  onChanged: (v) => update({'notifications': {key: v}}),
+                ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+                child: Text(l.notifyRulesNote, style: Theme.of(context).textTheme.bodySmall),
+              ),
+            ],
+          ),
           SwitchListTile(title: Text(l.discoverySetting), value: s['discoveryEnabled'] == true, onChanged: (v) => update({'discoveryEnabled': v})),
           SwitchListTile(title: Text(l.hideDistance), value: s['hideDistance'] == true, onChanged: (v) => update({'hideDistance': v})),
           SwitchListTile(title: Text(l.readReceipts), value: s['readReceipts'] == true, onChanged: (v) => update({'readReceipts': v})),

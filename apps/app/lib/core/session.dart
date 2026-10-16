@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api.dart';
 import 'push.dart';
@@ -78,6 +79,13 @@ class SessionNotifier extends Notifier<SessionState> {
         json = await _api.patch<Map<String, dynamic>>('/v1/me', {'locale': _api.locale});
       } catch (_) {}
     }
+    // Server-side timezone drives the 12:00 daily set, quiet hours and the daily reminder cap.
+    try {
+      final tz = (await FlutterTimezone.getLocalTimezone()).identifier;
+      if (tz.isNotEmpty && (json['settings'] as Map?)?['timezone'] != tz && json['status'] != 'blocked_underage') {
+        json = await _api.patch<Map<String, dynamic>>('/v1/me', {'timezone': tz});
+      }
+    } catch (_) {}
     final me = Me(json);
     state = SessionState(Phase.signedIn, me);
     return me;
