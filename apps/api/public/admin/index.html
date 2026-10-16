@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>NearSoul Admin</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <header>
+    <strong>NearSoul Admin</strong>
+    <nav id="nav" hidden>
+      <button data-tab="queue">Reports</button>
+      <button data-tab="metrics">Metrics</button>
+      <button data-tab="feedback">Feedback</button>
+      <button data-tab="invites">Invites</button>
+      <button data-tab="users">Users</button>
+      <button id="logout">Sign out</button>
+    </nav>
+  </header>
+  <main>
+    <section id="login">
+      <h1>Sign in</h1>
+      <form id="login-form">
+        <label>Email <input name="email" type="email" required autocomplete="username"></label>
+        <label>Password <input name="password" type="password" required autocomplete="current-password"></label>
+        <label>Authenticator code <input name="totp" inputmode="numeric" pattern="\d{6}" required autocomplete="one-time-code"></label>
+        <button type="submit">Sign in</button>
+        <p class="error" id="login-error"></p>
+      </form>
+    </section>
+    <section id="view" hidden></section>
+  </main>
+  <script src="admin.js"></script>
+</body>
+</html>

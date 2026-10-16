@@ -22,6 +22,7 @@ const EnvSchema = z.object({
   STORAGE_DRIVER: z.enum(['local', 's3']).default('local'),
   LOCAL_STORAGE_DIR: z.string().default('.data/storage'),
   PUBLIC_API_URL: z.string().default('http://localhost:3000'),
+  APP_PUBLIC_URL: z.string().default('http://localhost:8080'),
   S3_ENDPOINT: z.string().optional(),
   S3_REGION: z.string().default('auto'),
   S3_BUCKET: z.string().optional(),

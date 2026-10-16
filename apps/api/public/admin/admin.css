@@ -1,0 +1,24 @@
+:root { --bg: #fffbf8; --surface: #fff; --text: #1f1b24; --muted: #6b6475; --primary: #e8636f; --soul: #3b3b98; --danger: #d64545; --line: #ece6ef; }
+@media (prefers-color-scheme: dark) { :root { --bg: #14131a; --surface: #1e1c26; --text: #f3f0f7; --muted: #a9a2b5; --line: #2c2936; } }
+* { box-sizing: border-box; }
+body { margin: 0; font: 15px/1.5 system-ui, sans-serif; background: var(--bg); color: var(--text); }
+header { display: flex; gap: 16px; align-items: center; padding: 12px 20px; border-bottom: 1px solid var(--line); background: var(--surface); flex-wrap: wrap; }
+nav { display: flex; gap: 6px; flex-wrap: wrap; }
+main { max-width: 1100px; margin: 0 auto; padding: 20px 16px; }
+button { font: inherit; border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 10px; padding: 6px 12px; cursor: pointer; }
+button.primary, form button[type=submit] { background: var(--soul); color: #fff; border-color: var(--soul); }
+button.danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+label { display: block; margin: 10px 0; color: var(--muted); }
+input, select, textarea { display: block; width: 100%; max-width: 420px; font: inherit; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--text); margin-top: 4px; }
+table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 12px; overflow: hidden; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; background: var(--line); }
+.badge.urgent { background: var(--danger); color: #fff; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin: 12px 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.stat { font-size: 28px; font-weight: 600; }
+.photos img { width: 120px; height: 150px; object-fit: cover; border-radius: 10px; margin: 4px; }
+.msg { padding: 6px 10px; border-radius: 10px; margin: 4px 0; background: var(--line); max-width: 70%; }
+.msg.reported { margin-left: auto; background: color-mix(in srgb, var(--primary) 25%, transparent); }
+.error { color: var(--danger); }
+.muted { color: var(--muted); }

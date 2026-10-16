@@ -5,6 +5,7 @@ import { Public } from '../../common/auth';
 import { badRequest, notFound } from '../../common/errors';
 import { PrismaService } from '../../common/prisma.service';
 import { parse } from '../../common/zod';
+import { env } from '../../config/env';
 import { InvitesService } from '../invites/invites.service';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { StorageService } from '../storage/storage.service';
@@ -176,7 +177,7 @@ export class AdminController {
     const codes: string[] = [];
     for (let i = 0; i < count; i++) codes.push(await this.invites.createByAdmin(maxUses, expiresAt));
     await this.audit(admin, 'invites_created', 'invite', String(count));
-    return { codes };
+    return { codes, links: codes.map((c) => `${env().APP_PUBLIC_URL}/invite/${c}`) };
   }
 
   @Get('feedback')
