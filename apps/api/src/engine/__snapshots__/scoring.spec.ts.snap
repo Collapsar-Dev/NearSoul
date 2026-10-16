@@ -1,0 +1,138 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`scoring (ENG-005) matches the golden snapshot for a reference persona 1`] = `
+{
+  "archetype": "explorer",
+  "communication": {
+    "conversation_depth": {
+      "band": "balanced",
+      "confidence": 1,
+      "score": 50,
+      "source": "quick_scan",
+    },
+    "texting_rhythm": {
+      "source": "quick_scan",
+      "value": "all_day",
+    },
+  },
+  "dealbreakers": [],
+  "depth": 40,
+  "domains": {
+    "A": {
+      "band": "balanced",
+      "confidence": 1,
+      "score": 50,
+      "source": "quick_scan",
+    },
+    "C": {
+      "band": "balanced",
+      "confidence": 1,
+      "score": 50,
+      "source": "quick_scan",
+    },
+    "E": {
+      "band": "high",
+      "confidence": 1,
+      "score": 100,
+      "source": "quick_scan",
+    },
+    "O": {
+      "band": "high",
+      "confidence": 1,
+      "score": 100,
+      "source": "quick_scan",
+    },
+    "S": {
+      "band": "balanced",
+      "confidence": 1,
+      "score": 50,
+      "source": "quick_scan",
+    },
+  },
+  "engineVersion": "2.0.0",
+  "lifestyle": {
+    "activity_level": {
+      "source": "quick_scan",
+      "value": "low",
+    },
+    "drinking": {
+      "source": "quick_scan",
+      "value": "never",
+    },
+    "smoking": {
+      "source": "quick_scan",
+      "value": "never",
+    },
+    "spontaneity": {
+      "band": "balanced",
+      "confidence": 1,
+      "score": 50,
+      "source": "quick_scan",
+    },
+    "weekend_style": {
+      "source": "quick_scan",
+      "value": "cozy_home",
+    },
+  },
+  "normsVersion": "theoretical-1",
+  "quality": {
+    "consistencyFlags": [],
+    "straightLining": false,
+  },
+  "quickScanComplete": true,
+  "relationship": {
+    "affection_expression": {
+      "band": "balanced",
+      "confidence": 1,
+      "score": 50,
+      "source": "quick_scan",
+    },
+    "care_language": {
+      "source": "quick_scan",
+      "value": [
+        "words",
+      ],
+    },
+    "closeness_comfort": {
+      "band": "balanced",
+      "confidence": 1,
+      "score": 50,
+      "source": "quick_scan",
+    },
+    "conflict_style": {
+      "source": "quick_scan",
+      "value": "talk_now",
+    },
+    "independence_need": {
+      "band": "balanced",
+      "confidence": 1,
+      "score": 50,
+      "source": "quick_scan",
+    },
+    "reassurance_need": {
+      "band": "balanced",
+      "confidence": 1,
+      "score": 50,
+      "source": "quick_scan",
+    },
+  },
+  "values": {
+    "kids_plan": {
+      "source": "quick_scan",
+      "value": "have_want_more",
+    },
+    "life_direction": {
+      "source": "quick_scan",
+      "value": "settle_build",
+    },
+    "values": {
+      "source": "quick_scan",
+      "value": [
+        "adventure",
+        "freedom",
+        "growth",
+      ],
+    },
+  },
+}
+`;

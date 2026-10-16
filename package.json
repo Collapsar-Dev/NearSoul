@@ -1,0 +1,12 @@
+{
+  "name": "nearsoul",
+  "private": true,
+  "workspaces": ["apps/api"],
+  "scripts": {
+    "test": "npm test -w apps/api",
+    "lint": "npm run lint -w apps/api",
+    "typecheck": "npm run typecheck -w apps/api",
+    "build": "npm run build -w apps/api"
+  },
+  "engines": { "node": ">=22" }
+}
