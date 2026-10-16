@@ -1,3 +1,4 @@
+import sharp from 'sharp';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
@@ -89,4 +90,52 @@ export async function passGateAndScan(ctx: TestCtx, token: string, answers = qui
   for (const [k, v] of Object.entries(answers)) {
     await ctx.http.put(`/v1/engine/answers/${k}`).set(bearer(token)).send({ value: v }).expect(200);
   }
+}
+
+
+/** A 600×600 JPEG carrying EXIF GPS data (to prove we strip it). */
+export async function testJpeg(seed = 0): Promise<Buffer> {
+  return sharp({ create: { width: 600, height: 600, channels: 3, background: { r: (seed * 40) % 255, g: 120, b: 200 } } })
+    .jpeg()
+    .withExif({ IFD0: { Artist: 'Test Person' }, IFD3: { GPSLatitudeRef: 'N', GPSLatitude: '52/1 22/1 0/1', GPSLongitudeRef: 'E', GPSLongitude: '4/1 54/1 0/1' } })
+    .toBuffer();
+}
+
+export interface OnboardOpts {
+  gender?: 'woman' | 'man' | 'non_binary';
+  interestedIn?: ('woman' | 'man' | 'non_binary')[];
+  intent?: 'long_term' | 'open_to_long' | 'casual' | 'not_sure';
+  answers?: Record<string, unknown>;
+  dob?: string;
+  shareLevel?: 'minimal' | 'standard' | 'deep';
+  interests?: string[];
+  firstName?: string;
+  discovery?: boolean;
+}
+
+/** Full onboarding through the public API → an active, discoverable user. */
+export async function onboard(ctx: TestCtx, email: string, o: OnboardOpts = {}) {
+  const { token, userId } = await signIn(ctx, email);
+  await ctx.http.post('/v1/me/dob').set(bearer(token)).send({ dob: o.dob ?? '1995-05-05' }).expect(200);
+  await ctx.http.post('/v1/me/consents').set(bearer(token)).send({ terms: true }).expect(200);
+  for (const [k, v] of Object.entries(o.answers ?? quickScanAnswers())) {
+    await ctx.http.put(`/v1/engine/answers/${k}`).set(bearer(token)).send({ value: v }).expect(200);
+  }
+  await ctx.http.post('/v1/me/card/generate').set(bearer(token)).send({}).expect(201);
+  await ctx.http.patch('/v1/me/card').set(bearer(token)).send({ reviewed: true }).expect(200);
+  await ctx.http.patch('/v1/me/share-level').set(bearer(token)).send({ level: o.shareLevel ?? 'standard' }).expect(204);
+  await ctx.http.put('/v1/me/profile').set(bearer(token)).send({
+    firstName: o.firstName ?? (email.split('@')[0]!.replace(/[^a-z]/gi, '').slice(0, 20) || 'Tester'),
+    gender: o.gender ?? 'woman',
+    interestedIn: o.interestedIn ?? ['man'],
+    intent: o.intent ?? 'long_term',
+    cityId: 'amsterdam',
+    interests: o.interests ?? ['hiking', 'coffee', 'books'],
+    ageMin: 18,
+    ageMax: 60,
+  }).expect(200);
+  for (let i = 0; i < 2; i++) await ctx.http.post('/v1/photos').set(bearer(token)).attach('photo', await testJpeg(i), 'p.jpg').expect(201);
+  await ctx.http.post('/v1/me/onboarding/complete').set(bearer(token)).expect(200);
+  if (o.discovery !== false) await ctx.http.patch('/v1/me').set(bearer(token)).send({ discoveryEnabled: true }).expect(200);
+  return { token, userId };
 }

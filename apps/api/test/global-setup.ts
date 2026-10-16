@@ -11,4 +11,5 @@ export default async function globalSetup(): Promise<void> {
     env: { ...process.env, DATABASE_URL: url, PRISMA_HIDE_UPDATE_MESSAGE: '1' },
     stdio: 'ignore',
   });
+  execFileSync('npx', ['tsx', 'prisma/seed.ts'], { cwd: join(__dirname, '..'), env: { ...process.env, DATABASE_URL: url }, stdio: 'ignore' });
 }

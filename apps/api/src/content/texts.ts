@@ -204,5 +204,66 @@ export function codeText(code: string, locale: Locale, ctx: { name?: string; int
 }
 
 export const valueLabel = (v: string, locale: Locale) => tr(VALUE[v] ?? { en: v, ru: v }, locale);
+export const careLabel = (v: string, locale: Locale) => tr(CARE[v] ?? { en: v, ru: v }, locale);
 
 export const BANNED_WORDS = ['neurotic', 'unstable', 'lazy', 'cold', 'disorder', 'narciss', 'anxious attachment', 'avoidant', 'mbti', 'невротик', 'нестабильн', 'ленив', 'холодн', 'расстройств'];
+
+/** Self report texts (RPT-001). */
+export const SELF_CODES: Record<string, L> = {
+  CLOSENESS_HIGH: { en: 'You feel at home in close, interdependent relationships.', ru: 'Тебе комфортно в близких отношениях, где вы опираетесь друг на друга.' },
+  CLOSENESS_BALANCED: { en: 'You enjoy closeness and still keep your own footing.', ru: 'Ты ценишь близость, но сохраняешь опору на себя.' },
+  CLOSENESS_LOW: { en: 'You open up gradually and value trust that is earned over time.', ru: 'Ты раскрываешься постепенно и ценишь доверие, которое строится со временем.' },
+  INDEPENDENCE_HIGH: { en: 'Personal time matters to you, even when things are going well.', ru: 'Личное время для тебя важно, даже когда всё хорошо.' },
+  INDEPENDENCE_BALANCED: { en: 'You like a healthy mix of together time and me-time.', ru: 'Тебе нравится баланс времени вместе и времени для себя.' },
+  INDEPENDENCE_LOW: { en: 'You love sharing most of your life with a partner.', ru: 'Тебе нравится разделять с партнёром большую часть жизни.' },
+  CONFLICT_TALK_NOW: { en: 'In a disagreement, you prefer to talk it through right away.', ru: 'В споре ты предпочитаешь обсуждать всё сразу.' },
+  CONFLICT_COOL_DOWN_THEN_TALK: { en: 'In a disagreement, you take a moment to cool down, then talk.', ru: 'В споре ты сначала остываешь, а потом говоришь.' },
+  CONFLICT_LET_IT_GO: { en: 'You tend to let small disagreements go.', ru: 'Ты обычно не цепляешься за мелкие разногласия.' },
+  GROWTH_CLOSENESS_AND_SPACE: { en: 'You need both reassurance and space. Saying which one you need right now helps a partner a lot.', ru: 'Тебе важны и знаки внимания, и пространство. Говорить, что нужно прямо сейчас, очень помогает партнёру.' },
+  GROWTH_SELF_SOOTHING: { en: 'Because you feel deeply, small calming rituals can help you stay grounded in early dating.', ru: 'Ты глубоко чувствуешь, поэтому в начале знакомства помогают небольшие успокаивающие ритуалы.' },
+  GROWTH_FOLLOW_THROUGH: { en: 'Confirming plans a day ahead can make your spontaneity feel even more reliable.', ru: 'Подтверждать планы за день — и твоя спонтанность будет ощущаться ещё надёжнее.' },
+  GROWTH_SOFT_START: { en: 'Your honesty is a strength; a softer opening line can make it land even better.', ru: 'Твоя честность — сила; мягкое начало разговора помогает ей звучать ещё лучше.' },
+};
+
+export const REFLECT_QUESTIONS: L[] = [
+  { en: 'When did you last feel truly understood by someone? What made it work?', ru: 'Когда ты в последний раз чувствовал(а), что тебя по-настоящему понимают? Что сработало?' },
+  { en: 'What do you need most at the start of something new?', ru: 'Что тебе нужнее всего в начале чего-то нового?' },
+  { en: 'Which of your strengths do you want a partner to notice first?', ru: 'Какую из своих сильных сторон ты хочешь, чтобы партнёр заметил первой?' },
+];
+
+/** Conversation starters by reason code family (template version of starters_v1). */
+export const STARTERS: Record<string, L> = {
+  SHARED_VALUE: { en: 'What does {x} mean to you day to day?', ru: 'Что для тебя значит «{x}» в обычной жизни?' },
+  SAME_LIFE_DIRECTION: { en: 'Where do you see yourself in a few years, and what excites you most about it?', ru: 'Где ты видишь себя через пару лет и что в этом тебя больше всего радует?' },
+  BOTH_DEEP_TALKERS: { en: 'What’s a question you wish people asked you more often?', ru: 'Какой вопрос тебе хотелось бы слышать почаще?' },
+  BOTH_PLAYFUL_TALKERS: { en: 'What’s the most random thing that made you laugh this week?', ru: 'Что самое неожиданное рассмешило тебя на этой неделе?' },
+  SIMILAR_WEEKENDS: { en: 'What would your perfect Saturday look like this month?', ru: 'Какой была бы твоя идеальная суббота в этом месяце?' },
+  SHARED_INTEREST: { en: 'How did you get into {x}?', ru: 'Как ты увлёкся(лась) этим: {x}?' },
+  BOTH_CURIOUS: { en: 'What’s something new you’ve been curious about lately?', ru: 'Чем новым ты в последнее время интересуешься?' },
+  DEFAULT: { en: 'What made you smile today?', ru: 'Что сегодня заставило тебя улыбнуться?' },
+};
+
+export const FIRST_DATE_IDEAS: Record<string, L> = {
+  cozy_home: { en: 'A quiet café with board games', ru: 'Тихое кафе с настольными играми' },
+  outdoors_active: { en: 'A walk or easy hike with coffee to go', ru: 'Прогулка или лёгкий поход с кофе с собой' },
+  social_out: { en: 'A lively bar, then a walk to talk properly', ru: 'Оживлённый бар, а потом прогулка, чтобы спокойно поговорить' },
+  culture_explore: { en: 'An exhibition and a coffee afterwards', ru: 'Выставка и кофе после неё' },
+  mix: { en: 'Coffee first, then see where the day goes', ru: 'Сначала кофе, а дальше — по настроению' },
+  coffee: { en: 'Coffee nearby, right now', ru: 'Кофе рядом, прямо сейчас' },
+  walk: { en: 'A short walk around the neighbourhood', ru: 'Короткая прогулка по району' },
+  drinks: { en: 'One drink somewhere relaxed', ru: 'Один бокал в спокойном месте' },
+  chat: { en: 'A relaxed chat on a bench in the park', ru: 'Спокойный разговор на скамейке в парке' },
+};
+
+/** "What you need from a partner" (self report), keyed by tip code family. */
+export const NEED_TEXT: Record<string, L> = {
+  GIVE_TIME_AFTER_CONFLICT: { en: 'A partner who gives you a little time to cool down before a hard talk.', ru: 'Партнёр, который даёт тебе немного времени остыть перед сложным разговором.' },
+  TALK_IT_THROUGH: { en: 'A partner who is willing to talk things through openly.', ru: 'Партнёр, готовый открыто всё обсуждать.' },
+  DAILY_CHECKIN: { en: 'A steady daily check-in rather than constant messages.', ru: 'Спокойная переписка раз в день вместо постоянных сообщений.' },
+  PREFERS_MEETING: { en: 'Real time together over long text threads.', ru: 'Живые встречи вместо долгих переписок.' },
+  DEEP_QUESTIONS: { en: 'Conversations that go beyond small talk.', ru: 'Разговоры глубже, чем светская болтовня.' },
+  KEEP_IT_LIGHT: { en: 'Lightness and play, especially at the start.', ru: 'Лёгкость и игра, особенно в начале.' },
+  SHOW_CARE: { en: 'Care shown through {x}.', ru: 'Забота через {x}.' },
+  RESPECT_SPACE: { en: 'Respect for your personal time.', ru: 'Уважение к твоему личному времени.' },
+  REASSURE: { en: 'Small, regular signs of interest.', ru: 'Небольшие регулярные знаки интереса.' },
+};

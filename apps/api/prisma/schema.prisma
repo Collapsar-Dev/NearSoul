@@ -90,6 +90,7 @@ model User {
   timezone           String          @default("Europe/Amsterdam")
   analyticsId        String          @default(uuid()) @map("analytics_id")
   isDemo             Boolean         @default(false) @map("is_demo")
+  hiddenByModeration Boolean         @default(false) @map("hidden_by_moderation")
   invitesLeft        Int             @default(0) @map("invites_left")
   createdAt          DateTime        @default(now()) @map("created_at")
   lastActiveAt       DateTime        @default(now()) @map("last_active_at")
@@ -547,11 +548,14 @@ model NearbyAlert {
   id     String   @id @default(uuid(7)) @db.Uuid
   userA  String   @map("user_a") @db.Uuid
   userB  String   @map("user_b") @db.Uuid
-  band   String
-  score  Int
-  sentAt DateTime @default(now()) @map("sent_at")
+  band      String
+  score     Int
+  createdAt DateTime  @default(now()) @map("created_at")
+  deliverAt DateTime  @map("deliver_at")
+  sentAt    DateTime? @map("sent_at")
 
-  @@index([userA, userB, sentAt])
+  @@index([userA, userB, createdAt])
+  @@index([sentAt, deliverAt])
   @@map("nearby_alerts")
 }
 
