@@ -682,3 +682,18 @@ model SafetyEvent {
   @@index([category, createdAt])
   @@map("safety_events")
 }
+
+/// ACC-002 data export requests (ZIP stored privately, link valid 24 h).
+model DataExportJob {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  status      String    @default("pending") // pending | ready | failed
+  storageKey  String?   @map("storage_key")
+  error       String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  completedAt DateTime? @map("completed_at")
+  expiresAt   DateTime? @map("expires_at")
+
+  @@index([userId, createdAt])
+  @@map("data_export_jobs")
+}

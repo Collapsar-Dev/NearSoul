@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 import '../../core/api.dart';
 import '../../core/responsive.dart';
@@ -289,6 +290,7 @@ class _SoulSessionScreenState extends ConsumerState<SoulSessionScreen> {
                   leading: const Icon(Icons.call_outlined),
                   title: Text(r['name'] as String),
                   subtitle: Text([r['phone'], r['url']].whereType<String>().join(' · ')),
+                  onTap: () => launchUrl(Uri.parse(r['phone'] != null ? 'tel:${r['phone']}' : r['url'] as String)),
                 ),
               ),
             const SizedBox(height: 12),

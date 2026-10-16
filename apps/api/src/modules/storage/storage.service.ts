@@ -66,13 +66,30 @@ export class StorageService {
     await this.client().send(new DeleteObjectCommand({ Bucket: env().S3_BUCKET, Key: key }));
   }
 
-  async signedUrl(key: string, now = Date.now()): Promise<string> {
+  async signedUrl(key: string, now = Date.now(), ttlSec = URL_TTL_SEC): Promise<string> {
     if (env().STORAGE_DRIVER === 'local' || env().STORAGE_DRIVER === 'db') {
-      const exp = Math.floor(now / 1000) + URL_TTL_SEC;
+      const exp = Math.floor(now / 1000) + ttlSec;
       const sig = hmac(env().JWT_SECRET, `media:${key}:${exp}`);
       return `${env().PUBLIC_API_URL}/v1/media/${encodeURIComponent(key)}?exp=${exp}&sig=${sig}`;
     }
-    return getSignedUrl(this.client(), new GetObjectCommand({ Bucket: env().S3_BUCKET, Key: key }), { expiresIn: URL_TTL_SEC });
+    return getSignedUrl(this.client(), new GetObjectCommand({ Bucket: env().S3_BUCKET, Key: key }), { expiresIn: ttlSec });
+  }
+
+  /** Reads an object's bytes (server-side use: data export). */
+  async get(key: string): Promise<Buffer | null> {
+    if (env().STORAGE_DRIVER === 'db') {
+      const row = await this.db().media.findUnique({ where: { key } });
+      return row ? Buffer.from(row.data) : null;
+    }
+    if (env().STORAGE_DRIVER === 'local') {
+      try {
+        return await readFile(this.localPath(key));
+      } catch {
+        return null;
+      }
+    }
+    const res = await this.client().send(new GetObjectCommand({ Bucket: env().S3_BUCKET, Key: key }));
+    return res.Body ? Buffer.from(await res.Body.transformToByteArray()) : null;
   }
 
   /** Local/db drivers: verify a signed media URL and read the bytes. */

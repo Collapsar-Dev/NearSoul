@@ -1043,4 +1043,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get catGrowth => 'Рост';
+
+  @override
+  String get exportData => 'Скачать мои данные';
+
+  @override
+  String get exportRequested =>
+      'Готовим твои данные. Пришлём письмо со ссылкой для скачивания.';
+
+  @override
+  String get exportReady => 'Твои данные готовы';
+
+  @override
+  String get exportPending => 'Готовим данные…';
 }

@@ -316,5 +316,9 @@
   "catPattern": "Закономерности",
   "catStrength": "Сильные стороны",
   "catPreference": "Предпочтения",
-  "catGrowth": "Рост"
+  "catGrowth": "Рост",
+  "exportData": "Скачать мои данные",
+  "exportRequested": "Готовим твои данные. Пришлём письмо со ссылкой для скачивания.",
+  "exportReady": "Твои данные готовы",
+  "exportPending": "Готовим данные…"
 }

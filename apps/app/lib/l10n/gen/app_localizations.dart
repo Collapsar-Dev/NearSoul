@@ -1999,6 +1999,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Growth'**
   String get catGrowth;
+
+  /// No description provided for @exportData.
+  ///
+  /// In en, this message translates to:
+  /// **'Download my data'**
+  String get exportData;
+
+  /// No description provided for @exportRequested.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'re preparing your data. You\'ll get an email with a download link.'**
+  String get exportRequested;
+
+  /// No description provided for @exportReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data is ready'**
+  String get exportReady;
+
+  /// No description provided for @exportPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing your data…'**
+  String get exportPending;
 }
 
 class _AppLocalizationsDelegate

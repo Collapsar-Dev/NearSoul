@@ -1040,4 +1040,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get catGrowth => 'Growth';
+
+  @override
+  String get exportData => 'Download my data';
+
+  @override
+  String get exportRequested =>
+      'We\'re preparing your data. You\'ll get an email with a download link.';
+
+  @override
+  String get exportReady => 'Your data is ready';
+
+  @override
+  String get exportPending => 'Preparing your data…';
 }

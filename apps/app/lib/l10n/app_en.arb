@@ -469,5 +469,9 @@
   "catPattern": "Patterns",
   "catStrength": "Strengths",
   "catPreference": "Preferences",
-  "catGrowth": "Growth"
+  "catGrowth": "Growth",
+  "exportData": "Download my data",
+  "exportRequested": "We're preparing your data. You'll get an email with a download link.",
+  "exportReady": "Your data is ready",
+  "exportPending": "Preparing your data…"
 }

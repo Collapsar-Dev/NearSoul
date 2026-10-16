@@ -5,6 +5,7 @@ import { PrismaService } from '../../common/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { SoulService } from '../soul/soul.service';
+import { ExportService } from '../export/export.service';
 
 const MOD_RETENTION_DAYS = 90;
 
@@ -13,7 +14,7 @@ const MOD_RETENTION_DAYS = 90;
 export class RetentionService {
   private readonly logger = new Logger('Retention');
 
-  constructor(private readonly prisma: PrismaService, private readonly storage: StorageService, private readonly rt: RealtimeGateway, private readonly soul: SoulService) {}
+  constructor(private readonly prisma: PrismaService, private readonly storage: StorageService, private readonly rt: RealtimeGateway, private readonly soul: SoulService, private readonly exports: ExportService) {}
 
   async processDeletions(): Promise<number> {
     const users = await this.prisma.user.findMany({ where: { status: 'deletion_requested' }, select: { id: true }, take: 50 });
@@ -21,6 +22,9 @@ export class RetentionService {
       this.rt.disconnectUser(id);
       const photos = await this.prisma.photo.findMany({ where: { userId: id } });
       for (const p of photos) await this.storage.delete(p.storageKey);
+      const exportsToDelete = await this.prisma.dataExportJob.findMany({ where: { userId: id } });
+      for (const e of exportsToDelete) if (e.storageKey) await this.storage.delete(e.storageKey);
+      await this.prisma.dataExportJob.deleteMany({ where: { userId: id } });
       await this.prisma.match.updateMany({ where: { endedAt: null, OR: [{ userLow: id }, { userHigh: id }] }, data: { endedAt: new Date(), endedBy: id, endReason: 'deletion' } });
       await this.prisma.report.deleteMany({ where: { OR: [{ ownerId: id }, { otherId: id }] } });
       await this.prisma.dailySet.deleteMany({ where: { userId: id } });
@@ -41,6 +45,7 @@ export class RetentionService {
     await this.prisma.authCode.deleteMany({ where: { createdAt: { lt: new Date(now.getTime() - 86_400_000) } } });
     await this.prisma.session.deleteMany({ where: { revokedAt: { lt: new Date(now.getTime() - 30 * 86_400_000) } } });
     await this.soul.purge(now);
+    await this.exports.cleanup(now);
   }
 
   @Interval(10 * 60_000)

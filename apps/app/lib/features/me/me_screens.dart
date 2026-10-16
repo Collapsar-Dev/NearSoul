@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../core/api.dart';
 import '../../core/config.dart';
 import '../../core/responsive.dart';
 import '../../core/session.dart';
@@ -202,6 +204,32 @@ class SettingsScreen extends ConsumerWidget {
                 update({'locale': v.first});
               },
             ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.download_outlined),
+            title: Text(l.exportData),
+            onTap: () async {
+              final api = ref.read(apiProvider);
+              try {
+                final s = await api.get<Map<String, dynamic>>('/v1/me/export');
+                if (s['status'] == 'ready' && s['url'] != null) {
+                  await launchUrl(Uri.parse(s['url'] as String));
+                  return;
+                }
+                if (s['status'] == 'pending') {
+                  if (context.mounted) showSnack(context, l.exportPending);
+                  return;
+                }
+              } on ApiError catch (e) {
+                if (e.status != 404) rethrow;
+              }
+              try {
+                await api.post('/v1/me/export');
+                if (context.mounted) showSnack(context, l.exportRequested);
+              } catch (e) {
+                if (context.mounted) showSnack(context, errorText(context, e));
+              }
+            },
           ),
           const Divider(height: 32),
           ListTile(leading: const Icon(Icons.logout), title: Text(l.logout), onTap: () => ref.read(sessionProvider.notifier).signOut()),
