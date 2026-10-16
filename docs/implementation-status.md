@@ -5,7 +5,7 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 ## Evidence (commands run on 2026-10-16)
 | Command | Result |
 |---|---|
-| `cd apps/api && npx jest` | 15 suites, 197 tests passed (engine unit + property tests; integration tests on real Postgres) |
+| `cd apps/api && npx jest` | 14 suites, 197 tests passed (engine unit + property tests; integration tests on real Postgres) |
 | GitHub Actions CI (run 38901751005) | API, Flutter (web + APK), Windows, macOS green; Linux desktop fixed (libsecret) |
 | Render start command on an empty DB (APP_ENV=alpha, STORAGE_DRIVER=db) | migrations, seeds, 48 demo profiles, web + admin served, /ready ok |
 | Same-origin realtime chat check | demo reply delivered over the socket in < 2 s, localized |

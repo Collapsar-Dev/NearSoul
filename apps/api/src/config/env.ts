@@ -43,6 +43,8 @@ const EnvSchema = z.object({
   /** JSON: { "NL": [{ "name": "113 Zelfmoordpreventie", "phone": "0800-0113", "url": "https://www.113.nl" }], "default": [...] } */
   CRISIS_RESOURCES: z.string().optional(),
   CRISIS_TEXTS_APPROVED: bool.default('false'),
+  /** First admin for hosts without a shell (free Render): created once on boot if no admin exists. */
+  ADMIN_BOOTSTRAP_EMAIL: z.string().email().optional(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

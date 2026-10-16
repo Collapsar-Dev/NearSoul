@@ -52,6 +52,8 @@ services:
         sync: false # https://nearsoul-alpha.onrender.com
       - key: PUBLIC_API_URL
         sync: false # https://nearsoul-alpha.onrender.com
+      - key: ADMIN_BOOTSTRAP_EMAIL
+        sync: false # your email: the first admin's password + TOTP link appear once in the deploy log
       - key: AI_ENABLED
         value: "false" # set to true after adding ANTHROPIC_API_KEY
       - key: ANTHROPIC_API_KEY
