@@ -1,0 +1,581 @@
+// NearSoul data model (PRD 12-data-model). Alpha scope + P0 foundations.
+// Soul Talk tables (S3, encrypted) arrive with milestone M8.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  onboarding
+  active
+  suspended
+  blocked_underage
+  deletion_requested
+  deleted
+}
+
+enum UserRole {
+  user
+  tester
+}
+
+enum Gender {
+  woman
+  man
+  non_binary
+}
+
+enum Intent {
+  long_term
+  open_to_long
+  casual
+  not_sure
+}
+
+enum ShareLevel {
+  minimal
+  standard
+  deep
+}
+
+enum CardVisibility {
+  everyone
+  matches_only
+  hidden
+}
+
+enum PhotoStatus {
+  quarantine
+  ready
+  rejected
+}
+
+enum LikeAction {
+  like
+  pass
+}
+
+enum LikeSource {
+  daily
+  nearby
+  profile
+}
+
+enum CodePurpose {
+  login
+  sensitive_action
+  email_change
+}
+
+model User {
+  id                 String          @id @default(uuid(7)) @db.Uuid
+  email              String          @unique
+  status             UserStatus      @default(onboarding)
+  role               UserRole        @default(user)
+  onboardingStep     String          @default("dob") @map("onboarding_step")
+  dob                DateTime?       @db.Date
+  ageGatePassedAt    DateTime?       @map("age_gate_passed_at")
+  discoveryEnabled   Boolean         @default(false) @map("discovery_enabled")
+  hideDistance       Boolean         @default(false) @map("hide_distance")
+  readReceipts       Boolean         @default(true) @map("read_receipts")
+  cardVisibility     CardVisibility  @default(matches_only) @map("card_visibility")
+  shareLevel         ShareLevel?     @map("share_level")
+  flexibleFallback   Boolean         @default(true) @map("flexible_fallback")
+  locale             String          @default("en")
+  timezone           String          @default("Europe/Amsterdam")
+  analyticsId        String          @default(uuid()) @map("analytics_id")
+  isDemo             Boolean         @default(false) @map("is_demo")
+  invitesLeft        Int             @default(0) @map("invites_left")
+  createdAt          DateTime        @default(now()) @map("created_at")
+  lastActiveAt       DateTime        @default(now()) @map("last_active_at")
+  deletionRequestedAt DateTime?      @map("deletion_requested_at")
+
+  profile            Profile?
+  photos             Photo[]
+  sessions           Session[]
+  consents           Consent[]
+  answers            EngineAnswer[]
+  soulProfile        SoulProfileRow?
+  overrides          LayerOverride[]
+  card               PersonalityCard?
+  location           UserLocation?
+  notifications      Notification[]
+  likesGiven         Like[]          @relation("likeActor")
+  likesReceived      Like[]          @relation("likeTarget")
+  blocksMade         Block[]         @relation("blocker")
+  blocksReceived     Block[]         @relation("blocked")
+  feedback           Feedback[]
+  ratings            Rating[]
+
+  @@index([status, discoveryEnabled])
+  @@map("users")
+}
+
+model AuthCode {
+  id        String      @id @default(uuid(7)) @db.Uuid
+  email     String
+  purpose   CodePurpose
+  codeHash  String      @map("code_hash")
+  attempts  Int         @default(0)
+  expiresAt DateTime    @map("expires_at")
+  usedAt    DateTime?   @map("used_at")
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  @@index([email, purpose, createdAt])
+  @@map("auth_codes")
+}
+
+model Session {
+  id               String    @id @default(uuid(7)) @db.Uuid
+  userId           String    @map("user_id") @db.Uuid
+  familyId         String    @map("family_id") @db.Uuid
+  refreshTokenHash String    @unique @map("refresh_token_hash")
+  deviceId         String?   @map("device_id")
+  platform         String?
+  createdAt        DateTime  @default(now()) @map("created_at")
+  lastUsedAt       DateTime  @default(now()) @map("last_used_at")
+  revokedAt        DateTime? @map("revoked_at")
+  replacedById     String?   @map("replaced_by") @db.Uuid
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  devices          DeviceToken[]
+
+  @@index([userId])
+  @@index([familyId])
+  @@map("sessions")
+}
+
+model DeviceToken {
+  id        String  @id @default(uuid(7)) @db.Uuid
+  sessionId String  @map("session_id") @db.Uuid
+  token     String
+  platform  String
+  session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, token])
+  @@map("device_tokens")
+}
+
+model Consent {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  type      String
+  version   String
+  value     Json?
+  granted   Boolean
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type, createdAt])
+  @@map("consents")
+}
+
+model City {
+  id          String  @id
+  name        Json
+  countryCode String  @map("country_code")
+  lat         Float
+  lng         Float
+  active      Boolean @default(true)
+  profiles    Profile[]
+
+  @@map("cities")
+}
+
+model Interest {
+  id       String @id
+  category String
+  labels   Json
+  profiles ProfileInterest[]
+
+  @@map("interests")
+}
+
+model Profile {
+  userId       String   @id @map("user_id") @db.Uuid
+  firstName    String   @map("first_name")
+  gender       Gender
+  interestedIn Gender[] @map("interested_in")
+  intent       Intent
+  bio          String   @default("")
+  ageMin       Int      @map("age_min")
+  ageMax       Int      @map("age_max")
+  cityId       String?  @map("city_id")
+  heightCm     Int?     @map("height_cm")
+  jobTitle     String?  @map("job_title")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  city         City?    @relation(fields: [cityId], references: [id])
+  interests    ProfileInterest[]
+
+  @@map("profiles")
+}
+
+model ProfileInterest {
+  userId     String   @map("user_id") @db.Uuid
+  interestId String   @map("interest_id")
+  profile    Profile  @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  interest   Interest @relation(fields: [interestId], references: [id])
+
+  @@id([userId, interestId])
+  @@map("profile_interests")
+}
+
+model Photo {
+  id         String      @id @default(uuid(7)) @db.Uuid
+  userId     String      @map("user_id") @db.Uuid
+  storageKey String      @unique @map("storage_key")
+  position   Int
+  status     PhotoStatus @default(quarantine)
+  sha256     String?
+  width      Int?
+  height     Int?
+  createdAt  DateTime    @default(now()) @map("created_at")
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, position])
+  @@map("photos")
+}
+
+model EngineAnswer {
+  userId     String   @map("user_id") @db.Uuid
+  itemKey    String   @map("item_key")
+  itemVersion Int     @map("item_version")
+  value      Json
+  answeredAt DateTime @default(now()) @map("answered_at")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, itemKey])
+  @@map("engine_answers")
+}
+
+model SoulProfileRow {
+  userId         String   @id @map("user_id") @db.Uuid
+  profile        Json
+  archetype      String
+  depth          Int
+  engineVersion  String   @map("engine_version")
+  normsVersion   String   @map("norms_version")
+  profileVersion Int      @default(1) @map("profile_version")
+  computedAt     DateTime @default(now()) @map("computed_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("soul_profiles")
+}
+
+model LayerOverride {
+  userId    String   @map("user_id") @db.Uuid
+  traitKey  String   @map("trait_key")
+  value     Json
+  source    String
+  updatedAt DateTime @default(now()) @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, traitKey])
+  @@map("layer_overrides")
+}
+
+model MatchConfigRow {
+  version   String   @id
+  config    Json
+  active    Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("match_config")
+}
+
+model PersonalityCard {
+  userId            String   @id @map("user_id") @db.Uuid
+  headline          String
+  summary           String
+  communicationStyle String  @map("communication_style")
+  idealFirstDate    String   @map("ideal_first_date")
+  strengths         String[]
+  source            String
+  model             String?
+  promptVersion     String   @map("prompt_version")
+  userEdited        Boolean  @default(false) @map("user_edited")
+  reviewed          Boolean  @default(false)
+  generatedAt       DateTime @default(now()) @map("generated_at")
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("personality_cards")
+}
+
+model DailySet {
+  userId        String   @map("user_id") @db.Uuid
+  date          String
+  candidateIds  String[] @map("candidate_ids")
+  configVersion String   @map("config_version")
+  generatedAt   DateTime @default(now()) @map("generated_at")
+
+  @@id([userId, date])
+  @@map("daily_sets")
+}
+
+model Like {
+  id        String     @id @default(uuid(7)) @db.Uuid
+  actorId   String     @map("actor_id") @db.Uuid
+  targetId  String     @map("target_id") @db.Uuid
+  action    LikeAction
+  source    LikeSource
+  createdAt DateTime   @default(now()) @map("created_at")
+  actor     User       @relation("likeActor", fields: [actorId], references: [id], onDelete: Cascade)
+  target    User       @relation("likeTarget", fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([actorId, targetId])
+  @@index([targetId, action])
+  @@map("likes")
+}
+
+model Match {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userLow   String    @map("user_low") @db.Uuid
+  userHigh  String    @map("user_high") @db.Uuid
+  source    LikeSource
+  createdAt DateTime  @default(now()) @map("created_at")
+  endedAt   DateTime? @map("ended_at")
+  endedBy   String?   @map("ended_by") @db.Uuid
+  endReason String?   @map("end_reason")
+  messages  Message[]
+  reports   Report[]
+
+  @@unique([userLow, userHigh])
+  @@index([userLow])
+  @@index([userHigh])
+  @@map("matches")
+}
+
+model Message {
+  id              String    @id @default(uuid(7)) @db.Uuid
+  matchId         String    @map("match_id") @db.Uuid
+  senderId        String    @map("sender_id") @db.Uuid
+  clientMessageId String    @map("client_message_id")
+  body            String
+  createdAt       DateTime  @default(now()) @map("created_at")
+  readAt          DateTime? @map("read_at")
+  hiddenAt        DateTime? @map("hidden_at")
+  match           Match     @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, clientMessageId])
+  @@index([matchId, createdAt])
+  @@map("messages")
+}
+
+model Report {
+  id                  String     @id @default(uuid(7)) @db.Uuid
+  type                String // self | pair
+  ownerId             String     @map("owner_id") @db.Uuid
+  otherId             String?    @map("other_id") @db.Uuid
+  matchId             String?    @map("match_id") @db.Uuid
+  effectiveShareLevel ShareLevel? @map("effective_share_level")
+  data                Json
+  sections            Json
+  sourceVersions      String     @map("source_versions")
+  generatedAt         DateTime   @default(now()) @map("generated_at")
+  match               Match?     @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@unique([type, ownerId, matchId])
+  @@map("reports")
+}
+
+model Block {
+  blockerId String   @map("blocker_id") @db.Uuid
+  blockedId String   @map("blocked_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+  blocker   User     @relation("blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked   User     @relation("blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@id([blockerId, blockedId])
+  @@map("blocks")
+}
+
+model ModerationReport {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  reporterId  String    @map("reporter_id") @db.Uuid
+  reportedId  String    @map("reported_id") @db.Uuid
+  matchId     String?   @map("match_id") @db.Uuid
+  category    String
+  comment     String?
+  urgent      Boolean   @default(false)
+  status      String    @default("open")
+  assignedTo  String?   @map("assigned_to") @db.Uuid
+  resolution  String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  resolvedAt  DateTime? @map("resolved_at")
+
+  @@index([status, urgent, createdAt])
+  @@index([reportedId, createdAt])
+  @@map("reports_moderation")
+}
+
+model ModerationAction {
+  id           String   @id @default(uuid(7)) @db.Uuid
+  adminId      String   @map("admin_id") @db.Uuid
+  targetUserId String   @map("target_user_id") @db.Uuid
+  action       String
+  reason       String
+  reportId     String?  @map("report_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("moderation_actions")
+}
+
+model AdminUser {
+  id           String  @id @default(uuid(7)) @db.Uuid
+  email        String  @unique
+  passwordHash String  @map("password_hash")
+  role         String // moderator | support | admin
+  mfaSecret    String? @map("mfa_secret")
+  active       Boolean @default(true)
+
+  @@map("admin_users")
+}
+
+model AuditEvent {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  actorType  String   @map("actor_type")
+  actorId    String?  @map("actor_id") @db.Uuid
+  action     String
+  targetType String?  @map("target_type")
+  targetId   String?  @map("target_id")
+  metadata   Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([targetType, targetId])
+  @@map("audit_events")
+}
+
+model Notification {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  type      String
+  payload   Json
+  readAt    DateTime? @map("read_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
+model Invite {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  code        String   @unique
+  createdBy   String?  @map("created_by") @db.Uuid
+  createdByAdmin Boolean @default(false) @map("created_by_admin")
+  maxUses     Int      @default(1) @map("max_uses")
+  uses        Int      @default(0)
+  expiresAt   DateTime? @map("expires_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  redemptions InviteRedemption[]
+
+  @@map("invites")
+}
+
+model InviteRedemption {
+  inviteId   String   @map("invite_id") @db.Uuid
+  userId     String   @unique @map("user_id") @db.Uuid
+  redeemedAt DateTime @default(now()) @map("redeemed_at")
+  invite     Invite   @relation(fields: [inviteId], references: [id], onDelete: Cascade)
+
+  @@id([inviteId, userId])
+  @@map("invite_redemptions")
+}
+
+model Feedback {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  category   String
+  text       String
+  appVersion String?  @map("app_version")
+  platform   String?
+  screen     String?
+  status     String   @default("new")
+  createdAt  DateTime @default(now()) @map("created_at")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("feedback")
+}
+
+model Rating {
+  id            String   @id @default(uuid(7)) @db.Uuid
+  userId        String   @map("user_id") @db.Uuid
+  kind          String // reveal_accuracy | pair_report_accuracy
+  stars         Int
+  comment       String?
+  engineVersion String   @map("engine_version")
+  matchId       String?  @map("match_id") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at")
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ratings")
+}
+
+model UserLocation {
+  userId    String   @id @map("user_id") @db.Uuid
+  h3Cell    String   @map("h3_cell")
+  lat       Float // centre of the H3 cell, never the raw GPS point
+  lng       Float
+  simulated Boolean  @default(false)
+  updatedAt DateTime @default(now()) @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([updatedAt])
+  @@map("user_locations")
+}
+
+model NearbySession {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  radiusM   Int       @map("radius_m")
+  activity  String?
+  startedAt DateTime  @default(now()) @map("started_at")
+  openUntil DateTime  @map("open_until")
+  endedAt   DateTime? @map("ended_at")
+
+  @@index([userId, startedAt])
+  @@index([openUntil])
+  @@map("nearby_sessions")
+}
+
+model NearbyAlert {
+  id     String   @id @default(uuid(7)) @db.Uuid
+  userA  String   @map("user_a") @db.Uuid
+  userB  String   @map("user_b") @db.Uuid
+  band   String
+  score  Int
+  sentAt DateTime @default(now()) @map("sent_at")
+
+  @@index([userA, userB, sentAt])
+  @@map("nearby_alerts")
+}
+
+model NearbyLater {
+  userId    String   @map("user_id") @db.Uuid
+  targetId  String   @map("target_id") @db.Uuid
+  sessionId String   @map("session_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@id([userId, targetId, sessionId])
+  @@map("nearby_later")
+}
+
+model PairOutcome {
+  id            String    @id @default(uuid(7)) @db.Uuid
+  userLow       String    @map("user_low") @db.Uuid
+  userHigh      String    @map("user_high") @db.Uuid
+  tier          String
+  configVersion String    @map("config_version")
+  shownAt       DateTime  @default(now()) @map("shown_at")
+  matchedAt     DateTime? @map("matched_at")
+  firstMsgAt    DateTime? @map("first_msg_at")
+  tenMsgsAt     DateTime? @map("ten_msgs_at")
+
+  @@unique([userLow, userHigh])
+  @@map("pair_outcomes")
+}

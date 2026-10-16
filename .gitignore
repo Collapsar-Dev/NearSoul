@@ -14,3 +14,4 @@ apps/app/.flutter-plugins*
 apps/app/.packages
 # build outputs
 apps/*/dist/
+.data/

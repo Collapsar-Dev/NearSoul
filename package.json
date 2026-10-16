@@ -1,12 +1,24 @@
 {
   "name": "nearsoul",
   "private": true,
-  "workspaces": ["apps/api"],
+  "workspaces": [
+    "apps/api"
+  ],
   "scripts": {
     "test": "npm test -w apps/api",
     "lint": "npm run lint -w apps/api",
     "typecheck": "npm run typecheck -w apps/api",
     "build": "npm run build -w apps/api"
   },
-  "engines": { "node": ">=22" }
+  "engines": {
+    "node": ">=22"
+  },
+  "allowScripts": {
+    "@embedded-postgres/linux-x64@17.4.0-beta.15": true,
+    "@prisma/client@6.19.3": true,
+    "@prisma/engines@6.19.3": true,
+    "argon2@0.45.1": true,
+    "prisma@6.19.3": true,
+    "sharp@0.34.5": true
+  }
 }
