@@ -1705,6 +1705,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Too many tries. Please wait a moment.'**
   String get rateLimited;
+
+  /// No description provided for @downloadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Get NearSoul'**
+  String get downloadTitle;
+
+  /// No description provided for @downloadWeb.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in your browser'**
+  String get downloadWeb;
+
+  /// No description provided for @downloadWebHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Works on any phone or computer. To install: Chrome/Edge → menu → “Install app”; iPhone Safari → Share → “Add to Home Screen”.'**
+  String get downloadWebHint;
+
+  /// No description provided for @downloadAndroid.
+  ///
+  /// In en, this message translates to:
+  /// **'Android app (APK)'**
+  String get downloadAndroid;
+
+  /// No description provided for @downloadAndroidHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Download, open the file and allow installs from this source when asked.'**
+  String get downloadAndroidHint;
+
+  /// No description provided for @downloadIos.
+  ///
+  /// In en, this message translates to:
+  /// **'iPhone (TestFlight)'**
+  String get downloadIos;
+
+  /// No description provided for @downloadDesktop.
+  ///
+  /// In en, this message translates to:
+  /// **'Desktop apps (Windows, macOS, Linux)'**
+  String get downloadDesktop;
+
+  /// No description provided for @downloadDesktopHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Test builds are unsigned. On macOS: right-click the app → Open.'**
+  String get downloadDesktopHint;
+
+  /// No description provided for @notAvailableYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available yet'**
+  String get notAvailableYet;
 }
 
 class _AppLocalizationsDelegate

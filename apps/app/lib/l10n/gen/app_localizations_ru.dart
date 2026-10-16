@@ -882,4 +882,35 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get rateLimited => 'Слишком много попыток. Подожди немного.';
+
+  @override
+  String get downloadTitle => 'Установить NearSoul';
+
+  @override
+  String get downloadWeb => 'Открыть в браузере';
+
+  @override
+  String get downloadWebHint =>
+      'Работает на любом телефоне и компьютере. Установка: Chrome/Edge → меню → «Установить приложение»; iPhone Safari → Поделиться → «На экран Домой».';
+
+  @override
+  String get downloadAndroid => 'Приложение для Android (APK)';
+
+  @override
+  String get downloadAndroidHint =>
+      'Скачай, открой файл и разреши установку из этого источника, если спросят.';
+
+  @override
+  String get downloadIos => 'iPhone (TestFlight)';
+
+  @override
+  String get downloadDesktop =>
+      'Приложения для компьютера (Windows, macOS, Linux)';
+
+  @override
+  String get downloadDesktopHint =>
+      'Тестовые сборки не подписаны. На macOS: правый клик по приложению → «Открыть».';
+
+  @override
+  String get notAvailableYet => 'Пока недоступно';
 }

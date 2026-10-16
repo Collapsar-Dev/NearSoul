@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: API (lint, typecheck, engine + integration tests, build)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: ns
+          POSTGRES_PASSWORD: ns
+          POSTGRES_DB: nearsoul_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U ns" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql://ns:ns@localhost:5432/nearsoul_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+        working-directory: apps/api
+      - run: npm run lint
+      - run: npm run typecheck
+      - name: Engine tests (coverage gate 95%)
+        run: npx jest src/engine --coverage
+        working-directory: apps/api
+      - name: All tests (unit + integration on Postgres)
+        run: npx jest
+        working-directory: apps/api
+      - run: npm run build
+
+  app:
+    name: Flutter (analyze, test, web + Android builds)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - run: flutter pub get
+      - run: flutter gen-l10n
+      - run: flutter analyze
+      - run: flutter test
+      - name: Web build (alpha)
+        run: flutter build web --release --dart-define=API_URL=${{ vars.ALPHA_API_URL || 'https://api.example.invalid' }} --dart-define=APP_ENV=alpha --dart-define=BUILD_NUMBER=${{ github.run_number }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-alpha
+          path: apps/app/build/web
+      - name: Android APK (alpha)
+        run: flutter build apk --release --dart-define=API_URL=${{ vars.ALPHA_API_URL || 'https://api.example.invalid' }} --dart-define=APP_ENV=alpha --dart-define=BUILD_NUMBER=${{ github.run_number }} --build-number=${{ github.run_number }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nearsoul-alpha-apk
+          path: apps/app/build/app/outputs/flutter-apk/app-release.apk
+
+  desktop:
+    name: Desktop builds (optional, unsigned)
+    if: github.event_name == 'push'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: windows
+            out: apps/app/build/windows/x64/runner/Release
+          - os: macos-latest
+            target: macos
+            out: apps/app/build/macos/Build/Products/Release
+          - os: ubuntu-latest
+            target: linux
+            out: apps/app/build/linux/x64/release/bundle
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: apps/app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - if: matrix.target == 'linux'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build libgtk-3-dev
+      - run: flutter pub get && flutter gen-l10n
+      - run: flutter build ${{ matrix.target }} --release --dart-define=API_URL=${{ vars.ALPHA_API_URL || 'https://api.example.invalid' }} --dart-define=APP_ENV=alpha
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nearsoul-alpha-${{ matrix.target }}
+          path: ${{ matrix.out }}

@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Nearsoul</string>
+	<string>NearSoul</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -66,5 +66,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>NearSoul uses your approximate area only while the app is open, so compatible people who are also open to meet can be alerted. Others only see a distance range.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Take a photo for your NearSoul profile.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Choose photos for your NearSoul profile.</string>
 </dict>
 </plist>

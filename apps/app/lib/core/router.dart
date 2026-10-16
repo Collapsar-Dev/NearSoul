@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../features/auth/auth_screens.dart';
+import '../features/auth/download_screen.dart';
 import '../features/matches/matches_screen.dart';
 import '../features/matches/pair_report_screen.dart';
 import '../features/me/me_screens.dart';
@@ -55,7 +56,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final session = ref.read(sessionProvider);
       final path = state.uri.path;
-      if (path.startsWith('/invite/')) return null;
+      if (path.startsWith('/invite/') || path == '/download') return null;
       // Keep the original deep link while the session loads, then return to it (PLAT-003).
       if (session.phase == Phase.loading) return path == '/splash' ? null : '/splash?from=${Uri.encodeComponent(state.uri.toString())}';
       final from = path == '/splash' ? state.uri.queryParameters['from'] : null;
@@ -73,6 +74,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
       GoRoute(path: '/welcome', builder: (_, _) => const WelcomeScreen()),
+      GoRoute(path: '/download', builder: (_, _) => const DownloadScreen()),
       GoRoute(path: '/auth/email', builder: (_, _) => const EmailScreen()),
       GoRoute(path: '/auth/code', builder: (_, s) => CodeScreen(email: s.uri.queryParameters['email'] ?? '')),
       GoRoute(path: '/invite/:code', builder: (_, s) => InviteLandingScreen(code: s.pathParameters['code']!)),

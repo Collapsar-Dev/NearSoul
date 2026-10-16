@@ -267,5 +267,14 @@
   "testVersion": "ТЕСТ",
   "sessionExpired": "Пожалуйста, войди снова.",
   "photoMin": "Пока тебя видят другие, нужно минимум 2 фото.",
-  "rateLimited": "Слишком много попыток. Подожди немного."
+  "rateLimited": "Слишком много попыток. Подожди немного.",
+  "downloadTitle": "Установить NearSoul",
+  "downloadWeb": "Открыть в браузере",
+  "downloadWebHint": "Работает на любом телефоне и компьютере. Установка: Chrome/Edge → меню → «Установить приложение»; iPhone Safari → Поделиться → «На экран Домой».",
+  "downloadAndroid": "Приложение для Android (APK)",
+  "downloadAndroidHint": "Скачай, открой файл и разреши установку из этого источника, если спросят.",
+  "downloadIos": "iPhone (TestFlight)",
+  "downloadDesktop": "Приложения для компьютера (Windows, macOS, Linux)",
+  "downloadDesktopHint": "Тестовые сборки не подписаны. На macOS: правый клик по приложению → «Открыть».",
+  "notAvailableYet": "Пока недоступно"
 }

@@ -880,4 +880,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rateLimited => 'Too many tries. Please wait a moment.';
+
+  @override
+  String get downloadTitle => 'Get NearSoul';
+
+  @override
+  String get downloadWeb => 'Open in your browser';
+
+  @override
+  String get downloadWebHint =>
+      'Works on any phone or computer. To install: Chrome/Edge → menu → “Install app”; iPhone Safari → Share → “Add to Home Screen”.';
+
+  @override
+  String get downloadAndroid => 'Android app (APK)';
+
+  @override
+  String get downloadAndroidHint =>
+      'Download, open the file and allow installs from this source when asked.';
+
+  @override
+  String get downloadIos => 'iPhone (TestFlight)';
+
+  @override
+  String get downloadDesktop => 'Desktop apps (Windows, macOS, Linux)';
+
+  @override
+  String get downloadDesktopHint =>
+      'Test builds are unsigned. On macOS: right-click the app → Open.';
+
+  @override
+  String get notAvailableYet => 'Not available yet';
 }

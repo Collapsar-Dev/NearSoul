@@ -1,0 +1,92 @@
+# Render Blueprint for the NearSoul Alpha (friends test). PRD 18-release-plan §18.4.
+# Fill the `sync: false` values in the Render dashboard after the first sync. Never commit secrets.
+databases:
+  - name: nearsoul-alpha-db
+    region: frankfurt
+    plan: basic-256mb
+    databaseName: nearsoul
+    user: nearsoul
+    postgresMajorVersion: "17"
+
+services:
+  - type: web
+    name: nearsoul-alpha-api
+    runtime: node
+    region: frankfurt
+    plan: starter # always-on: websockets + background jobs (nearby matcher, retention)
+    buildCommand: npm ci && cd apps/api && npx prisma generate && npx tsc -p tsconfig.build.json
+    startCommand: cd apps/api && npx prisma migrate deploy && npx tsx prisma/seed.ts && node dist/main.js
+    healthCheckPath: /ready
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: APP_ENV
+        value: alpha
+      - key: DATABASE_URL
+        fromDatabase:
+          name: nearsoul-alpha-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: INVITE_ONLY
+        value: "true"
+      - key: PAYWALL_ENABLED
+        value: "false"
+      - key: LAUNCH_CITY
+        value: amsterdam
+      - key: APP_ORIGINS
+        sync: false # e.g. https://alpha.nearsoul.app
+      - key: APP_PUBLIC_URL
+        sync: false # e.g. https://alpha.nearsoul.app
+      - key: PUBLIC_API_URL
+        sync: false # e.g. https://api.alpha.nearsoul.app
+      - key: COOKIE_DOMAIN
+        sync: false # e.g. .alpha.nearsoul.app (API and web on sibling subdomains)
+      - key: EMAIL_PROVIDER
+        value: resend
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false # e.g. NearSoul <hello@alpha.nearsoul.app>
+      - key: STORAGE_DRIVER
+        value: s3
+      - key: S3_ENDPOINT
+        sync: false # Cloudflare R2: https://<account>.r2.cloudflarestorage.com
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: AI_ENABLED
+        value: "false" # set to true after adding ANTHROPIC_API_KEY
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: AI_DAILY_BUDGET_USD
+        value: "10"
+
+  - type: web
+    name: nearsoul-alpha-web
+    runtime: static
+    buildCommand: >-
+      git clone --depth 1 -b stable https://github.com/flutter/flutter.git $HOME/flutter &&
+      export PATH="$HOME/flutter/bin:$PATH" &&
+      cd apps/app && flutter pub get && flutter gen-l10n &&
+      flutter build web --release --dart-define=API_URL=$API_URL --dart-define=APP_ENV=alpha --dart-define=APK_URL=$APK_URL
+    staticPublishPath: apps/app/build/web
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: API_URL
+        sync: false # e.g. https://api.alpha.nearsoul.app
+      - key: APK_URL
+        sync: false # stable link to the latest alpha APK
