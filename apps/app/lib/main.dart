@@ -1,0 +1,43 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
+import 'core/router.dart';
+import 'core/session.dart';
+import 'core/theme.dart';
+import 'l10n/gen/app_localizations.dart';
+
+void main() {
+  usePathUrlStrategy(); // PLAT-003: path URLs on web (no #)
+  runApp(const ProviderScope(child: NearSoulApp()));
+  // Web: always build the semantics tree so screen readers (and browser automation) see real elements (§5.7, §16.4).
+  if (kIsWeb) SemanticsBinding.instance.ensureSemantics();
+}
+
+class NearSoulApp extends ConsumerWidget {
+  const NearSoulApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+    final locale = ref.watch(localeProvider);
+    return MaterialApp.router(
+      title: 'NearSoul',
+      debugShowCheckedModeBanner: false,
+      theme: buildTheme(Brightness.light),
+      darkTheme: buildTheme(Brightness.dark),
+      locale: locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: const [AppLocalizations.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+      localeResolutionCallback: (device, supported) {
+        final code = (locale ?? device)?.languageCode;
+        final resolved = supported.firstWhere((l) => l.languageCode == code, orElse: () => const Locale('en'));
+        ref.read(apiProvider).locale = resolved.languageCode;
+        return resolved;
+      },
+      routerConfig: router,
+    );
+  }
+}

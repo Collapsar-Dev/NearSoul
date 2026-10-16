@@ -1,0 +1,410 @@
+{
+  "@@locale": "en",
+  "appName": "NearSoul",
+  "tagline": "Get to know yourself. Discover someone compatible.",
+  "welcome1": "Find out who you are in love, in 6 minutes.",
+  "welcome2": "Meet people who truly fit you, even nearby, right now.",
+  "welcome3": "Your exact location is never shared. Ever.",
+  "getStarted": "Get started",
+  "haveAccount": "I have an account",
+  "continueBtn": "Continue",
+  "back": "Back",
+  "skip": "Skip",
+  "save": "Save",
+  "cancel": "Cancel",
+  "done": "Done",
+  "retry": "Try again",
+  "close": "Close",
+  "loading": "Loading…",
+  "somethingWrong": "Something went wrong.",
+  "offline": "You’re offline. We’ll retry when you’re back.",
+  "emailTitle": "What’s your email?",
+  "emailHint": "We’ll send you a 6-digit code. No passwords.",
+  "emailLabel": "Email",
+  "emailInvalid": "Please enter a valid email.",
+  "termsNote": "By continuing you agree to our Terms and Privacy Policy.",
+  "codeTitle": "Enter your code",
+  "codeSent": "We sent a code to {email}",
+  "@codeSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "codeLabel": "6-digit code",
+  "resendIn": "Resend in {seconds}s",
+  "@resendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "resend": "Send a new code",
+  "checkSpam": "Can’t find it? Check your spam folder.",
+  "inviteLabel": "Invite code",
+  "inviteHint": "NearSoul is invite-only right now. Ask the person who shared it with you.",
+  "dobTitle": "When were you born?",
+  "dobHint": "You must be 18 or older. We only show your age, never your birthday.",
+  "dobPick": "Choose date",
+  "dobConfirm": "You are {age}. Is that right?",
+  "@dobConfirm": {
+    "placeholders": {
+      "age": {
+        "type": "int"
+      }
+    }
+  },
+  "blockedTitle": "Sorry, NearSoul is for adults only",
+  "blockedBody": "You need to be 18 or older to use NearSoul.",
+  "consentTitle": "A few agreements",
+  "consentTerms": "I agree to the Terms and Privacy Policy (required)",
+  "consentAlpha": "I understand this is a test version: things may break, test data may be reset with 48 h notice, and I won’t share screenshots of other testers’ profiles (required)",
+  "consentAi": "Let AI write my personality card from my answers",
+  "consentAiHint": "Only trait results are sent, never your email, photos or location. Without it we use a template.",
+  "consentAnalytics": "Help improve NearSoul with anonymous usage analytics",
+  "consentEmails": "Product news by email",
+  "scanIntroTitle": "Let’s meet your soul",
+  "scanIntroBody": "About 6 minutes. No right or wrong answers. Just be honest with yourself.",
+  "scanStart": "Start",
+  "blockA": "How you are",
+  "blockB": "How you love",
+  "blockC": "What matters",
+  "blockD": "How you live",
+  "blockX": "Hard no's",
+  "scanHowAccurate": "How accurately does this describe you?",
+  "scanProgress": "{done} of {total}",
+  "@scanProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "scanInterlude": "Nice. Next: {block}",
+  "@scanInterlude": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      }
+    }
+  },
+  "untranslated": "Shown in English until the official translation is approved.",
+  "pickUpTo": "Pick up to {n}",
+  "@pickUpTo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "pickExactly": "Pick exactly {n}",
+  "@pickExactly": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "revealTitle": "Meet your soul",
+  "revealStrengths": "Your strengths",
+  "revealRate": "How accurate does this feel?",
+  "revealRateThanks": "Thanks! This helps us tune the engine.",
+  "revealOff": "What felt off? (optional)",
+  "lowConfidence": "Answer a few more questions to sharpen this.",
+  "cardTitle": "Your Personality DNA",
+  "cardAi": "Written with AI from your answers",
+  "cardTemplate": "Written from your answers",
+  "cardShow": "Show on profile",
+  "cardEdit": "Edit",
+  "cardHide": "Hide",
+  "cardGenerating": "Writing your card…",
+  "cardHeadline": "Headline",
+  "cardSummary": "Summary",
+  "cardComm": "Communication style",
+  "cardDate": "Ideal first date",
+  "visibilityEveryone": "Everyone",
+  "visibilityMatches": "Matches only",
+  "visibilityHidden": "Hidden",
+  "shareTitle": "How much can your matches learn about you?",
+  "shareReciprocity": "You see as deep as you share.",
+  "shareMinimal": "Minimal",
+  "shareMinimalDesc": "Only your compatibility tier and what you have in common.",
+  "shareStandard": "Standard (recommended)",
+  "shareStandardDesc": "Plus where you might differ and tips on how to talk to you.",
+  "shareDeep": "Deep",
+  "shareDeepDesc": "Plus your Big Five bands side by side.",
+  "basicsTitle": "A little about you",
+  "firstName": "First name",
+  "iAm": "I am",
+  "interestedIn": "Interested in",
+  "lookingFor": "Looking for",
+  "genderWoman": "Woman",
+  "genderMan": "Man",
+  "genderNonBinary": "Non-binary",
+  "women": "Women",
+  "men": "Men",
+  "nonBinaryPeople": "Non-binary people",
+  "intentLong": "A long-term relationship",
+  "intentOpen": "Dating, open to long-term",
+  "intentCasual": "Something casual",
+  "intentNotSure": "Not sure yet",
+  "ageRange": "Age range: {min}–{max}",
+  "@ageRange": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "city": "City",
+  "photosTitle": "Add your photos",
+  "photosHint": "At least 2. Clear, recent photos of you work best.",
+  "addPhoto": "Add photo",
+  "fromGallery": "Choose from gallery",
+  "fromCamera": "Take a photo",
+  "uploading": "Uploading…",
+  "interestsTitle": "What do you enjoy?",
+  "interestsCount": "{n} of 3–10 selected",
+  "@interestsCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "bio": "Bio (optional)",
+  "bioHint": "A few words about you. No links or contacts.",
+  "discoveryTitle": "Show me to compatible people?",
+  "discoveryBody": "You’ll appear in other people’s Today’s Souls. You can turn this off any time.",
+  "discoveryOn": "Yes, show me",
+  "notNow": "Not now",
+  "tabToday": "Today",
+  "tabNearby": "Nearby",
+  "tabSoul": "Soul",
+  "tabMatches": "Matches",
+  "tabMe": "Me",
+  "todayTitle": "Today’s Souls",
+  "todayLeft": "{n} left",
+  "@todayLeft": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "todayDone": "That’s today’s set. New souls at 12:00.",
+  "todayEmpty": "No one new right now. Try Open to meet or widen your preferences.",
+  "tryNearby": "Try Nearby",
+  "like": "Like",
+  "pass": "Pass",
+  "later": "Later",
+  "undo": "Undo",
+  "whyClick": "Why you might click",
+  "oneDifference": "One difference",
+  "demoBadge": "DEMO",
+  "tierStrong": "Strong match",
+  "tierGood": "Good match",
+  "tierSome": "Some common ground",
+  "tierLow": "Different vibes",
+  "sharedInterest": "Shared",
+  "aboutPerson": "About",
+  "interests": "Interests",
+  "itsMatch": "It’s a match!",
+  "bothNearby": "You’re both nearby, say hi 👋",
+  "sayHi": "Say hi",
+  "keepExploring": "Keep exploring",
+  "likeLimit": "You’ve reached today’s like limit. New likes tomorrow.",
+  "nearbyOffTitle": "Open to meet",
+  "nearbyOffBody": "Turn it on for 1–4 hours. If someone compatible who’s also open is nearby, you’ll both get one private alert.",
+  "nearbySafety": "Others only ever see a distance range, never where you are.",
+  "openToMeetCta": "I’m open to meet",
+  "locationTitle": "Your location stays private",
+  "locationBody": "NearSoul uses your approximate area only while the app is open. Others see a range like “Under 1 km”, never where you are. We keep only your latest approximate area and delete it within 24 hours.",
+  "allowLocation": "Allow location",
+  "locationDenied": "Location is off. Nearby needs it; everything else works without it.",
+  "locationDesktop": "Nearby works best on your phone.",
+  "duration": "For how long?",
+  "hours": "{n} h",
+  "@hours": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "radius": "How far?",
+  "activity": "Up for (optional)",
+  "actCoffee": "☕ Coffee",
+  "actWalk": "🚶 Walk",
+  "actDrinks": "🍷 Drinks",
+  "actChat": "💬 Just chat",
+  "start": "Start",
+  "stop": "Stop",
+  "openLeft": "Open to meet · {time} left",
+  "@openLeft": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "nearbyWaiting": "We’ll let you know when someone compatible is close.",
+  "nearbyList": "Nearby now",
+  "simulated": "Simulated location (test mode)",
+  "soulTitle": "Your soul",
+  "profileDepth": "Profile depth {n}%",
+  "@profileDepth": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "selfReport": "Your full report",
+  "retakeScan": "Retake the Quick Scan",
+  "retakeConfirm": "Retake the personality part? Your matches will update.",
+  "comingSoon": "Coming soon",
+  "soulTalk": "Soul Talk",
+  "deepPersonality": "Deep Personality",
+  "freeBeta": "Free during beta",
+  "locked": "Unlock with Soul+",
+  "needs": "What you need from a partner",
+  "growth": "Growth edges",
+  "reflect": "Questions to reflect on",
+  "values": "Your values",
+  "relationshipStyle": "You in relationships",
+  "inDating": "In dating",
+  "matchesTitle": "Matches",
+  "newMatches": "New matches",
+  "conversations": "Conversations",
+  "noMatches": "No matches yet. Like a few people in Today’s Souls to get started.",
+  "deletedUser": "Deleted user",
+  "typeMessage": "Message",
+  "send": "Send",
+  "notSent": "Not sent · Tap to retry",
+  "conversationEnded": "This conversation has ended.",
+  "safetyTip": "Be careful with links and numbers from people you haven’t met yet.",
+  "starters": "Conversation starters",
+  "youTwo": "You two",
+  "pairAccuracy": "Did this match your impression?",
+  "frictions": "Where you might differ",
+  "tips": "How to talk to {name}",
+  "@tips": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "firstDate": "First date ideas",
+  "layers": "Your layers side by side",
+  "unmatch": "Unmatch",
+  "unmatchConfirm": "Unmatch {name}? You won’t see each other again.",
+  "@unmatchConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "block": "Block",
+  "blockConfirm": "Block {name}? They won’t be able to see or contact you. They won’t be notified.",
+  "@blockConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "report": "Report",
+  "reportTitle": "What’s wrong?",
+  "reportComment": "Anything else we should know? (optional)",
+  "reportAlsoBlock": "Also block this person",
+  "reportDone": "Thanks for telling us. We’ve hidden this person from you and our team will review it.",
+  "catHarassment": "Harassment",
+  "catScam": "Scam or spam",
+  "catFake": "Fake profile",
+  "catUnderage": "May be under 18",
+  "catPhotos": "Inappropriate photos",
+  "catThreats": "Threats or violence",
+  "catOffline": "Behaviour on a date",
+  "catOther": "Something else",
+  "meTitle": "Me",
+  "editProfile": "Edit profile",
+  "settings": "Settings",
+  "notifications": "Notifications",
+  "noNotifications": "Nothing new.",
+  "markAllRead": "Mark all as read",
+  "sendFeedback": "Send feedback",
+  "feedbackTitle": "Help us improve",
+  "feedbackSent": "Thanks! We read every message.",
+  "fbBug": "Something broke",
+  "fbIdea": "An idea",
+  "fbConfusing": "Confusing",
+  "fbEngine": "The engine felt wrong",
+  "fbOther": "Other",
+  "invites": "Invite friends",
+  "invitesLeft": "{n} invites left",
+  "@invitesLeft": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "createInvite": "Create invite link",
+  "copied": "Copied",
+  "alphaTools": "Test tools",
+  "simulateLocation": "Simulate location",
+  "resetToday": "Reset Today’s Souls",
+  "engineDebug": "Engine debug",
+  "blockedUsers": "Blocked users",
+  "unblock": "Unblock",
+  "safetyCentre": "Safety centre",
+  "safety1": "Meet in a public place the first few times.",
+  "safety2": "Tell a friend where you’re going and who you’re meeting.",
+  "safety3": "Keep conversations in NearSoul until you trust someone.",
+  "safety4": "Never send money or financial details to someone you met online.",
+  "safety5": "Use Block and Report any time. Reports are confidential.",
+  "emergency": "In an emergency, call 112.",
+  "about": "About",
+  "version": "Version {v}",
+  "@version": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "environment": "Environment: {e}",
+  "@environment": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "ipipNote": "Personality items from the International Personality Item Pool (public domain).",
+  "logout": "Sign out",
+  "deleteAccount": "Delete account",
+  "deleteBody": "Your profile, photos, answers and matches will be deleted. You’ll be signed out and invisible immediately. Some safety records are kept anonymised as required by law.",
+  "deleteConfirm": "Delete my account",
+  "discoverySetting": "Show me in Today’s Souls",
+  "hideDistance": "Hide my distance",
+  "readReceipts": "Read receipts",
+  "cardVisibility": "Personality card visible to",
+  "shareLevel": "Report sharing level",
+  "language": "Language",
+  "testVersion": "TEST",
+  "sessionExpired": "Please sign in again.",
+  "photoMin": "Keep at least 2 photos while you’re discoverable.",
+  "rateLimited": "Too many tries. Please wait a moment."
+}

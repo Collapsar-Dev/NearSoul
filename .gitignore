@@ -15,3 +15,5 @@ apps/app/.packages
 # build outputs
 apps/*/dist/
 .data/
+apps/app/build/
+apps/api/.env

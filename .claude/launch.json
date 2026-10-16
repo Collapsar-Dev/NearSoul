@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "api",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "node scripts/dev-db.mjs start && cd apps/api && npx prisma migrate deploy && npx tsc -p tsconfig.build.json && node --env-file=.env dist/main.js"],
+      "port": 3000
+    },
+    {
+      "name": "web",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["scripts/serve-web.mjs", "apps/app/build/web"],
+      "port": 8080
+    }
+  ]
+}

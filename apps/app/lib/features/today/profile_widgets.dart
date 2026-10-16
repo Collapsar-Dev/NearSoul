@@ -1,0 +1,268 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../core/widgets/common.dart';
+import '../onboarding/reveal_screen.dart';
+
+/// Photo carousel with page dots.
+class PhotoCarousel extends StatefulWidget {
+  const PhotoCarousel({super.key, required this.photos, this.aspect = 4 / 5, this.overlay});
+  final List<Map<String, dynamic>> photos;
+  final double aspect;
+  final Widget? overlay;
+
+  @override
+  State<PhotoCarousel> createState() => _PhotoCarouselState();
+}
+
+class _PhotoCarouselState extends State<PhotoCarousel> {
+  int _i = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final photos = widget.photos;
+    return AspectRatio(
+      aspectRatio: widget.aspect,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(fit: StackFit.expand, children: [
+          if (photos.isEmpty) Container(color: Theme.of(context).colorScheme.surfaceContainerHighest)
+          else
+            PageView.builder(
+              itemCount: photos.length,
+              onPageChanged: (i) => setState(() => _i = i),
+              itemBuilder: (_, i) => Image.network(photos[i]['url'] as String, fit: BoxFit.cover, errorBuilder: (_, _, _) => Container(color: Colors.black12)),
+            ),
+          if (photos.length > 1)
+            Positioned(
+              top: 10,
+              left: 12,
+              right: 12,
+              child: Row(children: [
+                for (var i = 0; i < photos.length; i++)
+                  Expanded(child: Container(height: 3, margin: const EdgeInsets.symmetric(horizontal: 2), decoration: BoxDecoration(color: Colors.white.withValues(alpha: i == _i ? 0.95 : 0.45), borderRadius: BorderRadius.circular(3)))),
+              ]),
+            ),
+          if (widget.overlay != null) widget.overlay!,
+        ]),
+      ),
+    );
+  }
+}
+
+/// Large card for Today's Souls (S14): photo, name, age, place, tier, archetype, top reason.
+class SoulCard extends StatelessWidget {
+  const SoulCard({super.key, required this.p, this.onTap});
+  final Map<String, dynamic> p;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final compat = p['compatibility'] as Map<String, dynamic>?;
+    final reasons = (compat?['reasons'] as List?)?.cast<String>() ?? const [];
+    final place = (p['distanceBand'] ?? p['city']) as String?;
+    return GestureDetector(
+      onTap: onTap,
+      child: PhotoCarousel(
+        photos: (p['photos'] as List).cast<Map<String, dynamic>>(),
+        overlay: Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(18, 48, 18, 18),
+            decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black87])),
+            child: DefaultTextStyle(
+              style: const TextStyle(color: Colors.white),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Row(children: [
+                  Flexible(child: Text('${p['firstName']}, ${p['age']}', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w700, color: Colors.white), overflow: TextOverflow.ellipsis)),
+                  if (p['isDemo'] == true) ...[const SizedBox(width: 8), const DemoBadge()],
+                ]),
+                if (place != null) Text(place, style: const TextStyle(color: Colors.white70)),
+                const SizedBox(height: 8),
+                Wrap(spacing: 8, runSpacing: 6, crossAxisAlignment: WrapCrossAlignment.center, children: [
+                  if (compat != null) TierChip(compat['tier'] as String, onDark: true),
+                  Text((p['archetype'] as Map)['name'] as String, style: const TextStyle(color: Colors.white, fontStyle: FontStyle.italic)),
+                  if (p['activity'] != null) Chip(label: Text(p['activity'] as String), visualDensity: VisualDensity.compact),
+                ]),
+                if (reasons.isNotEmpty) ...[const SizedBox(height: 8), Text('“${reasons.first}”', maxLines: 2, overflow: TextOverflow.ellipsis)],
+              ]),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Full public profile body (S15), reused by Today (wide), profile screen and Nearby.
+class ProfileDetails extends StatelessWidget {
+  const ProfileDetails({super.key, required this.p, this.showPhotos = true, this.onReport, this.onBlock});
+  final Map<String, dynamic> p;
+  final bool showPhotos;
+  final VoidCallback? onReport;
+  final VoidCallback? onBlock;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l;
+    final compat = p['compatibility'] as Map<String, dynamic>?;
+    final archetype = (p['archetype'] as Map).cast<String, dynamic>();
+    final interests = (p['interests'] as List).cast<Map<String, dynamic>>();
+    final scheme = Theme.of(context).colorScheme;
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      if (showPhotos) PhotoCarousel(photos: (p['photos'] as List).cast<Map<String, dynamic>>()),
+      const SizedBox(height: 16),
+      Row(children: [
+        Expanded(child: Text('${p['firstName']}, ${p['age']}', style: Theme.of(context).textTheme.headlineSmall)),
+        if (p['isDemo'] == true) const DemoBadge(),
+        if (onReport != null || onBlock != null)
+          PopupMenuButton<String>(
+            onSelected: (v) => v == 'report' ? onReport?.call() : onBlock?.call(),
+            itemBuilder: (_) => [
+              if (onBlock != null) PopupMenuItem(value: 'block', child: Text(l.block)),
+              if (onReport != null) PopupMenuItem(value: 'report', child: Text(l.report)),
+            ],
+          ),
+      ]),
+      Text([p['distanceBand'] ?? p['city'], p['jobTitle']].whereType<String>().join(' · '), style: Theme.of(context).textTheme.bodyMedium),
+      const SizedBox(height: 12),
+      if (compat != null)
+        Card(
+          color: scheme.secondary.withValues(alpha: 0.07),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [TierChip(compat['tier'] as String), const Spacer(), Text(archetype['name'] as String, style: TextStyle(color: scheme.secondary, fontStyle: FontStyle.italic))]),
+              const SizedBox(height: 12),
+              Text(l.whyClick, style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 6),
+              for (final r in (compat['reasons'] as List).cast<String>())
+                Padding(padding: const EdgeInsets.only(bottom: 6), child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(Icons.check_circle, size: 18, color: scheme.secondary), const SizedBox(width: 8), Expanded(child: Text(r))])),
+              if (compat['difference'] != null) ...[
+                const SizedBox(height: 6),
+                Text(l.oneDifference, style: Theme.of(context).textTheme.titleSmall),
+                const SizedBox(height: 4),
+                Text(compat['difference'] as String),
+              ],
+            ]),
+          ),
+        ),
+      if ((p['bio'] as String?)?.isNotEmpty == true) ...[SectionTitle(l.aboutPerson), Text(p['bio'] as String)],
+      if (p['card'] != null) ...[const SizedBox(height: 16), PersonalityCardView(card: (p['card'] as Map).cast<String, dynamic>())],
+      SectionTitle(l.interests),
+      Wrap(spacing: 8, runSpacing: 8, children: [
+        for (final i in interests)
+          Chip(
+            label: Text(i['label'] as String),
+            avatar: i['shared'] == true ? Icon(Icons.favorite, size: 16, color: scheme.primary) : null,
+            backgroundColor: i['shared'] == true ? scheme.primary.withValues(alpha: 0.1) : null,
+          ),
+      ]),
+      const SizedBox(height: 8),
+      Text(archetype['line'] as String, style: Theme.of(context).textTheme.bodySmall),
+    ]);
+  }
+}
+
+/// Like / pass buttons.
+class LikePassBar extends StatelessWidget {
+  const LikePassBar({super.key, required this.onLike, required this.onPass, this.onLater});
+  final Future<void> Function() onLike;
+  final Future<void> Function() onPass;
+  final Future<void> Function()? onLater;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l;
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      _Round(icon: Icons.close_rounded, label: l.pass, onTap: onPass, color: Theme.of(context).colorScheme.outline),
+      if (onLater != null) ...[const SizedBox(width: 20), _Round(icon: Icons.schedule_rounded, label: l.later, onTap: onLater!, color: Colors.amber.shade700)],
+      const SizedBox(width: 20),
+      _Round(icon: Icons.favorite_rounded, label: l.like, onTap: onLike, color: Theme.of(context).colorScheme.primary, big: true),
+    ]);
+  }
+}
+
+class _Round extends StatefulWidget {
+  const _Round({required this.icon, required this.label, required this.onTap, required this.color, this.big = false});
+  final IconData icon;
+  final String label;
+  final Future<void> Function() onTap;
+  final Color color;
+  final bool big;
+
+  @override
+  State<_Round> createState() => _RoundState();
+}
+
+class _RoundState extends State<_Round> {
+  bool _busy = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = widget.big ? 72.0 : 60.0;
+    return Semantics(
+      button: true,
+      label: widget.label,
+      child: Material(
+        color: Theme.of(context).colorScheme.surface,
+        shape: CircleBorder(side: BorderSide(color: widget.color.withValues(alpha: 0.4), width: 2)),
+        elevation: 2,
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: _busy
+              ? null
+              : () async {
+                  setState(() => _busy = true);
+                  try {
+                    await widget.onTap();
+                  } catch (e) {
+                    if (context.mounted) showSnack(context, errorText(context, e));
+                  } finally {
+                    if (mounted) setState(() => _busy = false);
+                  }
+                },
+          child: SizedBox(width: size, height: size, child: Icon(widget.icon, color: widget.color, size: size * 0.45)),
+        ),
+      ),
+    );
+  }
+}
+
+/// S23 match moment.
+Future<void> showMatchDialog(BuildContext context, {required Map<String, dynamic> person, required String matchId, required bool nearby}) {
+  final l = context.l;
+  return showDialog(
+    context: context,
+    builder: (ctx) => Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Icon(Icons.favorite, size: 56, color: Theme.of(ctx).colorScheme.primary),
+          const SizedBox(height: 12),
+          Text(l.itsMatch, style: Theme.of(ctx).textTheme.headlineMedium),
+          if (nearby) ...[const SizedBox(height: 8), Text(l.bothNearby, textAlign: TextAlign.center)],
+          const SizedBox(height: 16),
+          if ((person['photos'] as List).isNotEmpty)
+            CircleAvatar(radius: 48, backgroundImage: NetworkImage(((person['photos'] as List).first as Map)['url'] as String)),
+          const SizedBox(height: 8),
+          Text(person['firstName'] as String, style: Theme.of(ctx).textTheme.titleLarge),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                context.go('/matches/$matchId');
+              },
+              child: Text(l.sayHi),
+            ),
+          ),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.keepExploring)),
+        ]),
+      ),
+    ),
+  );
+}
