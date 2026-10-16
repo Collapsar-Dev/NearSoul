@@ -1053,4 +1053,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportPending => 'Preparing your data…';
+
+  @override
+  String get paywallTitle => 'Understand yourself and your matches deeply';
+
+  @override
+  String get paywallB1 => 'Full self report with all facets';
+
+  @override
+  String get paywallB2 => 'Full \"You two\" report for every match';
+
+  @override
+  String get paywallB3 => 'Unlimited Soul Talk';
+
+  @override
+  String get paywallMonthly => '€7.99 / month';
+
+  @override
+  String get paywallYearly => '€39.99 / year';
+
+  @override
+  String get paywallRenewal =>
+      'Renews automatically until cancelled. Cancel anytime in your store settings.';
+
+  @override
+  String get paywallRestore => 'Restore purchases';
+
+  @override
+  String get paywallSoon => 'Purchases open after the beta.';
+
+  @override
+  String get soulPlus => 'Soul+';
+
+  @override
+  String soulPlusActive(String date) {
+    return 'Active until $date';
+  }
+
+  @override
+  String get soulPlusInactive => 'Not active';
 }

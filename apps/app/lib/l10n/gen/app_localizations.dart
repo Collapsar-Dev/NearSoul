@@ -2023,6 +2023,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Preparing your data…'**
   String get exportPending;
+
+  /// No description provided for @paywallTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Understand yourself and your matches deeply'**
+  String get paywallTitle;
+
+  /// No description provided for @paywallB1.
+  ///
+  /// In en, this message translates to:
+  /// **'Full self report with all facets'**
+  String get paywallB1;
+
+  /// No description provided for @paywallB2.
+  ///
+  /// In en, this message translates to:
+  /// **'Full \"You two\" report for every match'**
+  String get paywallB2;
+
+  /// No description provided for @paywallB3.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited Soul Talk'**
+  String get paywallB3;
+
+  /// No description provided for @paywallMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'€7.99 / month'**
+  String get paywallMonthly;
+
+  /// No description provided for @paywallYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'€39.99 / year'**
+  String get paywallYearly;
+
+  /// No description provided for @paywallRenewal.
+  ///
+  /// In en, this message translates to:
+  /// **'Renews automatically until cancelled. Cancel anytime in your store settings.'**
+  String get paywallRenewal;
+
+  /// No description provided for @paywallRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore purchases'**
+  String get paywallRestore;
+
+  /// No description provided for @paywallSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases open after the beta.'**
+  String get paywallSoon;
+
+  /// No description provided for @soulPlus.
+  ///
+  /// In en, this message translates to:
+  /// **'Soul+'**
+  String get soulPlus;
+
+  /// No description provided for @soulPlusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active until {date}'**
+  String soulPlusActive(String date);
+
+  /// No description provided for @soulPlusInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Not active'**
+  String get soulPlusInactive;
 }
 
 class _AppLocalizationsDelegate

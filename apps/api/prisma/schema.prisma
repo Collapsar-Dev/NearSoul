@@ -89,6 +89,7 @@ model User {
   locale             String          @default("en")
   timezone           String          @default("Europe/Amsterdam")
   analyticsId        String          @default(uuid()) @map("analytics_id")
+  billingId          String          @unique @default(uuid()) @map("billing_id")
   isDemo             Boolean         @default(false) @map("is_demo")
   hiddenByModeration Boolean         @default(false) @map("hidden_by_moderation")
   soulKeepConversations Boolean      @default(false) @map("soul_keep_conversations")
@@ -116,6 +117,7 @@ model User {
   soulSessions       SoulSession[]
   soulInsights       SoulInsight[]
   dataKey            UserDataKey?
+  entitlements       Entitlement[]
 
   @@index([status, discoveryEnabled])
   @@map("users")
@@ -696,4 +698,31 @@ model DataExportJob {
 
   @@index([userId, createdAt])
   @@map("data_export_jobs")
+}
+
+/// Store entitlements, written only by verified RevenueCat webhooks (PAY-002). The server is the source of truth.
+model Entitlement {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  entitlement String // soul_plus
+  productId   String    @map("product_id")
+  store       String
+  environment String // PRODUCTION | SANDBOX
+  active      Boolean
+  expiresAt   DateTime? @map("expires_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, entitlement])
+  @@map("entitlements")
+}
+
+/// Processed webhook event ids (idempotency).
+model BillingEvent {
+  id         String   @id
+  type       String
+  userId     String?  @map("user_id") @db.Uuid
+  receivedAt DateTime @default(now()) @map("received_at")
+
+  @@map("billing_events")
 }

@@ -4,6 +4,7 @@ import '../../core/responsive.dart';
 import '../../core/session.dart';
 import '../../core/widgets/common.dart';
 import '../../core/widgets/soul_widgets.dart';
+import '../me/paywall.dart';
 
 /// S26 "You two" pair report. Locked sections come only as titles + counts from the server.
 class PairReportScreen extends ConsumerStatefulWidget {
@@ -56,7 +57,7 @@ class _PairReportScreenState extends ConsumerState<PairReportScreen> {
                 ],
               ] else
                 for (final s in ((r['locked'] as List?) ?? []).cast<Map<String, dynamic>>())
-                  ListTile(leading: const Icon(Icons.lock_outline), title: Text('${s['key']} · ${s['count']}'), subtitle: Text(l.locked)),
+                  ListTile(leading: const Icon(Icons.lock_outline), title: Text('${s['key']} · ${s['count']}'), subtitle: Text(l.locked), onTap: () => showPaywall(context)),
               const SizedBox(height: 16),
               AccuracyRating(
                 title: l.pairAccuracy,

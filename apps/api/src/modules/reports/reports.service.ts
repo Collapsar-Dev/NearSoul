@@ -10,6 +10,7 @@ import { EngineService } from '../engine/engine.service';
 import { ProfileViewService } from '../discovery/profile-view.service';
 import { SubjectsService } from '../discovery/subjects.service';
 import { ChatService } from '../matches/chat.service';
+import { BillingService } from '../billing/billing.service';
 
 /** RPT-001/002/003. Locked content is never sent without entitlement (PAY-002). */
 @Injectable()
@@ -20,11 +21,11 @@ export class ReportsService {
     private readonly subjects: SubjectsService,
     private readonly views: ProfileViewService,
     private readonly chat: ChatService,
+    private readonly billing: BillingService,
   ) {}
 
-  /** Soul+ entitlement. Billing (PAY-001/002) arrives in M9; until then nobody has it. */
-  async hasSoulPlus(_userId: string): Promise<boolean> {
-    return false;
+  hasSoulPlus(userId: string): Promise<boolean> {
+    return this.billing.hasSoulPlus(userId);
   }
 
   private async unlocked(userId: string) {

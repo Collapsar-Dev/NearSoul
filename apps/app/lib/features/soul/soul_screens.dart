@@ -9,6 +9,7 @@ import '../onboarding/quick_scan_screen.dart';
 import '../onboarding/reveal_screen.dart';
 import '../shell.dart';
 import 'soul_talk_screens.dart';
+import '../me/paywall.dart';
 
 /// S27/S28 Soul tab: who you are.
 class SoulScreen extends ConsumerStatefulWidget {
@@ -164,7 +165,7 @@ class _SelfReportScreenState extends ConsumerState<SelfReportScreen> {
                 for (final s in list('reflect')) Padding(padding: const EdgeInsets.only(bottom: 6), child: Text('? $s')),
               ] else
                 for (final s in ((r['locked'] as List?) ?? []).cast<Map<String, dynamic>>())
-                  ListTile(leading: const Icon(Icons.lock_outline), title: Text('${s['key']} · ${s['count']}'), subtitle: Text(l.locked)),
+                  ListTile(leading: const Icon(Icons.lock_outline), title: Text('${s['key']} · ${s['count']}'), subtitle: Text(l.locked), onTap: () => showPaywall(context)),
               const SizedBox(height: 32),
             ]),
           );

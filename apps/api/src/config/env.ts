@@ -46,6 +46,8 @@ const EnvSchema = z.object({
   /** First admin for hosts without a shell (free Render): created once on boot if no admin exists. */
   ADMIN_BOOTSTRAP_EMAIL: z.string().email().optional(),
   POSTHOG_KEY: z.string().optional(),
+  /** Value RevenueCat sends in the Authorization header of webhooks (set in the RevenueCat dashboard). */
+  REVENUECAT_WEBHOOK_AUTH: z.string().min(16).optional(),
   POSTHOG_HOST: z.string().url().default('https://eu.i.posthog.com'),
 });
 

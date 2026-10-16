@@ -473,5 +473,24 @@
   "exportData": "Download my data",
   "exportRequested": "We're preparing your data. You'll get an email with a download link.",
   "exportReady": "Your data is ready",
-  "exportPending": "Preparing your data…"
+  "exportPending": "Preparing your data…",
+  "paywallTitle": "Understand yourself and your matches deeply",
+  "paywallB1": "Full self report with all facets",
+  "paywallB2": "Full \"You two\" report for every match",
+  "paywallB3": "Unlimited Soul Talk",
+  "paywallMonthly": "€7.99 / month",
+  "paywallYearly": "€39.99 / year",
+  "paywallRenewal": "Renews automatically until cancelled. Cancel anytime in your store settings.",
+  "paywallRestore": "Restore purchases",
+  "paywallSoon": "Purchases open after the beta.",
+  "soulPlus": "Soul+",
+  "soulPlusActive": "Active until {date}",
+  "@soulPlusActive": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "soulPlusInactive": "Not active"
 }

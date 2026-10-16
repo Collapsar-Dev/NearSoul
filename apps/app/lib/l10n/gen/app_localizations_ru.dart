@@ -1056,4 +1056,43 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get exportPending => 'Готовим данные…';
+
+  @override
+  String get paywallTitle => 'Пойми себя и своих матчей глубже';
+
+  @override
+  String get paywallB1 => 'Полный отчёт о себе со всеми гранями';
+
+  @override
+  String get paywallB2 => 'Полный отчёт «Вы двое» для каждого матча';
+
+  @override
+  String get paywallB3 => 'Безлимитный Soul Talk';
+
+  @override
+  String get paywallMonthly => '7,99 € в месяц';
+
+  @override
+  String get paywallYearly => '39,99 € в год';
+
+  @override
+  String get paywallRenewal =>
+      'Продлевается автоматически, пока не отменишь. Отменить можно в любой момент в настройках магазина.';
+
+  @override
+  String get paywallRestore => 'Восстановить покупки';
+
+  @override
+  String get paywallSoon => 'Покупки откроются после беты.';
+
+  @override
+  String get soulPlus => 'Soul+';
+
+  @override
+  String soulPlusActive(String date) {
+    return 'Активна до $date';
+  }
+
+  @override
+  String get soulPlusInactive => 'Не активна';
 }

@@ -25,6 +25,8 @@ import { ProfileViewService } from './modules/discovery/profile-view.service';
 import { SubjectsService } from './modules/discovery/subjects.service';
 import { EngineController } from './modules/engine/engine.controller';
 import { EngineService } from './modules/engine/engine.service';
+import { BillingController } from './modules/billing/billing.controller';
+import { BillingService } from './modules/billing/billing.service';
 import { ExportController } from './modules/export/export.controller';
 import { ExportService } from './modules/export/export.service';
 import { FeedbackController } from './modules/feedback/feedback.controller';
@@ -62,13 +64,13 @@ import { StorageService } from './modules/storage/storage.service';
     HealthController, AuthController, InvitesController, MeController, EngineController, CardController,
     ProfileController, ReferenceController, MediaController, DiscoveryController, MatchesController,
     NotificationsController, ReportsController, SafetyController, FeedbackController, NearbyController,
-    AlphaController, AdminController, SoulController, ExportController,
+    AlphaController, AdminController, SoulController, ExportController, BillingController,
   ],
   providers: [
     PrismaService, RateLimiter, EmailService, AuthService, InvitesService, MeService, EngineService, CardService,
     { provide: StorageService, useFactory: (p: PrismaService) => new StorageService(p), inject: [PrismaService] }, ProfileService, SubjectsService, ProfileViewService, DailySetService, LikesService, ChatService,
     RealtimeGateway, PushService, NotificationsService, ReportsService, SafetyService, NearbyService, DemoService,
-    RetentionService, AdminAuthService, AdminBootstrap, ExportService, AnalyticsService, SoulCryptoService, SoulService,
+    RetentionService, AdminAuthService, AdminBootstrap, ExportService, AnalyticsService, BillingService, SoulCryptoService, SoulService,
     { provide: AiProvider, useClass: AnthropicProvider },
     { provide: APP_GUARD, useClass: AuthGuard },
     { provide: APP_FILTER, useClass: ErrorFilter },

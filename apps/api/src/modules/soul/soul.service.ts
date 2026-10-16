@@ -9,6 +9,7 @@ import { PrismaService } from '../../common/prisma.service';
 import { RateLimiter } from '../../common/rate-limit';
 import { AiProvider } from '../ai/ai.provider';
 import { EngineService } from '../engine/engine.service';
+import { BillingService } from '../billing/billing.service';
 import {
   crisisResources, GUIDE_PROMPT_VERSION, guideSystem, keywordRisk, SAFETY_MESSAGE, SAFETY_PROMPT_VERSION, SAFETY_SYSTEM,
   SOUL_TOPICS, TOPICS_BY_KEY, UNDERAGE_MESSAGE, WRAPUP_PROMPT_VERSION, WRAPUP_SYSTEM, type SoulTopic,
@@ -67,6 +68,7 @@ export class SoulService {
     private readonly engine: EngineService,
     private readonly limiter: RateLimiter,
     private readonly analytics: AnalyticsService,
+    private readonly billing: BillingService,
   ) {}
 
   /** Feature flag + separate AI Self-Discovery consent. */
@@ -99,7 +101,7 @@ export class SoulService {
   private async checkLimits(userId: string) {
     const day = await this.prisma.soulSession.count({ where: { userId, startedAt: { gte: new Date(Date.now() - 86_400_000) } } });
     if (day >= SESSIONS_PER_DAY) throw new AppError(429, 'SOUL_DAILY_LIMIT', 'You can start up to 3 Soul Talks a day. Come back tomorrow.');
-    if (env().PAYWALL_ENABLED) {
+    if (env().PAYWALL_ENABLED && !(await this.billing.hasSoulPlus(userId))) {
       const week = await this.prisma.soulSession.count({ where: { userId, startedAt: { gte: new Date(Date.now() - 7 * 86_400_000) } } });
       if (week >= FREE_SESSIONS_PER_WEEK) throw new AppError(402, 'SOUL_WEEKLY_LIMIT', 'You have used this week’s free Soul Talks.');
     }
