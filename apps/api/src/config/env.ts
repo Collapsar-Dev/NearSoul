@@ -83,6 +83,16 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
     if (!env.CRISIS_TEXTS_APPROVED || !env.CRISIS_RESOURCES) throw new Error('SOUL_TALK_ENABLED requires CRISIS_RESOURCES and CRISIS_TEXTS_APPROVED=true');
   }
   if (env.AI_ENABLED && !env.ANTHROPIC_API_KEY) throw new Error('AI_ENABLED requires ANTHROPIC_API_KEY');
+  // Render gives every web service its real URL (it may add a suffix like "-y6qr" to the name). On an onrender.com
+  // host, trust that over whatever was configured so links (photo URLs, export links) point at this service.
+  const renderUrl = source.RENDER_EXTERNAL_URL?.replace(/\/$/, '');
+  if (renderUrl) {
+    const onRender = (u: string) => /^https:\/\/[^/]+\.onrender\.com\/?$/.test(u);
+    if (onRender(env.PUBLIC_API_URL) || env.PUBLIC_API_URL.startsWith('http://localhost')) env.PUBLIC_API_URL = renderUrl;
+    if (onRender(env.APP_PUBLIC_URL) || env.APP_PUBLIC_URL.startsWith('http://localhost')) env.APP_PUBLIC_URL = renderUrl;
+    const origins = env.APP_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean);
+    if (!origins.includes(renderUrl)) env.APP_ORIGINS = [...origins, renderUrl].join(',');
+  }
   return env;
 }
 

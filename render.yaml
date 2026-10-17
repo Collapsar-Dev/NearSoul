@@ -14,6 +14,7 @@ services:
     name: nearsoul-alpha
     runtime: node
     region: frankfurt
+    autoDeploy: true # deploy every push to main
     plan: free # sleeps after ~15 min idle; first request then takes ~1 min. Upgrade to starter for always-on.
     # The Flutter web build is prebuilt into deploy/web (scripts/build-web-dist.sh) to keep free-tier builds fast and small.
     buildCommand: npm ci && cd apps/api && npx prisma generate && npx tsc -p tsconfig.build.json
@@ -45,7 +46,8 @@ services:
       # + EMAIL_FROM (the server refuses "screen" when APP_ENV is staging/production).
       - key: EMAIL_PROVIDER
         value: screen
-      # Must match the service URL Render shows; change these three if Render gave the service another name.
+      # If Render adds a suffix to the service name (e.g. nearsoul-alpha-y6qr), the server uses Render's real URL
+      # automatically (RENDER_EXTERNAL_URL); set these only for a custom domain.
       - key: APP_ORIGINS
         value: https://nearsoul-alpha.onrender.com
       - key: APP_PUBLIC_URL

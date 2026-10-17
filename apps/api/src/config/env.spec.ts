@@ -10,6 +10,15 @@ describe('environment guards', () => {
     expect(loadEnv(alpha).APP_ENV).toBe('alpha');
   });
 
+  it('uses the URL Render assigned when the configured one is another onrender.com name', () => {
+    const e = loadEnv({ ...alpha, PUBLIC_API_URL: 'https://nearsoul-alpha.onrender.com', APP_PUBLIC_URL: 'https://nearsoul-alpha.onrender.com', APP_ORIGINS: 'https://nearsoul-alpha.onrender.com', RENDER_EXTERNAL_URL: 'https://nearsoul-alpha-y6qr.onrender.com' });
+    expect(e.PUBLIC_API_URL).toBe('https://nearsoul-alpha-y6qr.onrender.com');
+    expect(e.APP_PUBLIC_URL).toBe('https://nearsoul-alpha-y6qr.onrender.com');
+    expect(e.APP_ORIGINS.split(',')).toContain('https://nearsoul-alpha-y6qr.onrender.com');
+    // a custom domain is kept
+    expect(loadEnv({ ...alpha, PUBLIC_API_URL: 'https://app.nearsoul.com', RENDER_EXTERNAL_URL: 'https://x.onrender.com' }).PUBLIC_API_URL).toBe('https://app.nearsoul.com');
+  });
+
   it('on-screen codes are allowed for the alpha but never in staging/production', () => {
     expect(loadEnv({ ...base, APP_ENV: 'alpha', EMAIL_PROVIDER: 'screen', STORAGE_DRIVER: 'db' }).EMAIL_PROVIDER).toBe('screen');
     for (const APP_ENV of ['staging', 'production']) {
