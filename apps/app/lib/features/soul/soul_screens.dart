@@ -52,6 +52,22 @@ class _SoulScreenState extends ConsumerState<SoulScreen> {
             ]),
             const SizedBox(height: 16),
             Wrap(spacing: 8, runSpacing: 8, alignment: WrapAlignment.center, children: [for (final s in (r['strengths'] as List).cast<String>()) Chip(avatar: const Icon(Icons.star_rounded, size: 18), label: Text(s))]),
+            if (((data[2] as Map)['refineRemaining'] as int? ?? 0) > 0) ...[
+              Card(
+                margin: const EdgeInsets.only(top: 12),
+                child: ListTile(
+                  leading: const Icon(Icons.tune),
+                  title: Text(l.refineTitle),
+                  subtitle: Text(l.refineBody((data[2] as Map)['refineRemaining'] as int)),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () async {
+                    final done = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => const QuickScanScreen(refine: true)));
+                    if (done == true && context.mounted) showSnack(context, l.refineDone);
+                    setState(() => _f = _fetch());
+                  },
+                ),
+              ),
+            ],
           ]);
           final body = Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             for (final d in domains) DomainRow(domain: d),

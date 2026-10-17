@@ -2,7 +2,7 @@
  * Soul Engine types (PRD 08-soul-engine). Pure data, no I/O.
  */
 
-export const ENGINE_VERSION = '2.1.0';
+export const ENGINE_VERSION = '2.2.0';
 
 export type Domain = 'O' | 'C' | 'E' | 'A' | 'S';
 /** Neuroticism is measured by items but only Emotional Stability (S = 100 − N) is exposed. */

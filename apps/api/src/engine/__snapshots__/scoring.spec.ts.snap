@@ -50,7 +50,7 @@ exports[`scoring (ENG-005) matches the golden snapshot for a reference persona 1
       "source": "quick_scan",
     },
   },
-  "engineVersion": "2.1.0",
+  "engineVersion": "2.2.0",
   "facets": {},
   "lifestyle": {
     "activity_level": {

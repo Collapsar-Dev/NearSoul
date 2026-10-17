@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/platform/image_stub.dart' if (dart.library.js_interop) '../../core/platform/image_web.dart';
 import 'package:intl/intl.dart';
+import '../../core/api.dart';
 import '../../core/config.dart';
 import '../../core/responsive.dart';
 import '../../core/session.dart';
@@ -497,29 +498,94 @@ class _InterestsScreenState extends ConsumerState<InterestsScreen> {
 class DiscoveryOptInScreen extends ConsumerWidget {
   const DiscoveryOptInScreen({super.key});
 
+  static const _stepRoutes = {
+    'dob': '/onboarding/dob',
+    'terms': '/onboarding/consents',
+    'quickScan': '/onboarding/scan',
+    'shareLevel': '/onboarding/share',
+    'basics': '/onboarding/basics',
+    'photos': '/onboarding/photos',
+    'interests': '/onboarding/interests',
+  };
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l;
     Future<void> finish(bool discover) async {
       final api = ref.read(apiProvider);
-      await api.post('/v1/me/onboarding/complete');
+      try {
+        await api.post('/v1/me/onboarding/complete');
+      } on ApiError catch (e) {
+        // A step the server still needs: go there instead of silently staying on this screen.
+        final missing = ((e.details?['missing'] as List?) ?? const []).cast<String>();
+        final route = missing.map((m) => _stepRoutes[m]).whereType<String>().firstOrNull;
+        if (e.code != 'ONBOARDING_INCOMPLETE' || route == null) rethrow;
+        if (context.mounted) showSnack(context, l.stepMissing);
+        await ref.read(sessionProvider.notifier).reloadMe();
+        if (context.mounted) context.go(route);
+        return;
+      }
       if (discover) await api.patch('/v1/me', {'discoveryEnabled': true});
       await ref.read(sessionProvider.notifier).reloadMe();
+      if (context.mounted) context.go('/today');
     }
 
-    return StepScaffold(
-      step: 8,
-      title: l.discoveryTitle,
-      subtitle: l.discoveryBody,
-      children: [
-        Icon(Icons.visibility_outlined, size: 96, color: Theme.of(context).colorScheme.secondary),
-        const SizedBox(height: 32),
-        BusyButton(label: l.discoveryOn, onPressed: () => finish(true)),
-        const SizedBox(height: 8),
-        BusyButton(label: l.notNow, outlined: true, onPressed: () => finish(false)),
-        const SizedBox(height: 12),
-        Text(l.notNowHint, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
-      ],
+    final scheme = Theme.of(context).colorScheme;
+    return Scaffold(
+      body: SafeArea(
+        child: FocusColumn(
+          child: Column(children: [
+            const Spacer(),
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(shape: BoxShape.circle, color: scheme.secondaryContainer),
+              child: Icon(Icons.favorite_rounded, size: 56, color: scheme.onSecondaryContainer),
+            ),
+            const SizedBox(height: 28),
+            Text(l.finishTitle, style: Theme.of(context).textTheme.headlineMedium, textAlign: TextAlign.center),
+            const SizedBox(height: 12),
+            Text(l.finishBody, style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
+            const Spacer(),
+            SizedBox(width: double.infinity, child: BusyButton(label: l.startDating, icon: Icons.arrow_forward_rounded, onPressed: () => finish(true))),
+            const SizedBox(height: 8),
+            _QuietButton(label: l.startHidden, onPressed: () => finish(false)),
+            Text(l.notNowHint, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+            const SizedBox(height: 16),
+          ]),
+        ),
+      ),
     );
   }
+}
+
+/// Low-emphasis text button with its own busy state (the secondary choice on the final step).
+class _QuietButton extends StatefulWidget {
+  const _QuietButton({required this.label, required this.onPressed});
+  final String label;
+  final Future<void> Function() onPressed;
+
+  @override
+  State<_QuietButton> createState() => _QuietButtonState();
+}
+
+class _QuietButtonState extends State<_QuietButton> {
+  bool _busy = false;
+
+  @override
+  Widget build(BuildContext context) => TextButton(
+        onPressed: _busy
+            ? null
+            : () async {
+                setState(() => _busy = true);
+                try {
+                  await widget.onPressed();
+                } catch (e) {
+                  if (context.mounted) showSnack(context, errorText(context, e));
+                } finally {
+                  if (mounted) setState(() => _busy = false);
+                }
+              },
+        child: Text(widget.label),
+      );
 }

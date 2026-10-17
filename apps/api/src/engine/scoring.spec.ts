@@ -5,10 +5,12 @@ import { AT, answers, arbAnswers, domainAnswers, profile } from './test-helpers'
 import type { NormTable } from './types';
 
 describe('item bank (ENG-001/002)', () => {
-  it('has 37 Quick Scan items with unique keys and 36 required', () => {
+  it('has 37 Quick Scan items with unique keys; 10 starter items are required (CR-21)', () => {
     expect(QUICK_SCAN_ITEMS).toHaveLength(37);
     expect(new Set(QUICK_SCAN_ITEMS.map((i) => i.key)).size).toBe(37);
-    expect(REQUIRED_QUICK_SCAN_KEYS).toHaveLength(36);
+    expect(REQUIRED_QUICK_SCAN_KEYS).toHaveLength(10);
+    // one Mini-IPIP item per domain in the starter set
+    expect(new Set(REQUIRED_QUICK_SCAN_KEYS.filter((k) => k.startsWith('mi_')).map((k) => QUICK_SCAN_ITEMS.find((i) => i.key === k)!.domain)).size).toBe(5);
   });
 
   it('has 4 Mini-IPIP items per domain with 2 positive and 2 reverse keys', () => {
@@ -49,12 +51,13 @@ describe('scoring (ENG-005)', () => {
     expect(profile(domainAnswers('N', 'low')).domains.S.score).toBe(100);
   });
 
-  it('returns null with low confidence when fewer than half the domain items are answered', () => {
-    const a = answers({ mi_01: undefined as never, mi_06: undefined as never, mi_11: undefined as never });
-    const p = scoreProfile(a);
-    expect(p.domains.E.score).toBeNull();
-    expect(p.domains.E.band).toBeNull();
-    expect(p.domains.E.confidence).toBe(0.25);
+  it('scores a domain from one answer with low confidence, and returns null with none (CR-21)', () => {
+    const one = scoreProfile(answers({ mi_01: undefined as never, mi_06: undefined as never, mi_11: undefined as never }));
+    expect(one.domains.E.score).not.toBeNull();
+    expect(one.domains.E.confidence).toBe(0.25);
+    const none = scoreProfile(answers({ mi_01: undefined as never, mi_06: undefined as never, mi_11: undefined as never, mi_16: undefined as never }));
+    expect(none.domains.E.score).toBeNull();
+    expect(none.domains.E.confidence).toBe(0);
   });
 
   it('scores a domain from 2 of 4 answers with confidence 0.5', () => {

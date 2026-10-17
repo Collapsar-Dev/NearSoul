@@ -49,12 +49,14 @@ const likertValue = (answers: Answers, item: ItemDef): number | null => {
 };
 
 const MIN_ANSWERED_RATIO = 0.5;
+/** Quick Scan domains score from a single answer (starter set, CR-21); confidence stays low (0.25) until more are answered. */
+const MIN_QUICK_RATIO = 0.25;
 
 function scoreDomain(answers: Answers, domain: MeasuredDomain, flagged: boolean): DimensionResult {
   const items = QUICK_SCAN_ITEMS.filter((i) => i.domain === domain);
   const values = items.map((i) => likertValue(answers, i)).filter((v): v is number => v !== null);
   const ratio = values.length / items.length;
-  if (values.length === 0 || ratio < MIN_ANSWERED_RATIO) {
+  if (values.length === 0 || ratio < MIN_QUICK_RATIO) {
     return { score: null, band: null, confidence: ratio, source: 'quick_scan' };
   }
   const mean = values.reduce((a, b) => a + b, 0) / values.length;

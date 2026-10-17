@@ -16,7 +16,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tagline => 'Узнай себя. Найди того, кто тебе подходит.';
 
   @override
-  String get welcome1 => 'Узнай, какой ты в любви, за 6 минут.';
+  String get welcome1 => 'Узнай, какой ты в любви, за 2 минуты.';
 
   @override
   String get welcome2 =>
@@ -162,7 +162,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get scanIntroBody =>
-      'Около 6 минут. Здесь нет правильных и неправильных ответов. Просто будь честен(на) с собой.';
+      '10 вопросов, около 2 минут. Здесь нет правильных и неправильных ответов. Просто будь честен(на) с собой.';
 
   @override
   String get scanStart => 'Начать';
@@ -1389,4 +1389,31 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get menuInterests => 'Интересы и о себе';
+
+  @override
+  String get refineTitle => 'Уточнить профиль';
+
+  @override
+  String refineBody(int count) {
+    return 'Ещё $count вопросов: чем больше ответов, тем точнее подбор и отчёты.';
+  }
+
+  @override
+  String get refineDone => 'Профиль уточнён';
+
+  @override
+  String get finishTitle => 'Всё готово!';
+
+  @override
+  String get finishBody =>
+      'Мы уже подобрали людей, с которыми у тебя может сложиться. Подходящие люди тоже увидят тебя в «Душах дня».';
+
+  @override
+  String get startDating => 'Начать знакомиться';
+
+  @override
+  String get startHidden => 'Пока не показывать меня';
+
+  @override
+  String get stepMissing => 'Остался один шаг, открываем его.';
 }

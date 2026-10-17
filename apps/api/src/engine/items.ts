@@ -252,8 +252,15 @@ export const DEEP_ITEM_DEFS: readonly ItemDef[] = DEEP_ITEMS.map((d) => ({
 /** Every answerable item (Quick Scan + Deep Personality). */
 export const ALL_ITEMS_BY_KEY: ReadonlyMap<string, ItemDef> = new Map([...QUICK_SCAN_ITEMS, ...DEEP_ITEM_DEFS].map((i) => [i.key, i]));
 
-/** Items required for the Quick Scan to count as complete (all non-optional ones). */
-export const REQUIRED_QUICK_SCAN_KEYS: readonly string[] = QUICK_SCAN_ITEMS.filter((i) => !i.optional).map((i) => i.key);
+/**
+ * The 10 starter questions asked during onboarding (founder decision 2026-10-17, CR-21): one positively keyed
+ * Mini-IPIP item per domain plus the five items that carry most of the compatibility weight (values, kids,
+ * weekends, texting rhythm, closeness). The other Quick Scan items refine the profile later from the Soul tab.
+ */
+export const STARTER_KEYS: readonly string[] = ['mi_01', 'mi_02', 'mi_03', 'mi_09', 'mi_05', 'rel_01', 'val_01', 'val_02', 'life_01', 'com_01'];
+
+/** Items required for the Quick Scan to count as complete: the starter set. */
+export const REQUIRED_QUICK_SCAN_KEYS: readonly string[] = STARTER_KEYS;
 
 /** Positive/reverse item pairs used for the consistency check (ENG-006). */
 export const CONSISTENCY_PAIRS: ReadonlyArray<[string, string, MeasuredDomain]> = [

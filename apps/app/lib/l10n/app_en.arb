@@ -2,7 +2,7 @@
   "@@locale": "en",
   "appName": "NearSoul",
   "tagline": "Get to know yourself. Discover someone compatible.",
-  "welcome1": "Find out who you are in love, in 6 minutes.",
+  "welcome1": "Find out who you are in love, in 2 minutes.",
   "welcome2": "Meet people who truly fit you, even nearby, right now.",
   "welcome3": "Your exact location is never shared. Ever.",
   "getStarted": "Get started",
@@ -66,7 +66,7 @@
   "consentAnalytics": "Help improve NearSoul with anonymous usage analytics",
   "consentEmails": "Product news by email",
   "scanIntroTitle": "Let’s meet your soul",
-  "scanIntroBody": "About 6 minutes. No right or wrong answers. Just be honest with yourself.",
+  "scanIntroBody": "10 questions, about 2 minutes. No right or wrong answers. Just be honest with yourself.",
   "scanStart": "Start",
   "blockA": "How you are",
   "blockB": "How you love",
@@ -631,5 +631,20 @@
   "menuAccount": "Account",
   "menuHelp": "Help",
   "menuPhotos": "Photos",
-  "menuInterests": "Interests and bio"
+  "menuInterests": "Interests and bio",
+  "refineTitle": "Refine your profile",
+  "refineBody": "{count} more questions: the more you answer, the better your matches and reports.",
+  "refineDone": "Profile refined",
+  "@refineBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "finishTitle": "You’re all set!",
+  "finishBody": "We’ve already picked people you could click with. People who fit you will see you in their Today’s Souls too.",
+  "startDating": "Start meeting people",
+  "startHidden": "Don’t show me yet",
+  "stepMissing": "One step is still missing, opening it."
 }

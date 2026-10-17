@@ -118,6 +118,24 @@ describe('Onboarding, engine and card (ONB-001..003, ENG-002/005/008/010)', () =
     await ctx.http.post('/v1/me/onboarding/complete').set(bearer(token)).expect(200);
   });
 
+  it('10 starter answers complete the Quick Scan; the rest refine it later (CR-21)', async () => {
+    const { token } = await signIn(ctx, 'starter@example.com');
+    await ctx.http.post('/v1/me/dob').set(bearer(token)).send({ dob: '1995-05-05' }).expect(200);
+    await ctx.http.post('/v1/me/consents').set(bearer(token)).send({ terms: true }).expect(200);
+    const q = await ctx.http.get('/v1/engine/questionnaires/quick_scan').set(bearer(token)).expect(200);
+    const all = q.body.blocks.flatMap((b: { items: { key: string; starter: boolean }[] }) => b.items);
+    const starters = all.filter((i: { starter: boolean }) => i.starter).map((i: { key: string }) => i.key);
+    expect(starters).toHaveLength(10);
+    const full = quickScanAnswers() as Record<string, unknown>;
+    let last;
+    for (const k of starters) last = await ctx.http.put(`/v1/engine/answers/${k}`).set(bearer(token)).send({ value: full[k] }).expect(200);
+    expect(last!.body.quickScanComplete).toBe(true);
+    const me = await ctx.http.get('/v1/me').set(bearer(token)).expect(200);
+    expect(me.body.onboarding.quickScan).toBe(true);
+    const sp = await ctx.http.get('/v1/me/soul-profile').set(bearer(token)).expect(200);
+    expect(sp.body.profile.domains.E.score).not.toBeNull();
+  });
+
   it('a skipped Quick Scan question is accepted for every question type', async () => {
     const { token } = await signIn(ctx, 'skipper@example.com');
     await passGateAndScan(ctx, token);

@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcome1.
   ///
   /// In en, this message translates to:
-  /// **'Find out who you are in love, in 6 minutes.'**
+  /// **'Find out who you are in love, in 2 minutes.'**
   String get welcome1;
 
   /// No description provided for @welcome2.
@@ -371,7 +371,7 @@ abstract class AppLocalizations {
   /// No description provided for @scanIntroBody.
   ///
   /// In en, this message translates to:
-  /// **'About 6 minutes. No right or wrong answers. Just be honest with yourself.'**
+  /// **'10 questions, about 2 minutes. No right or wrong answers. Just be honest with yourself.'**
   String get scanIntroBody;
 
   /// No description provided for @scanStart.
@@ -2593,6 +2593,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Interests and bio'**
   String get menuInterests;
+
+  /// No description provided for @refineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Refine your profile'**
+  String get refineTitle;
+
+  /// No description provided for @refineBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} more questions: the more you answer, the better your matches and reports.'**
+  String refineBody(int count);
+
+  /// No description provided for @refineDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile refined'**
+  String get refineDone;
+
+  /// No description provided for @finishTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You’re all set!'**
+  String get finishTitle;
+
+  /// No description provided for @finishBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We’ve already picked people you could click with. People who fit you will see you in their Today’s Souls too.'**
+  String get finishBody;
+
+  /// No description provided for @startDating.
+  ///
+  /// In en, this message translates to:
+  /// **'Start meeting people'**
+  String get startDating;
+
+  /// No description provided for @startHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Don’t show me yet'**
+  String get startHidden;
+
+  /// No description provided for @stepMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'One step is still missing, opening it.'**
+  String get stepMissing;
 }
 
 class _AppLocalizationsDelegate

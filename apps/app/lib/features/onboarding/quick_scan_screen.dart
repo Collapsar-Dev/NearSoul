@@ -9,8 +9,11 @@ import '../../core/widgets/common.dart';
 
 /// ENG-002 Quick Scan: one question per screen, saved one by one, resumable.
 class QuickScanScreen extends ConsumerStatefulWidget {
-  const QuickScanScreen({super.key, this.retake = false, this.questionnaire = 'quick_scan'});
+  const QuickScanScreen({super.key, this.retake = false, this.questionnaire = 'quick_scan', this.refine = false});
   final bool retake;
+
+  /// Soul tab "Refine your profile": only the Quick Scan questions not answered yet (CR-21).
+  final bool refine;
 
   /// 'quick_scan' or 'deep_1'..'deep_4' (Deep Personality, ENG-003).
   final String questionnaire;
@@ -64,6 +67,14 @@ class _QuickScanScreenState extends ConsumerState<QuickScanScreen> {
         }
       }
       final answered = ((progress['answered'] as List?) ?? []).cast<String>().toSet();
+      // Onboarding and retakes ask only the 10 starter questions; "refine" asks the rest (CR-21).
+      if (!widget.isDeep) {
+        if (widget.refine) {
+          items.retainWhere((i) => i.json['starter'] != true && !answered.contains(i.key));
+        } else {
+          items.retainWhere((i) => i.json['starter'] == true);
+        }
+      }
       final firstOpen = items.indexWhere((i) => !answered.contains(i.key));
       setState(() {
         _items = items;
@@ -148,7 +159,7 @@ class _QuickScanScreenState extends ConsumerState<QuickScanScreen> {
       return;
     }
     await ref.read(sessionProvider.notifier).reloadMe();
-    if (widget.retake && mounted) Navigator.of(context).pop(true);
+    if ((widget.retake || widget.refine) && mounted) Navigator.of(context).pop(true);
   }
 
   @override

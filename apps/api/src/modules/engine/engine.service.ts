@@ -11,6 +11,7 @@ import {
   LIKERT_ACCURACY_LABELS,
   QUICK_SCAN_ITEMS,
   REQUIRED_QUICK_SCAN_KEYS,
+  STARTER_KEYS,
   scoreProfile,
   validateAnswer,
   type Answers,
@@ -67,6 +68,7 @@ export class EngineService implements OnApplicationBootstrap {
           prompt: pick(i.prompt, locale).text,
           translated: pick(i.prompt, locale).translated,
           optional: !!i.optional,
+          starter: !deep && STARTER_KEYS.includes(i.key),
           minSelect: i.minSelect,
           maxSelect: i.maxSelect,
           anchors: i.anchors ? { low: pick(i.anchors.low, locale).text, high: pick(i.anchors.high, locale).text } : undefined,
@@ -113,6 +115,8 @@ export class EngineService implements OnApplicationBootstrap {
       requiredAnswered: REQUIRED_QUICK_SCAN_KEYS.filter((k) => keys.has(k)).length,
       nextItem: next,
       complete: REQUIRED_QUICK_SCAN_KEYS.every((k) => keys.has(k)),
+      // Quick Scan questions beyond the 10 starters that can still refine the profile (CR-21).
+      refineRemaining: QUICK_SCAN_ITEMS.filter((i) => !STARTER_KEYS.includes(i.key) && !keys.has(i.key)).length,
     };
   }
 

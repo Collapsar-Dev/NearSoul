@@ -16,7 +16,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tagline => 'Get to know yourself. Discover someone compatible.';
 
   @override
-  String get welcome1 => 'Find out who you are in love, in 6 minutes.';
+  String get welcome1 => 'Find out who you are in love, in 2 minutes.';
 
   @override
   String get welcome2 =>
@@ -160,7 +160,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scanIntroBody =>
-      'About 6 minutes. No right or wrong answers. Just be honest with yourself.';
+      '10 questions, about 2 minutes. No right or wrong answers. Just be honest with yourself.';
 
   @override
   String get scanStart => 'Start';
@@ -1385,4 +1385,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get menuInterests => 'Interests and bio';
+
+  @override
+  String get refineTitle => 'Refine your profile';
+
+  @override
+  String refineBody(int count) {
+    return '$count more questions: the more you answer, the better your matches and reports.';
+  }
+
+  @override
+  String get refineDone => 'Profile refined';
+
+  @override
+  String get finishTitle => 'You’re all set!';
+
+  @override
+  String get finishBody =>
+      'We’ve already picked people you could click with. People who fit you will see you in their Today’s Souls too.';
+
+  @override
+  String get startDating => 'Start meeting people';
+
+  @override
+  String get startHidden => 'Don’t show me yet';
+
+  @override
+  String get stepMissing => 'One step is still missing, opening it.';
 }
