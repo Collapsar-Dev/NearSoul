@@ -17,10 +17,12 @@ export function configureApp(app: INestApplication): void {
           scriptSrc: ["'self'", "'wasm-unsafe-eval'", 'https://www.gstatic.com'],
           styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
           imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
-          connectSrc: ["'self'", 'wss:', 'https:', 'http://localhost:3000', 'ws://localhost:3000'],
+          // blob:/data: — the web image picker reads the chosen photo through a blob: URL before upload.
+          connectSrc: ["'self'", 'blob:', 'data:', 'wss:', 'https:', 'http://localhost:3000', 'ws://localhost:3000'],
           fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
           workerSrc: ["'self'", 'blob:'],
-          frameAncestors: ["'none'"],
+          // 'self' so /mobile.html can show the app inside a phone frame; other sites still can't embed it.
+          frameAncestors: ["'self'"],
         },
       },
       crossOriginEmbedderPolicy: false,
@@ -38,6 +40,8 @@ export function configureApp(app: INestApplication): void {
   const webDir = env().WEB_DIST_DIR ? resolve(env().WEB_DIST_DIR!) : null;
   if (webDir && existsSync(join(webDir, 'index.html'))) {
     const reserved = /^\/(v1|admin|ws|health|ready|socket\.io)(\/|$)/;
+    // Phone-frame preview of the web app for testing the mobile layout on a computer.
+    app.use('/mobile', (req: express.Request, res: express.Response, next: express.NextFunction) => (req.path === '/' ? res.redirect(302, '/mobile.html') : next()));
     app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
       if (reserved.test(req.path) || (req.method !== 'GET' && req.method !== 'HEAD')) return next();
       // Flutter file names are not content-hashed: always revalidate (ETag) so a deploy is picked up immediately.

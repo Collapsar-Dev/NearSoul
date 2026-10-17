@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../core/platform/image_stub.dart' if (dart.library.js_interop) '../../core/platform/image_web.dart';
 import 'package:intl/intl.dart';
 import '../../core/config.dart';
 import '../../core/responsive.dart';
@@ -9,9 +10,42 @@ import '../../core/session.dart';
 import '../../core/widgets/common.dart';
 
 /// Shared layout for onboarding steps: progress, title, body, primary action.
+/// "Skip" for optional onboarding steps; the server remembers it and the router moves on.
+class SkipStepButton extends ConsumerStatefulWidget {
+  const SkipStepButton({super.key, required this.step});
+  final String step;
+
+  @override
+  ConsumerState<SkipStepButton> createState() => _SkipStepButtonState();
+}
+
+class _SkipStepButtonState extends ConsumerState<SkipStepButton> {
+  bool _busy = false;
+
+  @override
+  Widget build(BuildContext context) => TextButton(
+        onPressed: _busy
+            ? null
+            : () async {
+                setState(() => _busy = true);
+                try {
+                  await ref.read(apiProvider).post('/v1/me/onboarding/skip', {'step': widget.step});
+                  await ref.read(sessionProvider.notifier).reloadMe();
+                } catch (e) {
+                  if (context.mounted) showSnack(context, errorText(context, e));
+                } finally {
+                  if (mounted) setState(() => _busy = false);
+                }
+              },
+        child: Text(context.l.skip),
+      );
+}
+
 class StepScaffold extends StatelessWidget {
-  const StepScaffold({super.key, required this.step, required this.title, this.subtitle, required this.children, this.action, this.total = 8});
+  const StepScaffold({super.key, required this.step, required this.title, this.subtitle, required this.children, this.action, this.total = 8, this.skip});
   final int step;
+  /// Optional onboarding step key ('photos', 'interests', 'shareLevel', 'reveal') → shows a Skip button.
+  final String? skip;
   final int total;
   final String title;
   final String? subtitle;
@@ -20,7 +54,10 @@ class StepScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: LinearProgressIndicator(value: step / total, borderRadius: BorderRadius.circular(8)), actions: const [TestBadge(), SizedBox(width: 12)]),
+        appBar: AppBar(
+          title: LinearProgressIndicator(value: step / total, borderRadius: BorderRadius.circular(8)),
+          actions: [if (skip != null) SkipStepButton(step: skip!), const TestBadge(), const SizedBox(width: 12)],
+        ),
         body: SafeArea(
           child: FocusColumn(
             child: Column(children: [
@@ -157,6 +194,7 @@ class _ShareLevelScreenState extends ConsumerState<ShareLevelScreen> {
     final options = [('minimal', l.shareMinimal, l.shareMinimalDesc), ('standard', l.shareStandard, l.shareStandardDesc), ('deep', l.shareDeep, l.shareDeepDesc)];
     return StepScaffold(
       step: 4,
+      skip: widget.inSettings ? null : 'shareLevel',
       title: l.shareTitle,
       subtitle: l.shareReciprocity,
       action: BusyButton(
@@ -285,8 +323,9 @@ class _PhotosScreenState extends ConsumerState<PhotosScreen> {
     if (file == null) return;
     setState(() => _uploading = true);
     try {
-      final bytes = await file.readAsBytes();
-      await ref.read(apiProvider).upload('/v1/photos', 'photo', bytes, file.name.isEmpty ? 'photo.jpg' : file.name);
+      final original = await file.readAsBytes();
+      final jpeg = await toJpeg(original, 2400);
+      await ref.read(apiProvider).upload('/v1/photos', 'photo', jpeg ?? original, jpeg != null ? 'photo.jpg' : (file.name.isEmpty ? 'photo.jpg' : file.name));
       await _load();
     } catch (e) {
       if (mounted) showSnack(context, errorText(context, e));
@@ -365,6 +404,7 @@ class _PhotosScreenState extends ConsumerState<PhotosScreen> {
     }
     return StepScaffold(
       step: 6,
+      skip: 'photos',
       title: l.photosTitle,
       subtitle: l.photosHint,
       action: BusyButton(label: l.continueBtn, onPressed: _photos.length < 2 ? null : () async => ref.read(sessionProvider.notifier).reloadMe()),
@@ -436,7 +476,7 @@ class _InterestsScreenState extends ConsumerState<InterestsScreen> {
         body: FocusColumn(child: ListView(children: [...children, const SizedBox(height: 16), BusyButton(label: l.save, onPressed: ok ? _save : null)])),
       );
     }
-    return StepScaffold(step: 7, title: l.interestsTitle, action: BusyButton(label: l.continueBtn, onPressed: ok ? _save : null), children: children);
+    return StepScaffold(step: 7, skip: 'interests', title: l.interestsTitle, action: BusyButton(label: l.continueBtn, onPressed: ok ? _save : null), children: children);
   }
 }
 

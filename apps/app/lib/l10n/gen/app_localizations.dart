@@ -2185,6 +2185,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Test version: no emails are sent. Your code is {code}.'**
   String testCodeBanner(String code);
+
+  /// No description provided for @scaleLean.
+  ///
+  /// In en, this message translates to:
+  /// **'More like: {side}'**
+  String scaleLean(String side);
+
+  /// No description provided for @scaleMiddle.
+  ///
+  /// In en, this message translates to:
+  /// **'In between'**
+  String get scaleMiddle;
+
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get themeSystem;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
+
+  /// No description provided for @paletteNeutral.
+  ///
+  /// In en, this message translates to:
+  /// **'Neutral'**
+  String get paletteNeutral;
+
+  /// No description provided for @paletteSage.
+  ///
+  /// In en, this message translates to:
+  /// **'Sage'**
+  String get paletteSage;
+
+  /// No description provided for @paletteSand.
+  ///
+  /// In en, this message translates to:
+  /// **'Sand'**
+  String get paletteSand;
+
+  /// No description provided for @paletteCoral.
+  ///
+  /// In en, this message translates to:
+  /// **'Coral'**
+  String get paletteCoral;
 }
 
 class _AppLocalizationsDelegate

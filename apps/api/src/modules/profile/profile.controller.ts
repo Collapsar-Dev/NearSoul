@@ -19,7 +19,7 @@ const ProfileSchema = z.object({
   cityId: z.string().max(40),
   heightCm: z.number().int().min(120).max(230).nullable(),
   jobTitle: z.string().trim().max(40).nullable(),
-  interests: z.array(z.string().max(40)).min(3).max(10),
+  interests: z.array(z.string().max(40)).max(10) // 0 when the interests step was skipped,
 }).partial().strict();
 
 @Controller('v1')

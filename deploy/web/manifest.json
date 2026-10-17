@@ -4,7 +4,7 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFBF8",
-  "theme_color": "#E8636F",
+  "theme_color": "#3F4A5A",
   "description": "Get to know yourself. Discover someone compatible.",
   "orientation": "any",
   "prefer_related_applications": false,

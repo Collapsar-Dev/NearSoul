@@ -46,7 +46,7 @@ export class ProfileService {
     }
     if (input.interests) {
       const unique = [...new Set(input.interests)];
-      if (unique.length < 3 || unique.length > 10) throw badRequest('INTERESTS_COUNT', 'Pick between 3 and 10 interests.');
+      if ((unique.length > 0 && unique.length < 3) || unique.length > 10) throw badRequest('INTERESTS_COUNT', 'Pick between 3 and 10 interests, or skip this step.');
       const known = await this.prisma.interest.count({ where: { id: { in: unique } } });
       if (known !== unique.length) throw badRequest('INVALID_INTEREST', 'Unknown interest.');
       input.interests = unique;
@@ -118,7 +118,7 @@ export class ProfileService {
     } catch {
       throw badRequest('INVALID_IMAGE', 'That file is not a supported image.');
     }
-    if (!meta.format || !ALLOWED_FORMATS.has(meta.format)) throw badRequest('INVALID_IMAGE', 'Use JPEG, PNG, HEIC or WebP.');
+    if (!meta.format || !ALLOWED_FORMATS.has(meta.format)) throw badRequest('INVALID_IMAGE', 'Use a JPEG, PNG or WebP photo.');
     if ((meta.width ?? 0) < 400 || (meta.height ?? 0) < 400) throw badRequest('IMAGE_TOO_SMALL', 'Photos must be at least 400×400 pixels.');
     // .rotate() applies EXIF orientation; sharp drops all metadata unless withMetadata() is called.
     const out = await sharp(file.buffer).rotate().resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true }).webp({ quality: 82 }).toBuffer({ resolveWithObject: true });

@@ -508,5 +508,16 @@
   "notifyReport": "Updates on my reports",
   "notifyRulesNote": "Quiet from 23:00 to 08:00, except messages. At most one reminder a day. Everything still appears in the bell.",
   "testCodeBanner": "Test version: no emails are sent. Your code is {code}.",
-  "@testCodeBanner": {"placeholders": {"code": {"type": "String"}}}
+  "@testCodeBanner": {"placeholders": {"code": {"type": "String"}}},
+  "scaleLean": "More like: {side}",
+  "scaleMiddle": "In between",
+  "@scaleLean": {"placeholders": {"side": {"type": "String"}}},
+  "appearance": "Appearance",
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "paletteNeutral": "Neutral",
+  "paletteSage": "Sage",
+  "paletteSand": "Sand",
+  "paletteCoral": "Coral"
 }

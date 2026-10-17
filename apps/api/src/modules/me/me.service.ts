@@ -51,11 +51,12 @@ export class MeService {
         dob: !!u.dob,
         terms: consents.terms === true,
         quickScan: await this.quickScanComplete(userId),
-        cardReviewed: !!u.card?.reviewed,
+        cardReviewed: !!u.card?.reviewed || u.onboardingSkipped.includes('reveal'),
         shareLevel: !!u.shareLevel,
         basics: !!u.profile,
-        photos: u.photos.length >= 2,
-        interests: (u.profile?.interests.length ?? 0) >= 3,
+        photos: u.photos.length >= 2 || u.onboardingSkipped.includes('photos'),
+        interests: (u.profile?.interests.length ?? 0) >= 3 || u.onboardingSkipped.includes('interests'),
+        skipped: u.onboardingSkipped,
         complete: u.status === 'active',
       },
       environment: env().APP_ENV,
@@ -134,6 +135,20 @@ export class MeService {
       // GEO-001: turning discovery off deletes the stored location.
       await this.prisma.userLocation.deleteMany({ where: { userId } });
     }
+  }
+
+  /**
+   * Skips an optional onboarding step. Age, terms, the Quick Scan (questions can be skipped one by one) and the basics
+   * stay required: without them we can't check 18+ or match anyone. Share level falls back to "standard".
+   */
+  async skipOnboardingStep(userId: string, step: 'photos' | 'interests' | 'reveal' | 'shareLevel') {
+    if (step === 'shareLevel') {
+      await this.prisma.user.updateMany({ where: { id: userId, shareLevel: null }, data: { shareLevel: 'standard' } });
+    } else {
+      const u = await this.prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { onboardingSkipped: true } });
+      if (!u.onboardingSkipped.includes(step)) await this.prisma.user.update({ where: { id: userId }, data: { onboardingSkipped: { push: step } } });
+    }
+    return this.me(userId);
   }
 
   /** Marks onboarding complete once every requirement is met (status → active). */

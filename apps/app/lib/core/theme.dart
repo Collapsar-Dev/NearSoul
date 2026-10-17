@@ -1,33 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-/// Design tokens (PRD §5.10).
+/// Design tokens (PRD §5.10). Fixed status colours; the accent comes from the chosen [NsPalette].
 class NsColors {
-  static const primary = Color(0xFFE8636F);
-  static const primaryDark = Color(0xFFF0848D);
-  static const soul = Color(0xFF3B3B98);
-  static const soulDark = Color(0xFF8C8CF0);
-  static const bg = Color(0xFFFFFBF8);
-  static const bgDark = Color(0xFF14131A);
-  static const surfaceDark = Color(0xFF1E1C26);
   static const success = Color(0xFF2E9E6B);
   static const warning = Color(0xFFD99A21);
   static const danger = Color(0xFFD64545);
 }
 
-ThemeData buildTheme(Brightness b) {
+/// Colour themes the person can pick in Settings. Neutral is the default.
+enum NsPalette {
+  neutral(primary: Color(0xFF3F4A5A), primaryDark: Color(0xFFAEB8C6), soul: Color(0xFF5B6475), soulDark: Color(0xFFB9C0CC), bg: Color(0xFFF6F6F4), bgDark: Color(0xFF121315), surfaceDark: Color(0xFF1C1D20)),
+  sage(primary: Color(0xFF4F6F5F), primaryDark: Color(0xFF9CC2AE), soul: Color(0xFF5E6E66), soulDark: Color(0xFFB6C8BE), bg: Color(0xFFF5F6F3), bgDark: Color(0xFF111412), surfaceDark: Color(0xFF1A1E1B)),
+  sand(primary: Color(0xFF7A6248), primaryDark: Color(0xFFD2B795), soul: Color(0xFF6B5E52), soulDark: Color(0xFFCDBFAF), bg: Color(0xFFF8F6F2), bgDark: Color(0xFF151311), surfaceDark: Color(0xFF1F1C19)),
+  coral(primary: Color(0xFFE8636F), primaryDark: Color(0xFFF0848D), soul: Color(0xFF3B3B98), soulDark: Color(0xFF8C8CF0), bg: Color(0xFFFFFBF8), bgDark: Color(0xFF14131A), surfaceDark: Color(0xFF1E1C26));
+
+  const NsPalette({required this.primary, required this.primaryDark, required this.soul, required this.soulDark, required this.bg, required this.bgDark, required this.surfaceDark});
+  final Color primary;
+  final Color primaryDark;
+  final Color soul;
+  final Color soulDark;
+  final Color bg;
+  final Color bgDark;
+  final Color surfaceDark;
+}
+
+ThemeData buildTheme(Brightness b, [NsPalette p = NsPalette.neutral]) {
   final dark = b == Brightness.dark;
   final scheme = ColorScheme.fromSeed(
-    seedColor: NsColors.primary,
+    seedColor: p.primary,
     brightness: b,
-    primary: dark ? NsColors.primaryDark : NsColors.primary,
-    secondary: dark ? NsColors.soulDark : NsColors.soul,
-    surface: dark ? NsColors.surfaceDark : Colors.white,
+    primary: dark ? p.primaryDark : p.primary,
+    secondary: dark ? p.soulDark : p.soul,
+    surface: dark ? p.surfaceDark : Colors.white,
     error: NsColors.danger,
   );
   final base = ThemeData(useMaterial3: true, colorScheme: scheme, brightness: b);
   return base.copyWith(
-    scaffoldBackgroundColor: dark ? NsColors.bgDark : NsColors.bg,
-    appBarTheme: AppBarTheme(backgroundColor: dark ? NsColors.bgDark : NsColors.bg, elevation: 0, scrolledUnderElevation: 0, centerTitle: false),
+    scaffoldBackgroundColor: dark ? p.bgDark : p.bg,
+    appBarTheme: AppBarTheme(backgroundColor: dark ? p.bgDark : p.bg, elevation: 0, scrolledUnderElevation: 0, centerTitle: false),
     cardTheme: CardThemeData(elevation: 0, color: scheme.surface, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), margin: EdgeInsets.zero),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(minimumSize: const Size(64, 52), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
@@ -44,6 +56,44 @@ ThemeData buildTheme(Brightness b) {
     ),
   );
 }
+
+/// Appearance chosen in Settings, kept on this device.
+class Appearance {
+  const Appearance({this.mode = ThemeMode.system, this.palette = NsPalette.neutral});
+  final ThemeMode mode;
+  final NsPalette palette;
+}
+
+class AppearanceNotifier extends Notifier<Appearance> {
+  static const _modeKey = 'ns_theme_mode';
+  static const _paletteKey = 'ns_theme_palette';
+
+  @override
+  Appearance build() {
+    SharedPreferences.getInstance().then((p) {
+      final mode = ThemeMode.values.where((m) => m.name == p.getString(_modeKey)).firstOrNull;
+      final palette = NsPalette.values.where((v) => v.name == p.getString(_paletteKey)).firstOrNull;
+      if (mode != null || palette != null) state = Appearance(mode: mode ?? state.mode, palette: palette ?? state.palette);
+    }).catchError((_) {});
+    return const Appearance();
+  }
+
+  Future<void> setMode(ThemeMode mode) async {
+    state = Appearance(mode: mode, palette: state.palette);
+    try {
+      await (await SharedPreferences.getInstance()).setString(_modeKey, mode.name);
+    } catch (_) {}
+  }
+
+  Future<void> setPalette(NsPalette palette) async {
+    state = Appearance(mode: state.mode, palette: palette);
+    try {
+      await (await SharedPreferences.getInstance()).setString(_paletteKey, palette.name);
+    } catch (_) {}
+  }
+}
+
+final appearanceProvider = NotifierProvider<AppearanceNotifier, Appearance>(AppearanceNotifier.new);
 
 /// Serif accent for archetype names.
 TextStyle archetypeStyle(BuildContext context) =>

@@ -36,7 +36,7 @@ describe('Onboarding, engine and card (ONB-001..003, ENG-002/005/008/010)', () =
     const ru = await ctx.http.get('/v1/engine/questionnaires/quick_scan').set(bearer(token)).set('accept-language', 'ru-RU').expect(200);
     const rel = ru.body.blocks[1].items[0];
     expect(rel.prompt).toMatch(/партнёром/);
-    expect(ru.body.blocks[0].items[0].translated).toBe(false); // IPIP item without an approved translation
+    expect(ru.body.blocks[0].items[0]).toMatchObject({ prompt: 'Я душа компании.', translated: true }); // draft ru translation (CR-8)
   });
 
   it('saves answers, resumes progress and validates values', async () => {
@@ -97,6 +97,28 @@ describe('Onboarding, engine and card (ONB-001..003, ENG-002/005/008/010)', () =
     const r = await ctx.http.patch('/v1/me/soul-profile/layers').set(bearer(token)).send({ conflict_style: 'let_it_go' }).expect(200);
     expect(r.body.profile.relationship.conflict_style).toEqual({ value: 'let_it_go', source: 'user_edit' });
     await ctx.http.patch('/v1/me/soul-profile/layers').set(bearer(token)).send({ O: 99 }).expect(400);
+  });
+
+  it('optional steps can be skipped; age, terms, Quick Scan and basics stay required', async () => {
+    const { token } = await signIn(ctx, 'skipper@example.com');
+    await passGateAndScan(ctx, token);
+    await ctx.http.post('/v1/me/onboarding/skip').set(bearer(token)).send({ step: 'dob' }).expect(400);
+    for (const step of ['reveal', 'shareLevel', 'photos', 'interests']) {
+      await ctx.http.post('/v1/me/onboarding/skip').set(bearer(token)).send({ step }).expect(200);
+    }
+    const me = await ctx.http.get('/v1/me').set(bearer(token)).expect(200);
+    expect(me.body.onboarding).toMatchObject({ cardReviewed: true, shareLevel: true, photos: true, interests: true, basics: false });
+    expect(me.body.settings.shareLevel).toBe('standard');
+    const early = await ctx.http.post('/v1/me/onboarding/complete').set(bearer(token)).expect(400);
+    expect(early.body.error.details.missing).toEqual(['basics']);
+    await ctx.http.put('/v1/me/profile').set(bearer(token)).send({ firstName: 'Skip', gender: 'woman', interestedIn: ['man'], intent: 'not_sure', cityId: 'amsterdam', interests: [], ageMin: 18, ageMax: 60 }).expect(200);
+    await ctx.http.post('/v1/me/onboarding/complete').set(bearer(token)).expect(200);
+  });
+
+  it('a skipped Quick Scan question is accepted for every question type', async () => {
+    const { token } = await signIn(ctx, 'skipper@example.com');
+    await passGateAndScan(ctx, token);
+    for (const k of ['rel_04', 'val_01', 'life_01']) await ctx.http.put(`/v1/engine/answers/${k}`).set(bearer(token)).send({ value: null }).expect(200);
   });
 
   it('share level change records consent and invalidates pair reports', async () => {

@@ -1147,4 +1147,36 @@ class AppLocalizationsRu extends AppLocalizations {
   String testCodeBanner(String code) {
     return 'Тестовая версия: письма не отправляются. Ваш код: $code.';
   }
+
+  @override
+  String scaleLean(String side) {
+    return 'Скорее: $side';
+  }
+
+  @override
+  String get scaleMiddle => 'Где-то посередине';
+
+  @override
+  String get appearance => 'Оформление';
+
+  @override
+  String get themeSystem => 'Как в системе';
+
+  @override
+  String get themeLight => 'Светлая';
+
+  @override
+  String get themeDark => 'Тёмная';
+
+  @override
+  String get paletteNeutral => 'Нейтральная';
+
+  @override
+  String get paletteSage => 'Шалфей';
+
+  @override
+  String get paletteSand => 'Песок';
+
+  @override
+  String get paletteCoral => 'Коралл';
 }

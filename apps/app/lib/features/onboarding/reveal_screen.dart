@@ -4,6 +4,7 @@ import '../../core/responsive.dart';
 import '../../core/session.dart';
 import '../../core/widgets/common.dart';
 import '../../core/widgets/soul_widgets.dart';
+import 'onboarding_screens.dart';
 
 /// S10–S11: Soul Profile reveal (aha #1) followed by the Personality DNA card review.
 class RevealScreen extends ConsumerStatefulWidget {
@@ -84,7 +85,7 @@ class _RevealScreenState extends ConsumerState<RevealScreen> {
   Widget build(BuildContext context) {
     final l = context.l;
     return Scaffold(
-      appBar: AppBar(actions: const [TestBadge(), SizedBox(width: 12)]),
+      appBar: AppBar(actions: const [SkipStepButton(step: 'reveal'), TestBadge(), SizedBox(width: 12)]),
       body: SafeArea(
         child: _cardStep ? _cardView(context) : AsyncBody<Map<String, dynamic>>(
           future: _report,

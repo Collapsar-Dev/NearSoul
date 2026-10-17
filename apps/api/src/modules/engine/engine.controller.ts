@@ -32,9 +32,9 @@ export class EngineController {
   }
 
   @Put('engine/answers/:itemKey')
-  async answer(@CurrentUser() user: AuthUser, @Param('itemKey') itemKey: string, @Body() body: unknown) {
+  async answer(@CurrentUser() user: AuthUser, @Param('itemKey') itemKey: string, @Body() body: unknown, @Headers('accept-language') lang?: string) {
     const { value } = parse(z.object({ value: z.union([z.number(), z.string(), z.array(z.string()), z.null()]) }).strict(), body);
-    const profile = await this.engine.saveAnswer(user.id, itemKey, value);
+    const profile = await this.engine.saveAnswer(user.id, itemKey, value, localeFrom(lang));
     return { saved: true, quickScanComplete: profile.quickScanComplete };
   }
 

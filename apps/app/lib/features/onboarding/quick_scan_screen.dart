@@ -190,8 +190,8 @@ class _QuickScanScreenState extends ConsumerState<QuickScanScreen> {
           LinearProgressIndicator(value: (_index + 1) / _items.length, borderRadius: BorderRadius.circular(8)),
         ]),
         actions: [
-          if (item.optional || item.type == 'likert5')
-            TextButton(onPressed: () => _answer(item.optional ? <String>[] : null), child: Text(l.skip)),
+          // Every question can be skipped (null); the engine just has less to go on.
+          TextButton(onPressed: () => _answer(item.optional ? <String>[] : null), child: Text(l.skip)),
           const TestBadge(),
           const SizedBox(width: 8),
         ],
@@ -230,7 +230,10 @@ class _QuickScanScreenState extends ConsumerState<QuickScanScreen> {
     switch (item.type) {
       case 'likert5':
         final anchors = item.json['anchors'] as Map<String, dynamic>?;
-        final labels = anchors == null ? _likert : [anchors['low'] as String, '', '', '', anchors['high'] as String];
+        final low = anchors?['low'] as String?;
+        final high = anchors?['high'] as String?;
+        // Two-ended scales label every point, so no option shows up as a bare number.
+        final labels = anchors == null ? _likert : [low!, l.scaleLean(low), l.scaleMiddle, l.scaleLean(high!), high];
         return Column(children: [
           for (var v = 1; v <= 5; v++)
             Padding(

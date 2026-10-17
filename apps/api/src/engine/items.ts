@@ -45,7 +45,8 @@ export interface ItemDef {
 const t = (en: string, ru: string | null = null): LocalizedText => ({ en, ru });
 const opt = (key: string, en: string, ru: string): ItemOption => ({ key, label: t(en, ru) });
 
-const mini = (n: number, en: string, domain: MeasuredDomain, keyed: 1 | -1): ItemDef => ({
+/** ru: DRAFT translation (not validated, CR-8): answers in ru are flagged for separate norms later. */
+const mini = (n: number, en: string, domain: MeasuredDomain, keyed: 1 | -1, ru: string | null = null): ItemDef => ({
   key: `mi_${String(n).padStart(2, '0')}`,
   instrument: 'mini_ipip',
   version: 1,
@@ -54,7 +55,7 @@ const mini = (n: number, en: string, domain: MeasuredDomain, keyed: 1 | -1): Ite
   domain,
   keyed,
   type: 'likert5',
-  prompt: t(en),
+  prompt: t(en, ru),
 });
 
 export const LIKERT_ACCURACY_LABELS: LocalizedText[] = [
@@ -67,26 +68,26 @@ export const LIKERT_ACCURACY_LABELS: LocalizedText[] = [
 
 export const QUICK_SCAN_ITEMS: readonly ItemDef[] = [
   // Block A: How you are (Mini-IPIP)
-  mini(1, 'Am the life of the party.', 'E', 1),
-  mini(2, "Sympathize with others' feelings.", 'A', 1),
-  mini(3, 'Get chores done right away.', 'C', 1),
-  mini(4, 'Have frequent mood swings.', 'N', 1),
-  mini(5, 'Have a vivid imagination.', 'O', 1),
-  mini(6, "Don't talk a lot.", 'E', -1),
-  mini(7, "Am not interested in other people's problems.", 'A', -1),
-  mini(8, 'Often forget to put things back in their proper place.', 'C', -1),
-  mini(9, 'Am relaxed most of the time.', 'N', -1),
-  mini(10, 'Am not interested in abstract ideas.', 'O', -1),
-  mini(11, 'Talk to a lot of different people at parties.', 'E', 1),
-  mini(12, "Feel others' emotions.", 'A', 1),
-  mini(13, 'Like order.', 'C', 1),
-  mini(14, 'Get upset easily.', 'N', 1),
-  mini(15, 'Have difficulty understanding abstract ideas.', 'O', -1),
-  mini(16, 'Keep in the background.', 'E', -1),
-  mini(17, 'Am not really interested in others.', 'A', -1),
-  mini(18, 'Make a mess of things.', 'C', -1),
-  mini(19, 'Seldom feel blue.', 'N', -1),
-  mini(20, 'Do not have a good imagination.', 'O', -1),
+  mini(1, 'Am the life of the party.', 'E', 1, 'Я душа компании.'),
+  mini(2, "Sympathize with others' feelings.", 'A', 1, 'Я сопереживаю чувствам других.'),
+  mini(3, 'Get chores done right away.', 'C', 1, 'Я сразу берусь за повседневные дела.'),
+  mini(4, 'Have frequent mood swings.', 'N', 1, 'У меня часто меняется настроение.'),
+  mini(5, 'Have a vivid imagination.', 'O', 1, 'У меня богатое воображение.'),
+  mini(6, "Don't talk a lot.", 'E', -1, 'Я немногословен(на).'),
+  mini(7, "Am not interested in other people's problems.", 'A', -1, 'Чужие проблемы мне неинтересны.'),
+  mini(8, 'Often forget to put things back in their proper place.', 'C', -1, 'Я часто забываю класть вещи на место.'),
+  mini(9, 'Am relaxed most of the time.', 'N', -1, 'Большую часть времени я спокоен(на).'),
+  mini(10, 'Am not interested in abstract ideas.', 'O', -1, 'Абстрактные идеи мне неинтересны.'),
+  mini(11, 'Talk to a lot of different people at parties.', 'E', 1, 'На вечеринках я общаюсь со множеством разных людей.'),
+  mini(12, "Feel others' emotions.", 'A', 1, 'Я чувствую эмоции других людей.'),
+  mini(13, 'Like order.', 'C', 1, 'Я люблю порядок.'),
+  mini(14, 'Get upset easily.', 'N', 1, 'Меня легко расстроить.'),
+  mini(15, 'Have difficulty understanding abstract ideas.', 'O', -1, 'Мне трудно понимать абстрактные идеи.'),
+  mini(16, 'Keep in the background.', 'E', -1, 'Я держусь в тени.'),
+  mini(17, 'Am not really interested in others.', 'A', -1, 'Другие люди мне не особенно интересны.'),
+  mini(18, 'Make a mess of things.', 'C', -1, 'Я часто устраиваю беспорядок.'),
+  mini(19, 'Seldom feel blue.', 'N', -1, 'Мне редко бывает грустно.'),
+  mini(20, 'Do not have a good imagination.', 'O', -1, 'У меня не очень хорошее воображение.'),
 
   // Block B: How you love
   {

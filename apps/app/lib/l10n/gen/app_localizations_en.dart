@@ -1143,4 +1143,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String testCodeBanner(String code) {
     return 'Test version: no emails are sent. Your code is $code.';
   }
+
+  @override
+  String scaleLean(String side) {
+    return 'More like: $side';
+  }
+
+  @override
+  String get scaleMiddle => 'In between';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get themeSystem => 'System';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get paletteNeutral => 'Neutral';
+
+  @override
+  String get paletteSage => 'Sage';
+
+  @override
+  String get paletteSand => 'Sand';
+
+  @override
+  String get paletteCoral => 'Coral';
 }

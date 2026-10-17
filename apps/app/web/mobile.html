@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NearSoul · мобильная версия</title>
+  <style>
+    :root { --bg: #ecedf0; --fg: #1f2329; --muted: #6b7280; --frame: #1b1d22; --btn: #ffffff; --btn-on: #3f4a5a; }
+    @media (prefers-color-scheme: dark) { :root { --bg: #0f1012; --fg: #e8eaed; --muted: #9aa0a6; --frame: #000; --btn: #1c1d20; --btn-on: #aeb8c6; } }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--fg); font: 15px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 16px; }
+    header { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; margin-bottom: 16px; }
+    h1 { font-size: 16px; margin: 0 12px 0 0; }
+    button { border: 1px solid #c9ccd2; background: var(--btn); color: var(--fg); border-radius: 999px; padding: 6px 12px; cursor: pointer; font: inherit; }
+    button[aria-pressed="true"] { background: var(--btn-on); color: #fff; border-color: var(--btn-on); }
+    .phone { background: var(--frame); border-radius: 44px; padding: 12px; box-shadow: 0 20px 60px rgba(0,0,0,.25); max-width: 100%; }
+    iframe { display: block; border: 0; border-radius: 32px; background: #fff; max-width: calc(100vw - 56px); }
+    p { color: var(--muted); font-size: 13px; text-align: center; max-width: 520px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>NearSoul · мобильная версия</h1>
+    <button data-w="375" data-h="667">iPhone SE</button>
+    <button data-w="393" data-h="852" aria-pressed="true">iPhone 15</button>
+    <button data-w="412" data-h="915">Android</button>
+    <button id="rotate">Повернуть</button>
+    <button id="reload">Обновить</button>
+  </header>
+  <div class="phone"><iframe id="app" src="/" title="NearSoul" width="393" height="852"></iframe></div>
+  <p>Это то же приложение, что и на телефоне, только в рамке. На самом телефоне просто откройте адрес сайта в браузере. Можно добавить его на экран «Домой», тогда он будет выглядеть как обычное приложение.</p>
+  <script src="mobile.js"></script>
+</body>
+</html>

@@ -100,6 +100,8 @@ model User {
   /// Daily-set key (dailyKey) we last announced with daily_set_ready.
   dailyAnnouncedKey  String?         @map("daily_announced_key")
   invitesLeft        Int             @default(0) @map("invites_left")
+  /// Optional onboarding steps the person chose to skip (photos, interests, reveal).
+  onboardingSkipped  String[]        @default([]) @map("onboarding_skipped")
   createdAt          DateTime        @default(now()) @map("created_at")
   lastActiveAt       DateTime        @default(now()) @map("last_active_at")
   deletionRequestedAt DateTime?      @map("deletion_requested_at")
@@ -259,6 +261,8 @@ model EngineAnswer {
   itemKey    String   @map("item_key")
   itemVersion Int     @map("item_version")
   value      Json
+  /// Language the item was shown in (CR-8: ru IPIP items are a draft translation, kept apart for norms).
+  locale     String?
   answeredAt DateTime @default(now()) @map("answered_at")
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 

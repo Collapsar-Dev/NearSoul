@@ -76,15 +76,15 @@ export class EngineService implements OnApplicationBootstrap {
     };
   }
 
-  async saveAnswer(userId: string, itemKey: string, value: unknown) {
+  async saveAnswer(userId: string, itemKey: string, value: unknown, locale: Locale = 'en') {
     const item = ALL_ITEMS_BY_KEY.get(itemKey);
     if (!item) throw notFound('Unknown question');
     const err = validateAnswer(item, value);
     if (err) throw badRequest(err, 'That answer is not valid for this question.');
     await this.prisma.engineAnswer.upsert({
       where: { userId_itemKey: { userId, itemKey } },
-      create: { userId, itemKey, itemVersion: item.version, value: value as Prisma.InputJsonValue },
-      update: { itemVersion: item.version, value: value as Prisma.InputJsonValue, answeredAt: new Date() },
+      create: { userId, itemKey, itemVersion: item.version, value: value as Prisma.InputJsonValue, locale },
+      update: { itemVersion: item.version, value: value as Prisma.InputJsonValue, locale, answeredAt: new Date() },
     });
     const before = await this.prisma.soulProfileRow.findUnique({ where: { userId }, select: { profile: true } });
     const was = before?.profile as unknown as SoulProfile | undefined;

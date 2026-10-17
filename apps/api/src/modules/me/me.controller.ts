@@ -68,6 +68,13 @@ export class MeController {
     await this.me.setShareLevel(user.id, level);
   }
 
+  @Post('onboarding/skip')
+  @HttpCode(200)
+  skip(@CurrentUser() user: AuthUser, @Body() body: unknown) {
+    const { step } = parse(z.object({ step: z.enum(['photos', 'interests', 'reveal', 'shareLevel']) }).strict(), body);
+    return this.me.skipOnboardingStep(user.id, step);
+  }
+
   @Post('onboarding/complete')
   @RequireGate('age')
   @HttpCode(200)

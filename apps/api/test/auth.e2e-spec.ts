@@ -8,6 +8,12 @@ describe('Auth (AUTH-001..004, ALPHA-001)', () => {
   afterAll(async () => ctx.app.close());
   beforeEach(async () => resetDb(ctx));
 
+  it('CSP lets the web image picker read the chosen photo (blob:) but nothing else from other origins', async () => {
+    const csp = (await ctx.http.get('/health')).headers['content-security-policy'] as string;
+    expect(csp).toContain("connect-src 'self' blob: data:");
+    expect(csp).toContain("frame-ancestors 'self'");
+  });
+
   it('returns identical responses for known and unknown emails (no enumeration)', async () => {
     await signIn(ctx, 'known@example.com');
     ctx.limiter.reset();

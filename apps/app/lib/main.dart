@@ -36,11 +36,13 @@ class _NearSoulAppState extends ConsumerState<NearSoulApp> {
   Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
     final locale = ref.watch(localeProvider);
+    final look = ref.watch(appearanceProvider);
     return MaterialApp.router(
       title: 'NearSoul',
       debugShowCheckedModeBanner: false,
-      theme: buildTheme(Brightness.light),
-      darkTheme: buildTheme(Brightness.dark),
+      theme: buildTheme(Brightness.light, look.palette),
+      darkTheme: buildTheme(Brightness.dark, look.palette),
+      themeMode: look.mode,
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [AppLocalizations.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],

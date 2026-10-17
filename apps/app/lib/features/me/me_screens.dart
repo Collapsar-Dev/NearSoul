@@ -9,6 +9,7 @@ import '../../core/config.dart';
 import '../../core/push.dart';
 import '../../core/responsive.dart';
 import '../../core/session.dart';
+import '../../core/theme.dart';
 import '../../core/widgets/common.dart';
 import '../onboarding/onboarding_screens.dart';
 import '../shell.dart';
@@ -206,6 +207,49 @@ class _PushTileState extends ConsumerState<PushTile> {
   }
 }
 
+/// Theme mode (system / light / dark) and colour palette, stored on this device.
+class AppearanceTiles extends ConsumerWidget {
+  const AppearanceTiles({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l;
+    final look = ref.watch(appearanceProvider);
+    final n = ref.read(appearanceProvider.notifier);
+    final names = {NsPalette.neutral: l.paletteNeutral, NsPalette.sage: l.paletteSage, NsPalette.sand: l.paletteSand, NsPalette.coral: l.paletteCoral};
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      ListTile(
+        leading: const Icon(Icons.palette_outlined),
+        title: Text(l.appearance),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: SegmentedButton<ThemeMode>(
+            segments: [
+              ButtonSegment(value: ThemeMode.system, label: Text(l.themeSystem)),
+              ButtonSegment(value: ThemeMode.light, label: Text(l.themeLight)),
+              ButtonSegment(value: ThemeMode.dark, label: Text(l.themeDark)),
+            ],
+            selected: {look.mode},
+            onSelectionChanged: (v) => n.setMode(v.first),
+          ),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(72, 0, 16, 12),
+        child: Wrap(spacing: 8, runSpacing: 8, children: [
+          for (final p in NsPalette.values)
+            ChoiceChip(
+              avatar: CircleAvatar(backgroundColor: p.primary, radius: 8),
+              label: Text(names[p]!),
+              selected: look.palette == p,
+              onSelected: (_) => n.setPalette(p),
+            ),
+        ]),
+      ),
+    ]);
+  }
+}
+
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -270,10 +314,11 @@ class SettingsScreen extends ConsumerWidget {
           ),
           ListTile(
             title: Text(l.shareLevel),
-            subtitle: Text('${s['shareLevel'] ?? '-'}'),
+            subtitle: Text(switch (s['shareLevel']) {'minimal' => l.shareMinimal, 'standard' => l.shareStandard, 'deep' => l.shareDeep, _ => '-'}),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ShareLevelScreen(inSettings: true))),
           ),
+          const AppearanceTiles(),
           ListTile(
             title: Text(l.language),
             trailing: SegmentedButton<String>(
