@@ -12,6 +12,7 @@ describe('Auth (AUTH-001..004, ALPHA-001)', () => {
     const csp = (await ctx.http.get('/health')).headers['content-security-policy'] as string;
     expect(csp).toContain("connect-src 'self' blob: data:");
     expect(csp).toContain("frame-ancestors 'self'");
+    expect((await ctx.http.get('/v1/me')).headers['cache-control']).toBe('no-store');
   });
 
   it('returns identical responses for known and unknown emails (no enumeration)', async () => {

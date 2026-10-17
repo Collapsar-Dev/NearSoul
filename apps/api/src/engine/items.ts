@@ -98,7 +98,7 @@ export const QUICK_SCAN_ITEMS: readonly ItemDef[] = [
   {
     key: 'rel_02', instrument: 'ns_custom', version: 1, block: 'B', trait: 'reassurance_need', type: 'likert5',
     prompt: t("When I'm close to someone, I like frequent signs that they care.",
-      'Когда я с кем-то близок, мне важны частые знаки внимания.'),
+      'Когда у меня близкие отношения, мне важны частые знаки внимания.'),
   },
   {
     key: 'rel_03', instrument: 'ns_custom', version: 1, block: 'B', trait: 'independence_need', type: 'likert5',
@@ -117,7 +117,7 @@ export const QUICK_SCAN_ITEMS: readonly ItemDef[] = [
   {
     key: 'rel_05', instrument: 'ns_custom', version: 1, block: 'B', trait: 'care_language', type: 'multi',
     minSelect: 1, maxSelect: 2,
-    prompt: t('I feel most cared for when someone… (pick up to 2)', 'Я чувствую заботу больше всего, когда человек… (до 2)'),
+    prompt: t('I feel most cared for when someone…', 'Я чувствую заботу больше всего, когда человек…'),
     options: [
       opt('words', 'Tells me how they feel', 'Говорит, что чувствует'),
       opt('time', 'Spends real time with me', 'Проводит со мной время'),

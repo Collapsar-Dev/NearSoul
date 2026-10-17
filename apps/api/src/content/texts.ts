@@ -21,32 +21,32 @@ export const BAND_TEXT: Record<Domain, Record<Band, { summary: L; dating: L; hea
     high: {
       summary: { en: 'You love new ideas, places and experiences, and your imagination is always at work.', ru: 'Ты любишь новые идеи, места и впечатления, а воображение у тебя работает без выходных.' },
       dating: { en: 'In dating, you light up when a conversation goes somewhere unexpected.', ru: 'В отношениях ты оживаешь, когда разговор уходит в неожиданную сторону.' },
-      headline: { en: 'Curious explorer', ru: 'Любознательный исследователь' },
+      headline: { en: 'Curious explorer', ru: 'Любознательная натура' },
     },
     balanced: {
       summary: { en: 'You enjoy new things but also value what already works for you.', ru: 'Ты любишь новое, но ценишь и то, что уже работает.' },
       dating: { en: 'You can enjoy both a familiar favourite place and a spontaneous adventure.', ru: 'Тебе подходит и любимое знакомое место, и спонтанное приключение.' },
-      headline: { en: 'Open-minded realist', ru: 'Открытый реалист' },
+      headline: { en: 'Open-minded realist', ru: 'Открытость и трезвый взгляд' },
     },
     low: {
       summary: { en: 'You are practical and grounded, and you trust what is real and proven.', ru: 'Ты практичный и приземлённый человек и доверяешь проверенному.' },
       dating: { en: 'You show love through steady, real-life care rather than big abstractions.', ru: 'Ты проявляешь любовь через реальную, надёжную заботу, а не громкие слова.' },
-      headline: { en: 'Grounded realist', ru: 'Приземлённый реалист' },
+      headline: { en: 'Grounded realist', ru: 'Трезвый взгляд на жизнь' },
     },
   },
   C: {
     high: {
       summary: { en: 'You like order and follow-through. People can count on you.', ru: 'Ты любишь порядок и доводишь дела до конца. На тебя можно положиться.' },
       dating: { en: 'You show love by keeping your word and planning thoughtful moments.', ru: 'Ты проявляешь любовь тем, что держишь слово и продумываешь приятные моменты.' },
-      headline: { en: 'Reliable planner', ru: 'Надёжный планировщик' },
+      headline: { en: 'Reliable planner', ru: 'Надёжность и план' },
     },
     balanced: {
       summary: { en: 'You can plan when it matters and go with the flow when it doesn’t.', ru: 'Ты умеешь планировать, когда это важно, и плыть по течению, когда нет.' },
       dating: { en: 'You balance reliability with room for surprises.', ru: 'Ты сочетаешь надёжность и место для сюрпризов.' },
-      headline: { en: 'Adaptable organizer', ru: 'Гибкий организатор' },
+      headline: { en: 'Adaptable organizer', ru: 'Гибкость и порядок' },
     },
     low: {
-      summary: { en: 'You are flexible and spontaneous, and you adapt easily when plans change.', ru: 'Ты гибкий и спонтанный человек и легко подстраиваешься, когда планы меняются.' },
+      summary: { en: 'You are flexible and spontaneous, and you adapt easily when plans change.', ru: 'В тебе много гибкости и спонтанности: ты легко подстраиваешься, когда планы меняются.' },
       dating: { en: 'You bring lightness and spontaneity to the people you’re with.', ru: 'Ты приносишь лёгкость и спонтанность в отношения.' },
       headline: { en: 'Free-flowing spirit', ru: 'Свободный дух' },
     },
@@ -60,7 +60,7 @@ export const BAND_TEXT: Record<Domain, Record<Band, { summary: L; dating: L; hea
     balanced: {
       summary: { en: 'You enjoy people and also value your quiet time.', ru: 'Тебе нравятся люди, но и тихое время для себя важно.' },
       dating: { en: 'You’re comfortable both at a lively dinner and a quiet walk.', ru: 'Тебе комфортно и на шумном ужине, и на тихой прогулке.' },
-      headline: { en: 'Easy-going connector', ru: 'Лёгкий в общении' },
+      headline: { en: 'Easy-going connector', ru: 'Лёгкость в общении' },
     },
     low: {
       summary: { en: 'You recharge in calm, one-to-one time and value depth over crowds.', ru: 'Ты восстанавливаешься в спокойствии и наедине и ценишь глубину больше, чем толпу.' },
@@ -75,25 +75,25 @@ export const BAND_TEXT: Record<Domain, Record<Band, { summary: L; dating: L; hea
       headline: { en: 'Warm heart', ru: 'Тёплое сердце' },
     },
     balanced: {
-      summary: { en: 'You are kind and fair, and you can also stand your ground.', ru: 'Ты добрый и справедливый, но умеешь отстоять своё.' },
+      summary: { en: 'You are kind and fair, and you can also stand your ground.', ru: 'В тебе есть доброта и справедливость, и ты умеешь отстоять своё.' },
       dating: { en: 'You balance kindness with honesty.', ru: 'Ты сочетаешь доброту и честность.' },
-      headline: { en: 'Kind and fair', ru: 'Добрый и справедливый' },
+      headline: { en: 'Kind and fair', ru: 'Доброта и справедливость' },
     },
     low: {
       summary: { en: 'You are direct and independent-minded, and you say what you think.', ru: 'Ты прямой и независимый человек и говоришь, что думаешь.' },
       dating: { en: 'People always know where they stand with you.', ru: 'С тобой человек всегда понимает, где он находится.' },
-      headline: { en: 'Honest original', ru: 'Честный и самобытный' },
+      headline: { en: 'Honest original', ru: 'Честность и самобытность' },
     },
   },
   S: {
     high: {
-      summary: { en: 'You tend to stay calm and steady, even when things get bumpy.', ru: 'Ты обычно остаёшься спокойным и устойчивым, даже когда непросто.' },
+      summary: { en: 'You tend to stay calm and steady, even when things get bumpy.', ru: 'Ты обычно сохраняешь спокойствие и устойчивость, даже когда непросто.' },
       dating: { en: 'You’re a calm, reassuring presence for a partner.', ru: 'Для партнёра ты спокойная и надёжная опора.' },
       headline: { en: 'Calm anchor', ru: 'Спокойная опора' },
     },
     balanced: {
       summary: { en: 'You feel things fully and usually find your balance again.', ru: 'Ты проживаешь эмоции полностью и обычно быстро находишь равновесие.' },
-      dating: { en: 'You’re emotionally present without being overwhelmed.', ru: 'Ты эмоционально включён, но не теряешь себя.' },
+      dating: { en: 'You’re emotionally present without being overwhelmed.', ru: 'Ты эмоционально присутствуешь в отношениях и при этом не теряешь себя.' },
       headline: { en: 'Balanced heart', ru: 'Сбалансированное сердце' },
     },
     low: {
@@ -106,15 +106,15 @@ export const BAND_TEXT: Record<Domain, Record<Band, { summary: L; dating: L; hea
 
 export const ARCHETYPES: Record<ArchetypeKey, { name: L; line: L }> = {
   architect: { name: { en: 'The Architect', ru: 'Архитектор' }, line: { en: 'Imaginative and organized: you dream big and build it step by step.', ru: 'Воображение и собранность: ты мечтаешь масштабно и строишь шаг за шагом.' } },
-  explorer: { name: { en: 'The Explorer', ru: 'Исследователь' }, line: { en: 'Curious and outgoing: new places, new people, new ideas.', ru: 'Любознательный и общительный: новые места, люди и идеи.' } },
+  explorer: { name: { en: 'The Explorer', ru: 'Исследователь' }, line: { en: 'Curious and outgoing: new places, new people, new ideas.', ru: 'Любознательность и общительность: новые места, люди и идеи.' } },
   dreamer: { name: { en: 'The Dreamer', ru: 'Мечтатель' }, line: { en: 'Imaginative and warm: you see the best in people and possibilities.', ru: 'Воображение и теплота: ты видишь лучшее в людях и возможностях.' } },
-  free_spirit: { name: { en: 'The Free Spirit', ru: 'Свободный дух' }, line: { en: 'Curious and calm: open to anything, rarely rattled.', ru: 'Любознательный и спокойный: открыт всему и редко теряет равновесие.' } },
-  captain: { name: { en: 'The Captain', ru: 'Капитан' }, line: { en: 'Organized and energetic: you make things happen and bring people along.', ru: 'Собранный и энергичный: ты воплощаешь идеи и ведёшь за собой.' } },
-  guardian: { name: { en: 'The Guardian', ru: 'Хранитель' }, line: { en: 'Reliable and caring: people know they can count on you.', ru: 'Надёжный и заботливый: на тебя всегда можно положиться.' } },
-  anchor: { name: { en: 'The Anchor', ru: 'Якорь' }, line: { en: 'Steady and dependable: a calm, solid presence.', ru: 'Устойчивый и надёжный: спокойная, прочная опора.' } },
-  sunshine: { name: { en: 'The Sunshine', ru: 'Солнце' }, line: { en: 'Outgoing and warm: you light up a room and make people feel welcome.', ru: 'Общительный и тёплый: ты освещаешь комнату, и людям рядом хорошо.' } },
-  adventurer: { name: { en: 'The Adventurer', ru: 'Искатель приключений' }, line: { en: 'Energetic and steady: up for anything, cool under pressure.', ru: 'Энергичный и устойчивый: готов ко всему и спокоен под давлением.' } },
-  peacemaker: { name: { en: 'The Peacemaker', ru: 'Миротворец' }, line: { en: 'Warm and calm: you bring harmony and patience.', ru: 'Тёплый и спокойный: ты приносишь гармонию и терпение.' } },
+  free_spirit: { name: { en: 'The Free Spirit', ru: 'Свободный дух' }, line: { en: 'Curious and calm: open to anything, rarely rattled.', ru: 'Любознательность и спокойствие: открытость всему новому и редкая потеря равновесия.' } },
+  captain: { name: { en: 'The Captain', ru: 'Капитан' }, line: { en: 'Organized and energetic: you make things happen and bring people along.', ru: 'Собранность и энергия: ты воплощаешь идеи и ведёшь за собой.' } },
+  guardian: { name: { en: 'The Guardian', ru: 'Хранитель' }, line: { en: 'Reliable and caring: people know they can count on you.', ru: 'Надёжность и забота: на тебя всегда можно положиться.' } },
+  anchor: { name: { en: 'The Anchor', ru: 'Якорь' }, line: { en: 'Steady and dependable: a calm, solid presence.', ru: 'Устойчивость и надёжность: спокойная, прочная опора.' } },
+  sunshine: { name: { en: 'The Sunshine', ru: 'Солнце' }, line: { en: 'Outgoing and warm: you light up a room and make people feel welcome.', ru: 'Общительность и теплота: ты освещаешь комнату, и людям рядом хорошо.' } },
+  adventurer: { name: { en: 'The Adventurer', ru: 'Искатель приключений' }, line: { en: 'Energetic and steady: up for anything, cool under pressure.', ru: 'Энергия и устойчивость: ты готов(а) ко всему и сохраняешь спокойствие под давлением.' } },
+  peacemaker: { name: { en: 'The Peacemaker', ru: 'Миротворец' }, line: { en: 'Warm and calm: you bring harmony and patience.', ru: 'Теплота и спокойствие: ты приносишь гармонию и терпение.' } },
   single_O: { name: { en: 'The Curious Soul', ru: 'Любознательная душа' }, line: { en: 'Your strongest trait is curiosity.', ru: 'Твоя самая сильная черта — любознательность.' } },
   single_C: { name: { en: 'The Reliable Soul', ru: 'Надёжная душа' }, line: { en: 'Your strongest trait is reliability.', ru: 'Твоя самая сильная черта — надёжность.' } },
   single_E: { name: { en: 'The Social Soul', ru: 'Общительная душа' }, line: { en: 'Your strongest trait is social energy.', ru: 'Твоя самая сильная черта — общительность.' } },
@@ -129,11 +129,11 @@ export const ARCHETYPE_DISCLAIMER: L = {
 };
 
 export const STRENGTHS: Record<string, L> = {
-  curious: { en: 'Curious', ru: 'Любознательный' }, open_minded: { en: 'Open-minded', ru: 'Открытый' }, grounded: { en: 'Grounded', ru: 'Приземлённый' },
-  reliable: { en: 'Reliable', ru: 'Надёжный' }, adaptable: { en: 'Adaptable', ru: 'Гибкий' }, flexible: { en: 'Flexible', ru: 'Лёгкий на подъём' },
-  energizing: { en: 'Energizing', ru: 'Заряжающий' }, sociable: { en: 'Sociable', ru: 'Общительный' }, reflective: { en: 'Reflective', ru: 'Вдумчивый' },
-  kind: { en: 'Kind', ru: 'Добрый' }, fair: { en: 'Fair', ru: 'Справедливый' }, independent_minded: { en: 'Independent-minded', ru: 'Независимый' },
-  steady: { en: 'Steady', ru: 'Устойчивый' }, balanced: { en: 'Balanced', ru: 'Уравновешенный' }, feels_deeply: { en: 'Feels deeply', ru: 'Чуткий' },
+  curious: { en: 'Curious', ru: 'Любознательность' }, open_minded: { en: 'Open-minded', ru: 'Открытость' }, grounded: { en: 'Grounded', ru: 'Приземлённость' },
+  reliable: { en: 'Reliable', ru: 'Надёжность' }, adaptable: { en: 'Adaptable', ru: 'Гибкость' }, flexible: { en: 'Flexible', ru: 'Лёгкость на подъём' },
+  energizing: { en: 'Energizing', ru: 'Энергия' }, sociable: { en: 'Sociable', ru: 'Общительность' }, reflective: { en: 'Reflective', ru: 'Вдумчивость' },
+  kind: { en: 'Kind', ru: 'Доброта' }, fair: { en: 'Fair', ru: 'Справедливость' }, independent_minded: { en: 'Independent-minded', ru: 'Независимость' },
+  steady: { en: 'Steady', ru: 'Устойчивость' }, balanced: { en: 'Balanced', ru: 'Уравновешенность' }, feels_deeply: { en: 'Feels deeply', ru: 'Чуткость' },
 };
 
 const VALUE: Record<string, L> = {

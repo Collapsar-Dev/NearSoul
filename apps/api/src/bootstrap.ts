@@ -29,6 +29,12 @@ export function configureApp(app: INestApplication): void {
     }),
   );
   app.use(cookieParser());
+  // Personal API data must never sit in the browser's HTTP cache (shared devices), and identical concurrent GETs
+  // must not wait on each other's cache entry. Signed media URLs stay cacheable.
+  app.use('/v1', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (!req.path.startsWith('/media/')) res.setHeader('cache-control', 'no-store');
+    next();
+  });
   app.enableCors({
     origin: origins,
     credentials: true,
