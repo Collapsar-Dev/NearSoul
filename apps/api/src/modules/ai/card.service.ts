@@ -85,7 +85,7 @@ export function templateCard(p: SoulProfile, locale: Locale): CardContent {
   const summary = [text(first), text(second)].filter(Boolean).map((t) => tr(t!.summary, locale)).join(' ') + valuesLine;
   const texting = p.communication.texting_rhythm.value;
   const conflict = p.relationship.conflict_style.value;
-  const comm = `${texting ? tr(TEXTING[texting]!, locale) : locale === 'ru' ? 'Открыт к общению' : 'Open to connecting'} ${conflict ? tr(CONFLICT[conflict]!, locale) : '.'}`.replace(' .', '.');
+  const comm = `${texting ? tr(TEXTING[texting]!, locale) : locale === 'ru' ? 'Легко идёт на контакт' : 'Open to connecting'} ${conflict ? tr(CONFLICT[conflict]!, locale) : '.'}`.replace(' .', '.');
   const weekend = p.lifestyle.weekend_style.value ?? 'mix';
   const strengths = self.strengths.map((s) => tr(STRENGTHS[s] ?? { en: s, ru: s }, locale).slice(0, 20));
   while (strengths.length < 3) strengths.push(locale === 'ru' ? 'Искренний' : 'Genuine');

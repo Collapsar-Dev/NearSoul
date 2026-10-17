@@ -225,7 +225,7 @@ export const QUICK_SCAN_ITEMS: readonly ItemDef[] = [
   {
     key: 'deal_01', instrument: 'ns_custom', version: 1, block: 'X', trait: 'dealbreakers', type: 'multi',
     minSelect: 0, maxSelect: 3, optional: true,
-    prompt: t("Hard no's (optional, up to 3)", 'Точно нет (необязательно, до 3)'),
+    prompt: t("Hard no's (optional)", 'Точно нет (необязательно)'),
     options: [
       opt('smoker', 'Smoker', 'Курит'), opt('heavy_drinker', 'Heavy drinker', 'Много пьёт'),
       opt('wants_kids', 'Wants kids', 'Хочет детей'), opt('doesnt_want_kids', "Doesn't want kids", 'Не хочет детей'),

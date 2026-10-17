@@ -29,20 +29,26 @@ class _MeScreenState extends ConsumerState<MeScreen> {
   Widget build(BuildContext context) {
     final l = context.l;
     final me = ref.watch(sessionProvider).me;
-    final tiles = <(IconData, String, String)>[
-      (Icons.switch_account_outlined, me?.personaLabel == null ? l.profiles : '${l.profiles} · ${me!.personaLabel}', '/me/profiles'),
-      (Icons.workspace_premium_outlined, l.subscription, '/me/subscription'),
-      (Icons.edit_outlined, l.editProfile, '/me/edit'),
-      (Icons.photo_library_outlined, l.photosTitle, '/me/photos'),
-      (Icons.interests_outlined, l.interestsTitle, '/me/interests'),
-      (Icons.settings_outlined, l.settings, '/me/settings'),
-      (Icons.notifications_none, l.notifications, '/me/notifications'),
-      if (AppConfig.isAlpha || AppConfig.appEnv == 'development') (Icons.card_giftcard, l.invites, '/me/invites'),
-      (Icons.rate_review_outlined, l.sendFeedback, '/me/feedback'),
-      if (me?.isTester == true && AppConfig.showTestTools) (Icons.science_outlined, l.alphaTools, '/me/alpha'),
-      (Icons.block, l.blockedUsers, '/me/blocked'),
-      (Icons.shield_outlined, l.safetyCentre, '/me/safety'),
-      (Icons.info_outline, l.about, '/me/about'),
+    final sections = <(String, List<(IconData, String, String)>)>[
+      (l.menuProfile, [
+        (Icons.switch_account_outlined, me?.personaLabel == null ? l.profiles : '${l.profiles} · ${me!.personaLabel}', '/me/profiles'),
+        (Icons.edit_outlined, l.editProfile, '/me/edit'),
+        (Icons.photo_library_outlined, l.menuPhotos, '/me/photos'),
+        (Icons.interests_outlined, l.menuInterests, '/me/interests'),
+      ]),
+      (l.menuAccount, [
+        (Icons.workspace_premium_outlined, l.subscription, '/me/subscription'),
+        (Icons.settings_outlined, l.settings, '/me/settings'),
+        (Icons.notifications_none, l.notifications, '/me/notifications'),
+        (Icons.block, l.blockedUsers, '/me/blocked'),
+      ]),
+      (l.menuHelp, [
+        (Icons.shield_outlined, l.safetyCentre, '/me/safety'),
+        if (AppConfig.isAlpha || AppConfig.appEnv == 'development') (Icons.card_giftcard, l.invites, '/me/invites'),
+        (Icons.rate_review_outlined, l.sendFeedback, '/me/feedback'),
+        if (me?.isTester == true && AppConfig.showTestTools) (Icons.science_outlined, l.alphaTools, '/me/alpha'),
+        (Icons.info_outline, l.about, '/me/about'),
+      ]),
     ];
     return Scaffold(
       appBar: AppBar(title: NsTitle(l.meTitle)),
@@ -70,7 +76,10 @@ class _MeScreenState extends ConsumerState<MeScreen> {
               );
             },
           ),
-          for (final t in tiles) ListTile(leading: Icon(t.$1), title: Text(t.$2), trailing: const Icon(Icons.chevron_right), onTap: () => context.push(t.$3)),
+          for (final (title, items) in sections) ...[
+            Padding(padding: const EdgeInsets.fromLTRB(16, 16, 16, 4), child: Text(title, style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.primary))),
+            for (final t in items) ListTile(leading: Icon(t.$1), title: Text(t.$2), trailing: const Icon(Icons.chevron_right), onTap: () => context.push(t.$3)),
+          ],
           const Divider(),
           ListTile(leading: const Icon(Icons.logout), title: Text(l.logout), onTap: () => ref.read(sessionProvider.notifier).signOut()),
           const SizedBox(height: 24),

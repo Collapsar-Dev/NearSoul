@@ -226,7 +226,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lowConfidence => 'Answer a few more questions to sharpen this.';
 
   @override
-  String get cardTitle => 'Your Personality DNA';
+  String get cardTitle => 'Your personality card';
 
   @override
   String get cardAi => 'Written with AI from your answers';
@@ -1355,4 +1355,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewList => 'List';
+
+  @override
+  String get dobLocked =>
+      'Your date of birth can’t be changed later, so please check it.';
+
+  @override
+  String get notNowHint =>
+      'If you hide yourself, we can’t show you anyone either: matching works both ways. You can turn it on in Settings.';
+
+  @override
+  String get swipeHint =>
+      'Swipe right to like, left to pass. Tap the photo to open the profile.';
+
+  @override
+  String get gotIt => 'Got it';
+
+  @override
+  String get menuProfile => 'Profile';
+
+  @override
+  String get menuAccount => 'Account';
+
+  @override
+  String get menuHelp => 'Help';
+
+  @override
+  String get menuPhotos => 'Photos';
+
+  @override
+  String get menuInterests => 'Interests and bio';
 }

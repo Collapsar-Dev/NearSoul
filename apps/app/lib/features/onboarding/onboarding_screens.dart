@@ -131,7 +131,8 @@ class _DobScreenState extends ConsumerState<DobScreen> {
             final now = DateTime.now();
             final picked = await showDatePicker(
               context: context,
-              initialDate: DateTime(now.year - 25),
+              // No preset date: an accidental "OK" would lock a wrong birthday (it can't be changed later).
+              initialDate: _dob,
               firstDate: DateTime(now.year - 100),
               lastDate: now,
               initialEntryMode: DatePickerEntryMode.input,
@@ -140,6 +141,8 @@ class _DobScreenState extends ConsumerState<DobScreen> {
           },
         ),
         if (_age != null) ...[const SizedBox(height: 16), Text(l.dobConfirm(_age!), style: Theme.of(context).textTheme.titleMedium)],
+        const SizedBox(height: 12),
+        Text(l.dobLocked, style: Theme.of(context).textTheme.bodySmall),
       ],
     );
   }
@@ -197,7 +200,8 @@ class ShareLevelScreen extends ConsumerStatefulWidget {
 }
 
 class _ShareLevelScreenState extends ConsumerState<ShareLevelScreen> {
-  String? _level;
+  // The recommended level is preselected so one tap continues; in Settings the current level is shown.
+  late String? _level = (ref.read(sessionProvider).me?.settings['shareLevel'] as String?) ?? 'standard';
 
   @override
   Widget build(BuildContext context) {
@@ -513,6 +517,8 @@ class DiscoveryOptInScreen extends ConsumerWidget {
         BusyButton(label: l.discoveryOn, onPressed: () => finish(true)),
         const SizedBox(height: 8),
         BusyButton(label: l.notNow, outlined: true, onPressed: () => finish(false)),
+        const SizedBox(height: 12),
+        Text(l.notNowHint, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
       ],
     );
   }

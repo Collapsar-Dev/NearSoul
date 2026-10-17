@@ -485,7 +485,7 @@ abstract class AppLocalizations {
   /// No description provided for @cardTitle.
   ///
   /// In en, this message translates to:
-  /// **'Your Personality DNA'**
+  /// **'Your personality card'**
   String get cardTitle;
 
   /// No description provided for @cardAi.
@@ -2539,6 +2539,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'List'**
   String get viewList;
+
+  /// No description provided for @dobLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Your date of birth can’t be changed later, so please check it.'**
+  String get dobLocked;
+
+  /// No description provided for @notNowHint.
+  ///
+  /// In en, this message translates to:
+  /// **'If you hide yourself, we can’t show you anyone either: matching works both ways. You can turn it on in Settings.'**
+  String get notNowHint;
+
+  /// No description provided for @swipeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe right to like, left to pass. Tap the photo to open the profile.'**
+  String get swipeHint;
+
+  /// No description provided for @gotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get gotIt;
+
+  /// No description provided for @menuProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get menuProfile;
+
+  /// No description provided for @menuAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get menuAccount;
+
+  /// No description provided for @menuHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get menuHelp;
+
+  /// No description provided for @menuPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get menuPhotos;
+
+  /// No description provided for @menuInterests.
+  ///
+  /// In en, this message translates to:
+  /// **'Interests and bio'**
+  String get menuInterests;
 }
 
 class _AppLocalizationsDelegate

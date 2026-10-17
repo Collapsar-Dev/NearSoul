@@ -27,14 +27,41 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   /// Cards (swipe one by one) or a scrollable list of everyone today; remembered on this device.
   bool _list = false;
   static const _viewKey = 'ns_today_view';
+  /// One-time "swipe right to like" hint for card mode.
+  bool _showSwipeHint = false;
+  static const _hintKey = 'ns_swipe_hint_seen';
 
   @override
   void initState() {
     super.initState();
     _load();
     SharedPreferences.getInstance().then((p) {
-      if (mounted && p.getString(_viewKey) == 'list') setState(() => _list = true);
+      if (!mounted) return;
+      setState(() {
+        _list = p.getString(_viewKey) == 'list';
+        _showSwipeHint = p.getBool(_hintKey) != true;
+      });
     }).catchError((_) {});
+  }
+
+  void _hideSwipeHint() {
+    setState(() => _showSwipeHint = false);
+    SharedPreferences.getInstance().then((p) => p.setBool(_hintKey, true)).catchError((_) => true);
+  }
+
+  Widget _swipeHint(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.fromLTRB(14, 8, 4, 8),
+      decoration: BoxDecoration(color: scheme.secondaryContainer, borderRadius: BorderRadius.circular(14)),
+      child: Row(children: [
+        Icon(Icons.swipe_outlined, color: scheme.onSecondaryContainer),
+        const SizedBox(width: 10),
+        Expanded(child: Text(context.l.swipeHint, style: TextStyle(color: scheme.onSecondaryContainer))),
+        TextButton(onPressed: _hideSwipeHint, child: Text(context.l.gotIt)),
+      ]),
+    );
   }
 
   void _setView(bool list) {
@@ -63,6 +90,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     try {
       final r = await ref.read(apiProvider).post<Map<String, dynamic>>('/v1/likes', {'targetId': p['id'], 'action': action, 'source': 'daily'});
       setState(() => _acted.add(p['id'] as String));
+      if (_showSwipeHint) _hideSwipeHint();
       if (action == 'pass' && mounted) _offerRewind();
       final match = r['match'] as Map<String, dynamic>?;
       if (match != null && mounted) await showMatchDialog(context, person: p, matchId: match['id'] as String, nearby: match['nearby'] == true);
@@ -217,6 +245,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       FocusColumn(
         padding: EdgeInsets.zero,
         child: Column(children: [
+          if (_showSwipeHint) _swipeHint(context),
           SwipeCard(
             key: ValueKey(p['id']),
             onLike: () => _act(p, 'like'),

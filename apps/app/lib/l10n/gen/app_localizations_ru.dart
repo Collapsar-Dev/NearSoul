@@ -228,7 +228,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get lowConfidence => 'Ответь ещё на пару вопросов, чтобы уточнить.';
 
   @override
-  String get cardTitle => 'Твоя Personality DNA';
+  String get cardTitle => 'Твоя карточка личности';
 
   @override
   String get cardAi => 'Написано AI по твоим ответам';
@@ -274,7 +274,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get shareReciprocity =>
-      'Ты видишь настолько глубоко, насколько открываешься сам.';
+      'Ты видишь настолько глубоко, насколько открываешься ты.';
 
   @override
   String get shareMinimal => 'Минимально';
@@ -387,7 +387,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get discoveryBody =>
-      'Ты будешь появляться в Today’s Souls у других. Это можно выключить в любой момент.';
+      'Ты будешь появляться в «Душах дня» у других. Это можно выключить в любой момент.';
 
   @override
   String get discoveryOn => 'Да, показывать';
@@ -411,7 +411,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tabMe => 'Я';
 
   @override
-  String get todayTitle => 'Today’s Souls';
+  String get todayTitle => 'Души дня';
 
   @override
   String todayLeft(int n) {
@@ -625,8 +625,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get conversations => 'Переписки';
 
   @override
-  String get noMatches =>
-      'Пока нет матчей. Поставь пару лайков в Today’s Souls.';
+  String get noMatches => 'Пока нет матчей. Поставь пару лайков в «Душах дня».';
 
   @override
   String get deletedUser => 'Удалённый пользователь';
@@ -789,7 +788,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get simulateLocation => 'Симулировать локацию';
 
   @override
-  String get resetToday => 'Сбросить Today’s Souls';
+  String get resetToday => 'Сбросить «Души дня»';
 
   @override
   String get engineDebug => 'Отладка движка';
@@ -854,7 +853,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get deleteConfirm => 'Удалить мой аккаунт';
 
   @override
-  String get discoverySetting => 'Показывать меня в Today’s Souls';
+  String get discoverySetting => 'Показывать меня в «Душах дня»';
 
   @override
   String get hideDistance => 'Скрывать моё расстояние';
@@ -1360,4 +1359,34 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get viewList => 'Лента';
+
+  @override
+  String get dobLocked =>
+      'Дату рождения потом нельзя изменить, проверь её внимательно.';
+
+  @override
+  String get notNowHint =>
+      'Если не показывать себя, тебе тоже никого не покажут: подбор работает в обе стороны. Включить можно в Настройках.';
+
+  @override
+  String get swipeHint =>
+      'Свайп вправо — нравится, влево — пропустить. Нажми на фото, чтобы открыть профиль.';
+
+  @override
+  String get gotIt => 'Понятно';
+
+  @override
+  String get menuProfile => 'Профиль';
+
+  @override
+  String get menuAccount => 'Аккаунт';
+
+  @override
+  String get menuHelp => 'Помощь';
+
+  @override
+  String get menuPhotos => 'Фото';
+
+  @override
+  String get menuInterests => 'Интересы и о себе';
 }
