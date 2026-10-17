@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/api.dart';
 import '../../core/responsive.dart';
 import '../../core/session.dart';
@@ -23,11 +24,22 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   Map<String, dynamic>? _set;
   Object? _error;
   final Set<String> _acted = {};
+  /// Cards (swipe one by one) or a scrollable list of everyone today; remembered on this device.
+  bool _list = false;
+  static const _viewKey = 'ns_today_view';
 
   @override
   void initState() {
     super.initState();
     _load();
+    SharedPreferences.getInstance().then((p) {
+      if (mounted && p.getString(_viewKey) == 'list') setState(() => _list = true);
+    }).catchError((_) {});
+  }
+
+  void _setView(bool list) {
+    setState(() => _list = list);
+    SharedPreferences.getInstance().then((p) => p.setString(_viewKey, list ? 'list' : 'cards')).catchError((_) => true);
   }
 
   Future<void> _load() async {
@@ -102,7 +114,12 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       appBar: AppBar(
         title: NsTitle(l.todayTitle),
         actions: [
-          if (_set != null) Center(child: Padding(padding: const EdgeInsets.only(right: 8), child: Text(l.todayLeft(remaining.length)))),
+          if (_set != null) Center(child: Padding(padding: const EdgeInsets.only(right: 4), child: Text(l.todayLeft(remaining.length)))),
+          IconButton(
+            tooltip: _list ? l.viewCards : l.viewList,
+            icon: Icon(_list ? Icons.style_outlined : Icons.view_agenda_outlined),
+            onPressed: () => _setView(!_list),
+          ),
           IconButton(tooltip: l.notifications, icon: const Icon(Icons.notifications_none), onPressed: () => context.push('/me/notifications')),
         ],
       ),
@@ -110,7 +127,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
           ? ErrorState(error: _error!, onRetry: _load)
           : _set == null
               ? const Center(child: CircularProgressIndicator())
-              : RefreshIndicator(onRefresh: _load, child: remaining.isEmpty ? _empty(context) : _content(context, remaining.first)),
+              : RefreshIndicator(onRefresh: _load, child: remaining.isEmpty ? _empty(context) : _list ? _feed(context, remaining) : _content(context, remaining.first)),
     );
   }
 
@@ -213,5 +230,29 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
         ]),
       ),
     ]);
+  }
+
+  /// Feed: everyone left today, one under another, each with its own pass/like.
+  Widget _feed(BuildContext context, List<Map<String, dynamic>> people) {
+    final columns = sizeClassOf(context) == SizeClass.expanded ? 3 : sizeClassOf(context) == SizeClass.medium ? 2 : 1;
+    Widget item(Map<String, dynamic> p) => Column(mainAxisSize: MainAxisSize.min, children: [
+          SoulCard(p: p, onTap: () => context.push('/today/profile/${p['id']}')),
+          const SizedBox(height: 10),
+          LikePassBar(onLike: () => _act(p, 'like'), onPass: () => _act(p, 'pass')),
+          const SizedBox(height: 28),
+        ]);
+    if (columns == 1) {
+      return ListView.builder(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+        itemCount: people.length,
+        itemBuilder: (_, i) => FocusColumn(padding: EdgeInsets.zero, child: KeyedSubtree(key: ValueKey(people[i]['id']), child: item(people[i]))),
+      );
+    }
+    return GridView.builder(
+      padding: const EdgeInsets.all(24),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: columns, crossAxisSpacing: 24, childAspectRatio: 0.62),
+      itemCount: people.length,
+      itemBuilder: (_, i) => KeyedSubtree(key: ValueKey(people[i]['id']), child: item(people[i])),
+    );
   }
 }

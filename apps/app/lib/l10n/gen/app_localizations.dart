@@ -2527,6 +2527,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add a photo'**
   String get addPhoto2;
+
+  /// No description provided for @viewCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards'**
+  String get viewCards;
+
+  /// No description provided for @viewList.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get viewList;
 }
 
 class _AppLocalizationsDelegate

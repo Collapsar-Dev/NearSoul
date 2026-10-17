@@ -1349,4 +1349,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addPhoto2 => 'Add a photo';
+
+  @override
+  String get viewCards => 'Cards';
+
+  @override
+  String get viewList => 'List';
 }

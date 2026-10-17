@@ -1354,4 +1354,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get addPhoto2 => 'Добавить фото';
+
+  @override
+  String get viewCards => 'Карточки';
+
+  @override
+  String get viewList => 'Лента';
 }

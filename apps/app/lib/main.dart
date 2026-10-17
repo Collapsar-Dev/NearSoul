@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -53,6 +54,8 @@ class _NearSoulAppState extends ConsumerState<NearSoulApp> {
         return resolved;
       },
       routerConfig: router,
+      // Lists and feeds can also be dragged with a mouse, like on a phone.
+      scrollBehavior: const MaterialScrollBehavior().copyWith(dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.trackpad, PointerDeviceKind.stylus}),
     );
   }
 }

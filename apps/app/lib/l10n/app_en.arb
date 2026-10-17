@@ -572,5 +572,7 @@
   "todayHidden": "You’re hidden from Today’s Souls, so we can’t show you anyone either: matching works both ways.",
   "showMe": "Show me",
   "todayNeedsPhoto": "Add a photo so people can see you, and you’ll see them too.",
-  "addPhoto2": "Add a photo"
+  "addPhoto2": "Add a photo",
+  "viewCards": "Cards",
+  "viewList": "List"
 }
