@@ -2179,6 +2179,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Quiet from 23:00 to 08:00, except messages. At most one reminder a day. Everything still appears in the bell.'**
   String get notifyRulesNote;
+
+  /// No description provided for @testCodeBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Test version: no emails are sent. Your code is {code}.'**
+  String testCodeBanner(String code);
 }
 
 class _AppLocalizationsDelegate

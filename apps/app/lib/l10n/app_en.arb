@@ -506,5 +506,7 @@
   "notifyNearby": "Someone compatible nearby",
   "notifyOpenEnding": "Open to meet is ending",
   "notifyReport": "Updates on my reports",
-  "notifyRulesNote": "Quiet from 23:00 to 08:00, except messages. At most one reminder a day. Everything still appears in the bell."
+  "notifyRulesNote": "Quiet from 23:00 to 08:00, except messages. At most one reminder a day. Everything still appears in the bell.",
+  "testCodeBanner": "Test version: no emails are sent. Your code is {code}.",
+  "@testCodeBanner": {"placeholders": {"code": {"type": "String"}}}
 }

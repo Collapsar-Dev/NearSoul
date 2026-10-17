@@ -41,8 +41,8 @@ export class AuthController {
   @HttpCode(202)
   async code(@Body() body: unknown, @Req() req: Request) {
     const { email } = parse(z.object({ email: emailSchema }).strict(), body);
-    await this.auth.requestCode(email, req.ip ?? 'unknown');
-    return { status: 'sent' };
+    const testCode = await this.auth.requestCode(email, req.ip ?? 'unknown');
+    return { status: 'sent', ...(testCode ? { testCode } : {}) };
   }
 
   @Public()

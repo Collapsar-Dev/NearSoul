@@ -1142,4 +1142,9 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get notifyRulesNote =>
       'С 23:00 до 08:00 тихо, кроме сообщений. Не больше одного напоминания в день. Всё остальное по-прежнему видно в колокольчике.';
+
+  @override
+  String testCodeBanner(String code) {
+    return 'Тестовая версия: письма не отправляются. Ваш код: $code.';
+  }
 }

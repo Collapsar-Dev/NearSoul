@@ -42,7 +42,8 @@ export class AuthService {
   }
 
   /** AUTH-001: identical response whether or not the account exists. */
-  async requestCode(rawEmail: string, ip: string): Promise<void> {
+  /** Returns the code itself only with EMAIL_PROVIDER=screen (alpha test mode), otherwise null. */
+  async requestCode(rawEmail: string, ip: string): Promise<string | null> {
     const email = normalizeEmail(rawEmail);
     this.limiter.check(`code-ip:${ip}`, 10, 3_600_000);
     const since = new Date(Date.now() - CODE_WINDOW_MS);
@@ -75,6 +76,7 @@ export class AuthService {
       await this.prisma.authCode.delete({ where: { id: record.id } });
       throw new AppError(503, 'EMAIL_UNAVAILABLE', 'We couldn’t send the email right now. Please try again in a minute.');
     }
+    return screenCode(code);
   }
 
   /** AUTH-002: verify the code, create the account if new (invite required when INVITE_ONLY). */
@@ -149,7 +151,7 @@ export class AuthService {
   }
 
   /** AUTH-005: a fresh code for high-risk actions (account deletion, email change). */
-  async requestSensitiveCode(userId: string): Promise<void> {
+  async requestSensitiveCode(userId: string): Promise<string | null> {
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
     const recent = await this.prisma.authCode.findFirst({ where: { email: user.email, purpose: 'sensitive_action', createdAt: { gte: new Date(Date.now() - RESEND_COOLDOWN_MS) } } });
     if (recent) throw tooMany(60);
@@ -157,6 +159,7 @@ export class AuthService {
     await this.prisma.authCode.updateMany({ where: { email: user.email, purpose: 'sensitive_action', usedAt: null }, data: { usedAt: new Date() } });
     await this.prisma.authCode.create({ data: { email: user.email, purpose: 'sensitive_action', codeHash: this.codeHash(user.email, code), expiresAt: new Date(Date.now() + CODE_TTL_MS) } });
     await this.email.send({ to: user.email, subject: `${code} confirms your NearSoul request`, text: `Your confirmation code is ${code}. It expires in 10 minutes.\n\nIf you didn't ask to delete your account or change your email, ignore this email and consider signing out of all devices.` });
+    return screenCode(code);
   }
 
   async verifySensitiveCode(userId: string, code: string): Promise<void> {
@@ -180,4 +183,8 @@ export class AuthService {
     await this.prisma.session.updateMany({ where: { userId, revokedAt: null }, data: { revokedAt: new Date() } });
     await this.prisma.deviceToken.deleteMany({ where: { session: { userId } } });
   }
+}
+
+function screenCode(code: string): string | null {
+  return env().EMAIL_PROVIDER === 'screen' ? code : null;
 }

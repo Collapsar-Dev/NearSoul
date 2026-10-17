@@ -17,6 +17,7 @@ describe('Auth (AUTH-001..004, ALPHA-001)', () => {
     expect(a.status).toBe(202);
     expect(b.status).toBe(202);
     expect(a.body).toEqual(b.body);
+    expect(a.body).toEqual({ status: 'sent' }); // codes are only ever returned in the alpha on-screen mode
   });
 
   it('normalizes emails and creates the account on first verify', async () => {

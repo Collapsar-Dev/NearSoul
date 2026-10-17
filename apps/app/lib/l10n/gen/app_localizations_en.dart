@@ -1138,4 +1138,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notifyRulesNote =>
       'Quiet from 23:00 to 08:00, except messages. At most one reminder a day. Everything still appears in the bell.';
+
+  @override
+  String testCodeBanner(String code) {
+    return 'Test version: no emails are sent. Your code is $code.';
+  }
 }

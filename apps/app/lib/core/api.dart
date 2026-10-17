@@ -29,16 +29,18 @@ class Api {
       headers: {if (isWebPlatform) 'x-client': 'web'},
     ));
     configureAdapter(dio);
+    // Public auth endpoints take no bearer and never trigger a refresh; logout / logout-all do need the token.
+    bool isPublicAuth(String path) => const ['/v1/auth/code', '/v1/auth/verify', '/v1/auth/refresh'].contains(path);
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
         final t = accessToken;
-        if (t != null && !options.path.startsWith('/v1/auth/')) options.headers['authorization'] = 'Bearer $t';
+        if (t != null && !isPublicAuth(options.path)) options.headers['authorization'] = 'Bearer $t';
         options.headers['accept-language'] = locale;
         handler.next(options);
       },
       onError: (err, handler) async {
         final req = err.requestOptions;
-        final retriable = err.response?.statusCode == 401 && !req.path.startsWith('/v1/auth/') && req.extra['retried'] != true;
+        final retriable = err.response?.statusCode == 401 && !isPublicAuth(req.path) && req.extra['retried'] != true;
         if (retriable && await refresh()) {
           req.extra['retried'] = true;
           req.headers['authorization'] = 'Bearer $accessToken';
@@ -48,7 +50,7 @@ class Api {
             return handler.next(e);
           }
         }
-        if (err.response?.statusCode == 401 && !req.path.startsWith('/v1/auth/')) onSessionExpired?.call();
+        if (err.response?.statusCode == 401 && !isPublicAuth(req.path) && !req.path.startsWith('/v1/auth/logout')) onSessionExpired?.call();
         handler.next(err);
       },
     ));

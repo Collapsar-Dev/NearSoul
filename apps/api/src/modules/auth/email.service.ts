@@ -21,6 +21,7 @@ export class EmailService {
       if (e.APP_ENV === 'development') this.logger.log(`[dev email] to=${mail.to} subject="${mail.subject}"\n${mail.text}`);
       return;
     }
+    if (e.EMAIL_PROVIDER === 'screen') return; // alpha without an email account: the code goes back to the app instead
     if (e.EMAIL_PROVIDER === 'brevo') {
       const m = /^(.*)<(.+)>$/.exec(e.EMAIL_FROM.trim());
       const sender = m ? { name: m[1]!.trim(), email: m[2]!.trim() } : { name: 'NearSoul', email: e.EMAIL_FROM.trim() };

@@ -78,8 +78,8 @@ export class MeController {
   @Post('sensitive-code')
   @HttpCode(202)
   async sensitiveCode(@CurrentUser() user: AuthUser) {
-    await this.auth.requestSensitiveCode(user.id);
-    return { status: 'sent' };
+    const testCode = await this.auth.requestSensitiveCode(user.id);
+    return { status: 'sent', ...(testCode ? { testCode } : {}) };
   }
 
   @Post('delete')

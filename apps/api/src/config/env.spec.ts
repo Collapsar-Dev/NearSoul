@@ -10,6 +10,13 @@ describe('environment guards', () => {
     expect(loadEnv(alpha).APP_ENV).toBe('alpha');
   });
 
+  it('on-screen codes are allowed for the alpha but never in staging/production', () => {
+    expect(loadEnv({ ...base, APP_ENV: 'alpha', EMAIL_PROVIDER: 'screen', STORAGE_DRIVER: 'db' }).EMAIL_PROVIDER).toBe('screen');
+    for (const APP_ENV of ['staging', 'production']) {
+      expect(() => loadEnv({ ...base, APP_ENV, EMAIL_PROVIDER: 'screen', STORAGE_DRIVER: 'db' })).toThrow(/EMAIL_PROVIDER=screen/);
+    }
+  });
+
   it('Soul Talk needs a master key and approved crisis texts outside development/test (SOUL-006/007)', () => {
     expect(() => loadEnv({ ...alpha, SOUL_TALK_ENABLED: 'true' })).toThrow(/SOUL_MASTER_KEY/);
     const key = Buffer.alloc(32, 7).toString('base64');

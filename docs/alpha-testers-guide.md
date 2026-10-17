@@ -9,7 +9,7 @@
 - You need the **invite link** to sign up. You get 3 invites to share.
 
 **Please try**
-1. Sign up with your email (you'll get a 6-digit code — check spam).
+1. Sign up with your email. In the test version no email is sent: the 6-digit code appears on screen and is filled in for you. Use your real email so we can switch to emailed codes later.
 2. Do the Quick Scan and **rate how accurate your Soul Profile feels**.
 3. Add 2+ photos and your interests.
 4. Like at least 5 people in *Today's Souls* (profiles marked **DEMO** are not real people).
@@ -29,7 +29,7 @@
 - Для регистрации нужна **ссылка‑приглашение**. У тебя будет 3 приглашения для друзей.
 
 **Что попробовать**
-1. Зарегистрируйся по email (придёт 6‑значный код — проверь «Спам»).
+1. Зарегистрируйся по email. В тестовой версии письма не приходят: 6‑значный код появится прямо на экране и подставится сам. Указывай свою настоящую почту — позже коды начнут приходить на неё.
 2. Пройди Quick Scan и **оцени, насколько точно описан твой профиль**.
 3. Добавь 2+ фото и интересы.
 4. Поставь минимум 5 лайков в *Today's Souls* (профили с пометкой **ДЕМО** — не реальные люди).

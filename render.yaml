@@ -1,6 +1,6 @@
 # Render Blueprint — NearSoul Alpha (free test deployment). PRD 18-release-plan.
 # One web service serves both the API and the Flutter web app (same origin → secure cookies work on onrender.com).
-# Fill the `sync: false` values in the Render dashboard when you create the Blueprint. Never commit secrets.
+# Nothing has to be filled in to start: the `sync: false` values are optional (leave them empty). Never commit secrets.
 databases:
   - name: nearsoul-alpha-db
     region: frankfurt
@@ -40,23 +40,23 @@ services:
         value: amsterdam
       - key: STORAGE_DRIVER
         value: db # photos in Postgres (free tier has no persistent disk); move to s3/R2 later
+      # Friends test without any email account: the sign-in code is shown on screen (anyone who knows an email
+      # can sign in as it, so only invite people you trust). Before production: EMAIL_PROVIDER=brevo + BREVO_API_KEY
+      # + EMAIL_FROM (the server refuses "screen" when APP_ENV is staging/production).
       - key: EMAIL_PROVIDER
-        value: brevo
-      - key: BREVO_API_KEY
-        sync: false # Brevo → SMTP & API → API keys
-      - key: EMAIL_FROM
-        sync: false # e.g. NearSoul <your.verified.sender@gmail.com>
+        value: screen
+      # Must match the service URL Render shows; change these three if Render gave the service another name.
       - key: APP_ORIGINS
-        sync: false # https://nearsoul-alpha.onrender.com
+        value: https://nearsoul-alpha.onrender.com
       - key: APP_PUBLIC_URL
-        sync: false # https://nearsoul-alpha.onrender.com
+        value: https://nearsoul-alpha.onrender.com
       - key: PUBLIC_API_URL
-        sync: false # https://nearsoul-alpha.onrender.com
+        value: https://nearsoul-alpha.onrender.com
       - key: ADMIN_BOOTSTRAP_EMAIL
-        sync: false # your email: the first admin's password + TOTP link appear once in the deploy log
+        sync: false # optional, your email: the first admin's password + TOTP link appear once in the deploy log
       - key: AI_ENABLED
         value: "false" # set to true after adding ANTHROPIC_API_KEY
       - key: ANTHROPIC_API_KEY
-        sync: false
+        sync: false # optional, later
       - key: AI_DAILY_BUDGET_USD
         value: "10"

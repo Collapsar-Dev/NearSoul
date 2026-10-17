@@ -5,7 +5,7 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 ## Evidence (commands run on 2026-10-16)
 | Command | Result |
 |---|---|
-| `cd apps/api && npx jest` | 20 suites, 223 tests passed (engine unit + property + golden snapshot tests; integration tests on real Postgres) |
+| `cd apps/api && npx jest` | 21 suites, 226 tests passed (engine unit + property + golden snapshot tests; integration tests on real Postgres) |
 | Browser check of Settings → «О чём уведомлять» | toggle saved (notify_prefs), browser timezone synced to the server |
 | Web Push round trip (headless Chromium 151) | subscribe via web/push.js → server PushService → Google push service → service worker shows the localized notification with the right deep link |
 | GitHub Actions CI (run 38901751005) | API, Flutter (web + APK), Windows, macOS green; Linux desktop fixed (libsecret) |
@@ -14,7 +14,8 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 | `cd apps/api && npx jest src/engine --coverage` | engine lines 100%, statements 99.8%, branches 94.8% |
 | `cd apps/api && npx eslint "src/**/*.ts" "test/**/*.ts"` / `npx tsc --noEmit` | clean |
 | `cd apps/app && flutter analyze` | No issues found |
-| `cd apps/app && flutter test` | 6 tests passed |
+| `cd apps/app && flutter test` | 7 tests passed |
+| Browser check, Render-like alpha mode (APP_ENV=alpha, EMAIL_PROVIDER=screen, STORAGE_DRIVER=db) | sign-up with the on-screen code → onboarding; logout now ends the session (was 401: the client sent no token to /v1/auth/logout) |
 | `flutter build web --release` | built |
 | Manual browser walkthrough (web, medium + compact widths) | sign-up with email code → DOB → consents → Quick Scan → Soul Profile reveal → Today's Souls → like → match with demo → realtime chat with demo auto-reply → "You two" report → Nearby → Soul tab |
 
@@ -29,7 +30,7 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 | M5 Chat, notifications, safety, admin | TESTED | CHAT-001..003 (starters templated), LIKE-004, SAFE-001..005, NOTIF-001 in-app + realtime + Web Push (VAPID keys auto-generated, Settings toggle, SSRF-safe endpoint allowlist); per-type push toggles, quiet hours 23:00–08:00 (messages exempt), max 1 reminder push per local day, daily_set_ready at 12:00 local (only when the new set has people and wasn't opened), timezone synced from the device; FCM HTTP v1 path ready, live once a Firebase service account is set; admin panel static client (CR-4) |
 | M6 Reports | TESTED | RPT-001..003 with deterministic templates (CR-7); paywall gating tested in both flag states |
 | M7 Nearby Now | TESTED (server) / IMPLEMENTED (app) | GEO-001..007, ALPHA-003 simulator. Not yet tested with two physical phones |
-| A1 Alpha release | IN PROGRESS | render.yaml ready (free tier, open registration). Waiting for the founder: Render Blueprint + Brevo sender/API key. Later: own domain, R2, Anthropic key, APK signing, admin account |
+| A1 Alpha release | IN PROGRESS | render.yaml ready (free tier, open registration) and needs **no accounts or keys**: sign-in codes are shown on screen (EMAIL_PROVIDER=screen, alpha only). Waiting for the founder: Render Blueprint. Later: own domain, R2, Anthropic key, APK signing, admin account |
 | M8 Deep Personality & Soul Talk | IN PROGRESS | Deep Personality (ENG-003) TESTED: 116 IPIP-NEO-120 items in 4 parts, 29 facets, domains switch to deep scores, background recompute on ENGINE_VERSION bump. Soul Talk IMPLEMENTED + TESTED behind `SOUL_TALK_ENABLED=false`: 8 topics, encrypted owner-only storage with crypto-shred, safety classifier + bilingual keyword backup, fixed crisis message (DRAFT), insights → traits only after Keep, Soul Map, purge job. **Cannot go live until the founder approves the crisis message and resources (CRISIS_TEXTS_APPROVED) and an Anthropic key is set** |
 | M9 Payments & ops | IN PROGRESS | PAY-001..003 TESTED (RevenueCat webhook, entitlements, paywall sheet; store products not set up yet). ACC-002 data export TESTED. ANL-001 consent-gated server analytics TESTED (needs POSTHOG_KEY) |
 
@@ -38,3 +39,8 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 - Real-device tests (Android phone pair for Nearby; iPhone PWA).
 - Russian translation of IPIP items (CR-8).
 - Founder review of band texts, archetype texts and golden persona pairs.
+
+## Before production (founder: "prepare for production")
+- Email: EMAIL_PROVIDER=brevo (or resend) + API key + verified EMAIL_FROM. `screen` is refused by the server in staging/production; with `screen` anyone who types an email can sign in as it.
+- Render free Postgres is for testing only (limited lifetime and no backups): move to a paid database.
+- Own domain, R2/S3 storage instead of photos in Postgres, APK signing, Anthropic key, Firebase for native push.

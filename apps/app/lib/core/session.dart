@@ -58,7 +58,15 @@ class SessionNotifier extends Notifier<SessionState> {
     }
   }
 
-  Future<void> requestCode(String email) => _api.post('/v1/auth/code', {'email': email});
+  /// Alpha on-screen mode (EMAIL_PROVIDER=screen): the last code the server returned, per email. Memory only.
+  final Map<String, String> _testCodes = {};
+  String? testCodeFor(String email) => _testCodes[email.trim().toLowerCase()];
+
+  Future<void> requestCode(String email) async {
+    final res = await _api.post<Map<String, dynamic>>('/v1/auth/code', {'email': email});
+    final code = res['testCode'];
+    if (code is String) _testCodes[email.trim().toLowerCase()] = code;
+  }
 
   Future<void> verify(String email, String code, {String? inviteCode}) async {
     final data = await _api.post<Map<String, dynamic>>('/v1/auth/verify', {
@@ -67,6 +75,7 @@ class SessionNotifier extends Notifier<SessionState> {
       if (inviteCode != null && inviteCode.isNotEmpty) 'inviteCode': inviteCode,
     });
     await _api.setTokens(data);
+    _testCodes.clear();
     await reloadMe();
     unawaited(ref.read(pushProvider).refresh().catchError((_) {}));
   }

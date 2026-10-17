@@ -171,10 +171,18 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
   Timer? _timer;
   String? _error;
 
+  String? _testCode;
+
   @override
   void initState() {
     super.initState();
     _startCooldown();
+    _showTestCode();
+  }
+
+  void _showTestCode() {
+    _testCode = ref.read(sessionProvider.notifier).testCodeFor(widget.email);
+    if (_testCode != null) _code.text = _testCode!;
   }
 
   void _startCooldown() {
@@ -220,7 +228,15 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
           child: ListView(children: [
             Text(l.codeTitle, style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),
-            Text(l.codeSent(widget.email)),
+            if (_testCode == null) Text(l.codeSent(widget.email)) else Text(widget.email),
+            if (_testCode != null) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(color: Theme.of(context).colorScheme.tertiaryContainer, borderRadius: BorderRadius.circular(12)),
+                child: Text(l.testCodeBanner(_testCode!), style: TextStyle(color: Theme.of(context).colorScheme.onTertiaryContainer)),
+              ),
+            ],
             const SizedBox(height: 24),
             TextField(
               controller: _code,
@@ -253,6 +269,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                         try {
                           await ref.read(sessionProvider.notifier).requestCode(widget.email);
                           _startCooldown();
+                          setState(_showTestCode);
                         } catch (e) {
                           if (context.mounted) showSnack(context, errorText(context, e));
                         }
@@ -260,7 +277,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                       child: Text(l.resend),
                     ),
             ),
-            Center(child: Text(l.checkSpam, style: Theme.of(context).textTheme.bodySmall)),
+            if (_testCode == null) Center(child: Text(l.checkSpam, style: Theme.of(context).textTheme.bodySmall)),
           ]),
         ),
       ),

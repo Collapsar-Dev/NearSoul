@@ -12,7 +12,8 @@ const EnvSchema = z.object({
   APP_ORIGINS: z.string().default('http://localhost:8080'),
   COOKIE_DOMAIN: z.string().optional(),
   INVITE_ONLY: bool.default('false'),
-  EMAIL_PROVIDER: z.enum(['console', 'resend', 'brevo']).default('console'),
+  // 'screen' (friends alpha, no email account): codes are returned to the app and shown on screen.
+  EMAIL_PROVIDER: z.enum(['console', 'screen', 'resend', 'brevo']).default('console'),
   BREVO_API_KEY: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().default('NearSoul <hello@nearsoul.app>'),
@@ -72,6 +73,8 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
     if (env.EMAIL_PROVIDER === 'console') throw new Error('EMAIL_PROVIDER=console is not allowed outside development/test');
     if (env.STORAGE_DRIVER === 'local') throw new Error('STORAGE_DRIVER=local is not allowed outside development/test');
   }
+  // Anyone who types an email sees its code: fine for a friends test, never for real users.
+  if (env.EMAIL_PROVIDER === 'screen' && (env.APP_ENV === 'production' || env.APP_ENV === 'staging')) throw new Error('EMAIL_PROVIDER=screen is only allowed in development/test/alpha');
   if (env.EMAIL_PROVIDER === 'brevo' && !env.BREVO_API_KEY) throw new Error('EMAIL_PROVIDER=brevo requires BREVO_API_KEY');
   if (env.EMAIL_PROVIDER === 'resend' && !env.RESEND_API_KEY) throw new Error('EMAIL_PROVIDER=resend requires RESEND_API_KEY');
   if (env.SOUL_TALK_ENABLED && !['development', 'test'].includes(env.APP_ENV)) {
