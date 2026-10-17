@@ -42,9 +42,11 @@ export type IneligibleReason =
 
 export type EligibilityResult = { eligible: true } | { eligible: false; reason: IneligibleReason };
 
-const MIN_PHOTOS = 2;
+/** One clear photo is enough (founder decision 2026-10-17, CR-14). */
+const MIN_PHOTOS = 1;
 
-function readyForDating(s: EligibilitySubject, mode: PairContext['mode']): IneligibleReason | null {
+/** Why this person can't take part in discovery right now (null = ready). Applies to viewer and candidate alike. */
+export function readyForDating(s: EligibilitySubject, mode: PairContext['mode']): IneligibleReason | null {
   if (s.status !== 'active') return 'INACTIVE';
   if (!s.ageGatePassed) return 'AGE_GATE';
   if (!s.onboardingComplete) return 'ONBOARDING';

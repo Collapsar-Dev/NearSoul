@@ -350,7 +350,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get photosTitle => 'Add your photos';
 
   @override
-  String get photosHint => 'At least 2. Clear, recent photos of you work best.';
+  String get photosHint =>
+      'At least one photo. A clear, recent one of you works best.';
 
   @override
   String get addPhoto => 'Add photo';
@@ -1334,4 +1335,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passed => 'Passed';
+
+  @override
+  String get todayHidden =>
+      'You’re hidden from Today’s Souls, so we can’t show you anyone either: matching works both ways.';
+
+  @override
+  String get showMe => 'Show me';
+
+  @override
+  String get todayNeedsPhoto =>
+      'Add a photo so people can see you, and you’ll see them too.';
+
+  @override
+  String get addPhoto2 => 'Add a photo';
 }

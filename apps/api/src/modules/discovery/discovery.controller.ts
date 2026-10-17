@@ -1,6 +1,7 @@
 import { AnalyticsService } from '../analytics/analytics.service';
 import { Controller, Get, Headers, Param, ParseUUIDPipe } from '@nestjs/common';
 import { CurrentUser, RequireGate, type AuthUser } from '../../common/auth';
+import { readyForDating } from '../../engine';
 import { notFound } from '../../common/errors';
 import { familyIds } from '../../common/family';
 import { PrismaService } from '../../common/prisma.service';
@@ -49,7 +50,9 @@ export class DiscoveryController {
     // Too many skipped questions leave the engine nothing to compare (every score is 0): tell the app why it's empty.
     const domains = viewer.profile ? Object.values(viewer.profile.domains) : [];
     const needsAnswers = domains.length === 0 || domains.every((d) => d.score === null);
-    return { date, refreshAt, remaining: cards.filter((c) => !c.action).length, cards, needsAnswers };
+    // Matching is mutual, so the viewer must be ready too (2 photos, discoverable…); tell the app what's missing.
+    const viewerBlocked = readyForDating(viewer.eligibility, 'daily');
+    return { date, refreshAt, remaining: cards.filter((c) => !c.action).length, cards, needsAnswers, viewerBlocked };
   }
 
   /** Public profile: only for people in your daily set, nearby list or matches (prevents scraping by id). */

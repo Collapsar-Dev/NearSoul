@@ -9,7 +9,7 @@ import { ageOn } from '../me/me.service';
 import { containsContactInfo, looksLikeScam } from './text-safety';
 
 export const MAX_PHOTOS = 6;
-export const MIN_PHOTOS = 2;
+export const MIN_PHOTOS = 1;
 const MAX_BYTES = 10 * 1024 * 1024;
 const ALLOWED_FORMATS = new Set(['jpeg', 'png', 'webp', 'heif']);
 
@@ -138,7 +138,7 @@ export class ProfileService {
     if (!photo) throw notFound();
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
     const count = await this.prisma.photo.count({ where: { userId, status: 'ready' } });
-    if (count <= MIN_PHOTOS && user.discoveryEnabled) throw badRequest('MIN_PHOTOS', `Keep at least ${MIN_PHOTOS} photos while you're discoverable.`);
+    if (count <= MIN_PHOTOS && user.discoveryEnabled) throw badRequest('MIN_PHOTOS', 'Keep at least one photo while you are discoverable.');
     await this.prisma.photo.delete({ where: { id: photo.id } });
     await this.storage.delete(photo.storageKey);
     await this.reindex(userId);

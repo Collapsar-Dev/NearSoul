@@ -71,7 +71,7 @@ export class MeController {
   @Post('onboarding/skip')
   @HttpCode(200)
   skip(@CurrentUser() user: AuthUser, @Body() body: unknown) {
-    const { step } = parse(z.object({ step: z.enum(['photos', 'interests', 'reveal', 'shareLevel']) }).strict(), body);
+    const { step } = parse(z.object({ step: z.enum(['interests', 'reveal', 'shareLevel']) }).strict(), body);
     return this.me.skipOnboardingStep(user.id, step);
   }
 

@@ -1,4 +1,4 @@
-import { bearer, createTestApp, lastCode, passGateAndScan, quickScanAnswers, resetDb, signIn, type TestCtx } from './helpers/app';
+import { bearer, testJpeg, createTestApp, lastCode, passGateAndScan, quickScanAnswers, resetDb, signIn, type TestCtx } from './helpers/app';
 
 describe('Onboarding, engine and card (ONB-001..003, ENG-002/005/008/010)', () => {
   let ctx: TestCtx;
@@ -99,19 +99,22 @@ describe('Onboarding, engine and card (ONB-001..003, ENG-002/005/008/010)', () =
     await ctx.http.patch('/v1/me/soul-profile/layers').set(bearer(token)).send({ O: 99 }).expect(400);
   });
 
-  it('optional steps can be skipped; age, terms, Quick Scan and basics stay required', async () => {
+  it('optional steps can be skipped; age, terms, Quick Scan, basics and one photo stay required', async () => {
     const { token } = await signIn(ctx, 'skipper@example.com');
     await passGateAndScan(ctx, token);
     await ctx.http.post('/v1/me/onboarding/skip').set(bearer(token)).send({ step: 'dob' }).expect(400);
-    for (const step of ['reveal', 'shareLevel', 'photos', 'interests']) {
+    // one photo is required (CR-14): the photo step can't be skipped
+    await ctx.http.post('/v1/me/onboarding/skip').set(bearer(token)).send({ step: 'photos' }).expect(400);
+    for (const step of ['reveal', 'shareLevel', 'interests']) {
       await ctx.http.post('/v1/me/onboarding/skip').set(bearer(token)).send({ step }).expect(200);
     }
     const me = await ctx.http.get('/v1/me').set(bearer(token)).expect(200);
-    expect(me.body.onboarding).toMatchObject({ cardReviewed: true, shareLevel: true, photos: true, interests: true, basics: false });
+    expect(me.body.onboarding).toMatchObject({ cardReviewed: true, shareLevel: true, photos: false, interests: true, basics: false });
     expect(me.body.settings.shareLevel).toBe('standard');
     const early = await ctx.http.post('/v1/me/onboarding/complete').set(bearer(token)).expect(400);
-    expect(early.body.error.details.missing).toEqual(['basics']);
+    expect(early.body.error.details.missing).toEqual(['basics', 'photos']);
     await ctx.http.put('/v1/me/profile').set(bearer(token)).send({ firstName: 'Skip', gender: 'woman', interestedIn: ['man'], intent: 'not_sure', cityId: 'amsterdam', interests: [], ageMin: 18, ageMax: 60 }).expect(200);
+    await ctx.http.post('/v1/photos').set(bearer(token)).attach('photo', await testJpeg(1), 'p.jpg').expect(201);
     await ctx.http.post('/v1/me/onboarding/complete').set(bearer(token)).expect(200);
   });
 

@@ -5,10 +5,13 @@ import '../onboarding/reveal_screen.dart';
 
 /// Photo carousel with page dots.
 class PhotoCarousel extends StatefulWidget {
-  const PhotoCarousel({super.key, required this.photos, this.aspect = 4 / 5, this.overlay});
+  const PhotoCarousel({super.key, required this.photos, this.aspect = 4 / 5, this.overlay, this.tapToFlip = false, this.onCenterTap});
   final List<Map<String, dynamic>> photos;
   final double aspect;
   final Widget? overlay;
+  /// Stories-style: tap the left/right third to change photo (horizontal swipes are left to the card).
+  final bool tapToFlip;
+  final VoidCallback? onCenterTap;
 
   @override
   State<PhotoCarousel> createState() => _PhotoCarouselState();
@@ -16,6 +19,25 @@ class PhotoCarousel extends StatefulWidget {
 
 class _PhotoCarouselState extends State<PhotoCarousel> {
   int _i = 0;
+  final _page = PageController();
+
+  @override
+  void dispose() {
+    _page.dispose();
+    super.dispose();
+  }
+
+  void _tap(TapUpDetails d, double width) {
+    final x = d.localPosition.dx / width;
+    final n = widget.photos.length;
+    if (x < 0.33 && _i > 0) {
+      _page.jumpToPage(_i - 1);
+    } else if (x > 0.67 && _i < n - 1) {
+      _page.jumpToPage(_i + 1);
+    } else {
+      widget.onCenterTap?.call();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +50,8 @@ class _PhotoCarouselState extends State<PhotoCarousel> {
           if (photos.isEmpty) Container(color: Theme.of(context).colorScheme.surfaceContainerHighest)
           else
             PageView.builder(
+              controller: _page,
+              physics: widget.tapToFlip ? const NeverScrollableScrollPhysics() : null,
               itemCount: photos.length,
               onPageChanged: (i) => setState(() => _i = i),
               itemBuilder: (_, i) => Image.network(photos[i]['url'] as String, fit: BoxFit.cover, errorBuilder: (_, _, _) => Container(color: Colors.black12)),
@@ -43,6 +67,7 @@ class _PhotoCarouselState extends State<PhotoCarousel> {
               ]),
             ),
           if (widget.overlay != null) widget.overlay!,
+          if (widget.tapToFlip) LayoutBuilder(builder: (context, c) => GestureDetector(behavior: HitTestBehavior.translucent, onTapUp: (d) => _tap(d, c.maxWidth))),
         ]),
       ),
     );
@@ -60,9 +85,12 @@ class SoulCard extends StatelessWidget {
     final compat = p['compatibility'] as Map<String, dynamic>?;
     final reasons = (compat?['reasons'] as List?)?.cast<String>() ?? const [];
     final place = (p['distanceBand'] ?? p['city']) as String?;
-    return GestureDetector(
+    return Semantics(
+      button: onTap != null,
       onTap: onTap,
       child: PhotoCarousel(
+        tapToFlip: true,
+        onCenterTap: onTap,
         photos: (p['photos'] as List).cast<Map<String, dynamic>>(),
         overlay: Positioned(
           left: 0,
@@ -271,4 +299,109 @@ Future<void> showMatchDialog(BuildContext context, {required Map<String, dynamic
       ),
     ),
   );
+}
+
+/// Tinder-style swipe on a Today card: drag right to like, left to pass. Buttons below stay for keyboard,
+/// screen readers and anyone who prefers tapping.
+class SwipeCard extends StatefulWidget {
+  const SwipeCard({super.key, required this.child, required this.onLike, required this.onPass});
+  final Widget child;
+  final Future<void> Function() onLike;
+  final Future<void> Function() onPass;
+
+  @override
+  State<SwipeCard> createState() => _SwipeCardState();
+}
+
+class _SwipeCardState extends State<SwipeCard> with SingleTickerProviderStateMixin {
+  late final AnimationController _anim = AnimationController(vsync: this, duration: const Duration(milliseconds: 220));
+  Offset _drag = Offset.zero;
+  Offset _from = Offset.zero;
+  Offset _to = Offset.zero;
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _anim.addListener(() => setState(() => _drag = Offset.lerp(_from, _to, Curves.easeOut.transform(_anim.value))!));
+  }
+
+  @override
+  void dispose() {
+    _anim.dispose();
+    super.dispose();
+  }
+
+  Future<void> _animateTo(Offset target) async {
+    _from = _drag;
+    _to = target;
+    await _anim.forward(from: 0);
+  }
+
+  Future<void> _end(DragEndDetails d, double width) async {
+    if (_busy) return;
+    final vx = d.velocity.pixelsPerSecond.dx;
+    final like = _drag.dx > width * 0.28 || vx > 900;
+    final pass = _drag.dx < -width * 0.28 || vx < -900;
+    if (!like && !pass) {
+      await _animateTo(Offset.zero);
+      return;
+    }
+    _busy = true;
+    if (!MediaQuery.disableAnimationsOf(context)) await _animateTo(Offset((like ? 1.5 : -1.5) * width, _drag.dy));
+    try {
+      await (like ? widget.onLike() : widget.onPass());
+    } finally {
+      if (mounted) {
+        setState(() {
+          _drag = Offset.zero;
+          _busy = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l;
+    final scheme = Theme.of(context).colorScheme;
+    return LayoutBuilder(builder: (context, c) {
+      final w = c.maxWidth;
+      final t = (_drag.dx / (w * 0.28)).clamp(-1.0, 1.0);
+      Widget stamp(String text, Color color, double opacity, Alignment at, double angle) => Positioned.fill(
+            child: IgnorePointer(
+              child: Align(
+                alignment: at,
+                child: Opacity(
+                  opacity: opacity,
+                  child: Transform.rotate(
+                    angle: angle,
+                    child: Container(
+                      margin: const EdgeInsets.all(24),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                      decoration: BoxDecoration(border: Border.all(color: color, width: 4), borderRadius: BorderRadius.circular(10), color: Colors.black.withValues(alpha: 0.15)),
+                      child: Text(text.toUpperCase(), style: TextStyle(color: color, fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 2)),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+      return GestureDetector(
+        onHorizontalDragUpdate: _busy ? null : (d) => setState(() => _drag += Offset(d.delta.dx, d.delta.dy * 0.3)),
+        onHorizontalDragEnd: (d) => _end(d, w),
+        child: Transform.translate(
+          offset: _drag,
+          child: Transform.rotate(
+            angle: MediaQuery.disableAnimationsOf(context) ? 0 : t * 0.12,
+            child: Stack(children: [
+              widget.child,
+              stamp(l.like, scheme.primary, t > 0 ? t : 0, Alignment.topLeft, -0.3),
+              stamp(l.pass, scheme.error, t < 0 ? -t : 0, Alignment.topRight, 0.3),
+            ]),
+          ),
+        ),
+      );
+    });
+  }
 }

@@ -21,7 +21,7 @@ describe('eligibility (ENG-011)', () => {
     ['no age gate', { ageGatePassed: false }, 'AGE_GATE'],
     ['onboarding', { onboardingComplete: false }, 'ONBOARDING'],
     ['quick scan', { quickScanComplete: false }, 'QUICK_SCAN'],
-    ['photos', { photoCount: 1 }, 'PHOTOS'],
+    ['photos', { photoCount: 0 }, 'PHOTOS'],
     ['moderation', { hiddenByModeration: true }, 'MODERATION'],
     ['discovery off', { discoveryEnabled: false }, 'NOT_DISCOVERABLE'],
   ])('rejects candidate: %s', (_n, over, reason) => {

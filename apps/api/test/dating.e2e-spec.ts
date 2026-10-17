@@ -88,6 +88,14 @@ describe('Discovery, likes, matches, chat (ENG-011/014, LIKE-001..004, CHAT-001)
     expect(set.body.cards.map((x: { id: string }) => x.id)).toEqual([c.userId]);
   });
 
+  it('tells the viewer why the day is empty when they are not ready (discovery off)', async () => {
+    const ben = await onboard(ctx, 'ben@example.com', { gender: 'man', interestedIn: ['woman'] });
+    await onboard(ctx, 'anna@example.com');
+    await ctx.http.patch('/v1/me').set(bearer(ben.token)).send({ discoveryEnabled: false }).expect(200);
+    const hidden = await ctx.http.get('/v1/daily-set').set(bearer(ben.token)).expect(200);
+    expect(hidden.body).toMatchObject({ cards: [], viewerBlocked: 'NOT_DISCOVERABLE' });
+  });
+
   it('an empty day is rebuilt once people join instead of staying empty until tomorrow', async () => {
     const ben = await onboard(ctx, 'ben@example.com', { gender: 'man', interestedIn: ['woman'] });
     const empty = await ctx.http.get('/v1/daily-set').set(bearer(ben.token)).expect(200);

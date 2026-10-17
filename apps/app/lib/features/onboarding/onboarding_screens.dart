@@ -415,10 +415,9 @@ class _PhotosScreenState extends ConsumerState<PhotosScreen> {
     }
     return StepScaffold(
       step: 6,
-      skip: 'photos',
       title: l.photosTitle,
       subtitle: l.photosHint,
-      action: BusyButton(label: l.continueBtn, onPressed: _photos.length < 2 ? null : () async => ref.read(sessionProvider.notifier).reloadMe()),
+      action: BusyButton(label: l.continueBtn, onPressed: _photos.isEmpty ? null : () async => ref.read(sessionProvider.notifier).reloadMe()),
       children: [grid],
     );
   }

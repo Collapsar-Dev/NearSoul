@@ -354,7 +354,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get photosHint =>
-      'Минимум 2. Лучше всего — свежие фото, где хорошо видно тебя.';
+      'Нужно хотя бы одно фото. Лучше всего — свежее, где хорошо видно тебя.';
 
   @override
   String get addPhoto => 'Добавить фото';
@@ -1340,4 +1340,18 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get passed => 'Пропущено';
+
+  @override
+  String get todayHidden =>
+      'Показ тебя выключен, поэтому и тебе мы никого не показываем: подбор работает в обе стороны.';
+
+  @override
+  String get showMe => 'Показывать меня';
+
+  @override
+  String get todayNeedsPhoto =>
+      'Добавь фото: тогда тебя увидят, а ты увидишь других.';
+
+  @override
+  String get addPhoto2 => 'Добавить фото';
 }

@@ -56,7 +56,7 @@ export class MeService {
         cardReviewed: !!u.card?.reviewed || u.onboardingSkipped.includes('reveal'),
         shareLevel: !!u.shareLevel,
         basics: !!u.profile,
-        photos: u.photos.length >= 2 || u.onboardingSkipped.includes('photos'),
+        photos: u.photos.length >= 1,
         interests: (u.profile?.interests.length ?? 0) >= 3 || u.onboardingSkipped.includes('interests'),
         skipped: u.onboardingSkipped,
         complete: u.status === 'active',
@@ -143,7 +143,7 @@ export class MeService {
    * Skips an optional onboarding step. Age, terms, the Quick Scan (questions can be skipped one by one) and the basics
    * stay required: without them we can't check 18+ or match anyone. Share level falls back to "standard".
    */
-  async skipOnboardingStep(userId: string, step: 'photos' | 'interests' | 'reveal' | 'shareLevel') {
+  async skipOnboardingStep(userId: string, step: 'interests' | 'reveal' | 'shareLevel') {
     if (step === 'shareLevel') {
       await this.prisma.user.updateMany({ where: { id: userId, shareLevel: null }, data: { shareLevel: 'standard' } });
     } else {

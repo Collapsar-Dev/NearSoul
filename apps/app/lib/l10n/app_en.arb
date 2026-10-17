@@ -166,7 +166,7 @@
   },
   "city": "City",
   "photosTitle": "Add your photos",
-  "photosHint": "At least 2. Clear, recent photos of you work best.",
+  "photosHint": "At least one photo. A clear, recent one of you works best.",
   "addPhoto": "Add photo",
   "fromGallery": "Choose from gallery",
   "fromCamera": "Take a photo",
@@ -568,5 +568,9 @@
   "@perMonth": {"placeholders": {"price": {"type": "String"}}},
   "@likedYouCount": {"placeholders": {"count": {"type": "int"}}},
   "@personaCountVip": {"placeholders": {"count": {"type": "int"}}},
-  "passed": "Passed"
+  "passed": "Passed",
+  "todayHidden": "You’re hidden from Today’s Souls, so we can’t show you anyone either: matching works both ways.",
+  "showMe": "Show me",
+  "todayNeedsPhoto": "Add a photo so people can see you, and you’ll see them too.",
+  "addPhoto2": "Add a photo"
 }

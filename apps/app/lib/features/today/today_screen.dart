@@ -117,6 +117,28 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   Widget _empty(BuildContext context) {
     final l = context.l;
     final total = (_set!['cards'] as List).length;
+    final blocked = _set!['viewerBlocked'] as String?;
+    if (total == 0 && (blocked == 'NOT_DISCOVERABLE' || blocked == 'PHOTOS')) {
+      return ListView(children: [
+        const SizedBox(height: 80),
+        EmptyState(
+          icon: blocked == 'PHOTOS' ? Icons.add_a_photo_outlined : Icons.visibility_off_outlined,
+          text: blocked == 'PHOTOS' ? l.todayNeedsPhoto : l.todayHidden,
+          action: FilledButton(
+            onPressed: () async {
+              if (blocked == 'PHOTOS') {
+                await context.push('/me/photos');
+              } else {
+                await ref.read(apiProvider).patch('/v1/me', {'discoveryEnabled': true});
+                await ref.read(sessionProvider.notifier).reloadMe();
+              }
+              await _load();
+            },
+            child: Text(blocked == 'PHOTOS' ? l.addPhoto2 : l.showMe),
+          ),
+        ),
+      ]);
+    }
     if (total == 0 && _set!['needsAnswers'] == true) {
       return ListView(children: [
         const SizedBox(height: 80),
@@ -168,7 +190,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       return Padding(
         padding: const EdgeInsets.all(24),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          SizedBox(width: 440, child: Column(children: [SoulCard(p: p), const SizedBox(height: 20), actions])),
+          SizedBox(width: 440, child: Column(children: [SwipeCard(key: ValueKey(p['id']), onLike: () => _act(p, 'like'), onPass: () => _act(p, 'pass'), child: SoulCard(p: p)), const SizedBox(height: 20), actions])),
           const SizedBox(width: 32),
           Expanded(child: SingleChildScrollView(child: ProfileDetails(p: p, showPhotos: false, onReport: report, onBlock: block))),
         ]),
@@ -178,7 +200,12 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       FocusColumn(
         padding: EdgeInsets.zero,
         child: Column(children: [
-          SoulCard(p: p, onTap: () => context.push('/today/profile/${p['id']}')),
+          SwipeCard(
+            key: ValueKey(p['id']),
+            onLike: () => _act(p, 'like'),
+            onPass: () => _act(p, 'pass'),
+            child: SoulCard(p: p, onTap: () => context.push('/today/profile/${p['id']}')),
+          ),
           const SizedBox(height: 20),
           actions,
           const SizedBox(height: 24),

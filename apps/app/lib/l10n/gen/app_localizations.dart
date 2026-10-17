@@ -725,7 +725,7 @@ abstract class AppLocalizations {
   /// No description provided for @photosHint.
   ///
   /// In en, this message translates to:
-  /// **'At least 2. Clear, recent photos of you work best.'**
+  /// **'At least one photo. A clear, recent one of you works best.'**
   String get photosHint;
 
   /// No description provided for @addPhoto.
@@ -2503,6 +2503,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Passed'**
   String get passed;
+
+  /// No description provided for @todayHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'You’re hidden from Today’s Souls, so we can’t show you anyone either: matching works both ways.'**
+  String get todayHidden;
+
+  /// No description provided for @showMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Show me'**
+  String get showMe;
+
+  /// No description provided for @todayNeedsPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a photo so people can see you, and you’ll see them too.'**
+  String get todayNeedsPhoto;
+
+  /// No description provided for @addPhoto2.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a photo'**
+  String get addPhoto2;
 }
 
 class _AppLocalizationsDelegate
