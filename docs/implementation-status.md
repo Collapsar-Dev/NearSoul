@@ -5,7 +5,7 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 ## Evidence (commands run on 2026-10-16)
 | Command | Result |
 |---|---|
-| `cd apps/api && npx jest` | 21 suites, 229 tests passed (engine unit + property + golden snapshot tests; integration tests on real Postgres) |
+| `cd apps/api && npx jest` | 22 suites, 233 tests passed (engine unit + property + golden snapshot tests; integration tests on real Postgres) |
 | Browser check of Settings → «О чём уведомлять» | toggle saved (notify_prefs), browser timezone synced to the server |
 | Web Push round trip (headless Chromium 151) | subscribe via web/push.js → server PushService → Google push service → service worker shows the localized notification with the right deep link |
 | GitHub Actions CI (run 38901751005) | API, Flutter (web + APK), Windows, macOS green; Linux desktop fixed (libsecret) |
@@ -15,6 +15,7 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 | `cd apps/api && npx eslint "src/**/*.ts" "test/**/*.ts"` / `npx tsc --noEmit` | clean |
 | `cd apps/app && flutter analyze` | No issues found |
 | `cd apps/app && flutter test` | 7 tests passed |
+| Browser check of personas (CR-17) | create «Спокойная» from My profiles → lands on its Quick Scan with age/terms inherited → switch back from the unfinished profile → main profile's Today |
 | Browser check in the /mobile phone frame (alpha mode) | Russian Mini-IPIP items, labelled middle points on two-ended scales, skip on reveal/share/photos/interests → Today, photo upload from a 3000×4000 PNG (converted to JPEG in the browser) → 201, dark theme + Sage palette |
 | Browser check, Render-like alpha mode (APP_ENV=alpha, EMAIL_PROVIDER=screen, STORAGE_DRIVER=db) | sign-up with the on-screen code → onboarding; logout now ends the session (was 401: the client sent no token to /v1/auth/logout) |
 | `flutter build web --release` | built |
@@ -33,6 +34,7 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 | M7 Nearby Now | TESTED (server) / IMPLEMENTED (app) | GEO-001..007, ALPHA-003 simulator. Not yet tested with two physical phones |
 | A1 Alpha release | IN PROGRESS | render.yaml ready (free tier, open registration) and needs **no accounts or keys**: sign-in codes are shown on screen (EMAIL_PROVIDER=screen, alpha only). Waiting for the founder: Render Blueprint. Later: own domain, R2, Anthropic key, APK signing, admin account |
 | M8 Deep Personality & Soul Talk | IN PROGRESS | Deep Personality (ENG-003) TESTED: 116 IPIP-NEO-120 items in 4 parts, 29 facets, domains switch to deep scores, background recompute on ENGINE_VERSION bump. Soul Talk IMPLEMENTED + TESTED behind `SOUL_TALK_ENABLED=false`: 8 topics, encrypted owner-only storage with crypto-shred, safety classifier + bilingual keyword backup, fixed crisis message (DRAFT), insights → traits only after Keep, Soul Map, purge job. **Cannot go live until the founder approves the crisis message and resources (CRISIS_TEXTS_APPROVED) and an Anthropic key is set** |
+| Personas (CR-17) | TESTED | Separate profiles under one sign-in: /v1/me/personas, /v1/auth/switch, family-wide blocks/suspension/deletion, shared Soul+, push to the active device; app: My profiles screen, switcher reachable from unfinished profiles; Today explains an empty set when most questions were skipped |
 | M9 Payments & ops | IN PROGRESS | PAY-001..003 TESTED (RevenueCat webhook, entitlements, paywall sheet; store products not set up yet). ACC-002 data export TESTED. ANL-001 consent-gated server analytics TESTED (needs POSTHOG_KEY) |
 
 ## Fixed on 2026-10-17 from founder testing

@@ -17,7 +17,8 @@ export class RetentionService {
   constructor(private readonly prisma: PrismaService, private readonly storage: StorageService, private readonly rt: RealtimeGateway, private readonly soul: SoulService, private readonly exports: ExportService) {}
 
   async processDeletions(): Promise<number> {
-    const users = await this.prisma.user.findMany({ where: { status: 'deletion_requested' }, select: { id: true }, take: 50 });
+    // Personas first: deleting an owner row would cascade to its personas before their photos and data are cleaned up.
+    const users = await this.prisma.user.findMany({ where: { status: 'deletion_requested' }, select: { id: true }, orderBy: { parentId: { sort: 'asc', nulls: 'last' } }, take: 50 });
     for (const { id } of users) {
       this.rt.disconnectUser(id);
       const photos = await this.prisma.photo.findMany({ where: { userId: id } });

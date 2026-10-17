@@ -2245,6 +2245,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Coral'**
   String get paletteCoral;
+
+  /// No description provided for @profiles.
+  ///
+  /// In en, this message translates to:
+  /// **'My profiles'**
+  String get profiles;
+
+  /// No description provided for @profilesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Each profile is separate: its own questions, photos, matches and chats. Your age is the same in all of them, and your profiles never see each other.'**
+  String get profilesHint;
+
+  /// No description provided for @profileOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Main profile'**
+  String get profileOwner;
+
+  /// No description provided for @profileCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get profileCurrent;
+
+  /// No description provided for @profileSwitch.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch'**
+  String get profileSwitch;
+
+  /// No description provided for @profileAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a profile'**
+  String get profileAdd;
+
+  /// No description provided for @profileLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name for yourself (only you see it)'**
+  String get profileLabel;
+
+  /// No description provided for @profileRename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get profileRename;
+
+  /// No description provided for @profileNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New profile'**
+  String get profileNew;
+
+  /// No description provided for @profileUnfinished.
+  ///
+  /// In en, this message translates to:
+  /// **'Not finished yet'**
+  String get profileUnfinished;
+
+  /// No description provided for @profileMax.
+  ///
+  /// In en, this message translates to:
+  /// **'You have the maximum of {max} profiles.'**
+  String profileMax(int max);
+
+  /// No description provided for @todayNeedsAnswers.
+  ///
+  /// In en, this message translates to:
+  /// **'You skipped most of the questions, so we have nothing to match you on yet. Answer them and your Today’s Souls will fill up.'**
+  String get todayNeedsAnswers;
+
+  /// No description provided for @answerQuestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer the questions'**
+  String get answerQuestions;
 }
 
 class _AppLocalizationsDelegate

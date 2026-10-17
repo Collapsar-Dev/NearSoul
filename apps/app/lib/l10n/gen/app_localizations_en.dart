@@ -1175,4 +1175,47 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paletteCoral => 'Coral';
+
+  @override
+  String get profiles => 'My profiles';
+
+  @override
+  String get profilesHint =>
+      'Each profile is separate: its own questions, photos, matches and chats. Your age is the same in all of them, and your profiles never see each other.';
+
+  @override
+  String get profileOwner => 'Main profile';
+
+  @override
+  String get profileCurrent => 'Current';
+
+  @override
+  String get profileSwitch => 'Switch';
+
+  @override
+  String get profileAdd => 'Add a profile';
+
+  @override
+  String get profileLabel => 'Name for yourself (only you see it)';
+
+  @override
+  String get profileRename => 'Rename';
+
+  @override
+  String get profileNew => 'New profile';
+
+  @override
+  String get profileUnfinished => 'Not finished yet';
+
+  @override
+  String profileMax(int max) {
+    return 'You have the maximum of $max profiles.';
+  }
+
+  @override
+  String get todayNeedsAnswers =>
+      'You skipped most of the questions, so we have nothing to match you on yet. Answer them and your Today’s Souls will fill up.';
+
+  @override
+  String get answerQuestions => 'Answer the questions';
 }

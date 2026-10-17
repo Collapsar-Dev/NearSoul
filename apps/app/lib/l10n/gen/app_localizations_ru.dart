@@ -1179,4 +1179,47 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get paletteCoral => 'Коралл';
+
+  @override
+  String get profiles => 'Мои профили';
+
+  @override
+  String get profilesHint =>
+      'Каждый профиль отдельный: свои вопросы, фото, совпадения и чаты. Возраст во всех один и тот же, а твои профили никогда не видят друг друга.';
+
+  @override
+  String get profileOwner => 'Основной профиль';
+
+  @override
+  String get profileCurrent => 'Сейчас';
+
+  @override
+  String get profileSwitch => 'Переключиться';
+
+  @override
+  String get profileAdd => 'Добавить профиль';
+
+  @override
+  String get profileLabel => 'Название для себя (видишь только ты)';
+
+  @override
+  String get profileRename => 'Переименовать';
+
+  @override
+  String get profileNew => 'Новый профиль';
+
+  @override
+  String get profileUnfinished => 'Ещё не заполнен';
+
+  @override
+  String profileMax(int max) {
+    return 'У тебя максимум профилей: $max.';
+  }
+
+  @override
+  String get todayNeedsAnswers =>
+      'Ты пропустил(а) почти все вопросы, поэтому пока не на что опереться при подборе. Ответь на них, и «Души дня» заполнятся.';
+
+  @override
+  String get answerQuestions => 'Ответить на вопросы';
 }

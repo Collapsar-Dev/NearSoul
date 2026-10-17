@@ -6,6 +6,7 @@ import '../features/auth/download_screen.dart';
 import '../features/matches/matches_screen.dart';
 import '../features/matches/pair_report_screen.dart';
 import '../features/me/me_screens.dart';
+import '../features/me/personas_screen.dart';
 import '../features/nearby/nearby_screen.dart';
 import '../features/onboarding/onboarding_screens.dart';
 import '../features/onboarding/quick_scan_screen.dart';
@@ -66,7 +67,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
       final me = session.me!;
       final next = onboardingRoute(me);
-      if (next != null) return path == next ? null : next;
+      // An unfinished extra profile can still open the profile switcher to go back (CR-17).
+      if (next != null) return path == next || (path == '/me/profiles' && me.isPersona) ? null : next;
       if (from != null && !publicPaths.contains(Uri.parse(from).path) && !from.startsWith('/onboarding') && from != '/splash') return from;
       if (path == '/splash' || publicPaths.contains(path) || path.startsWith('/onboarding') || path == '/blocked') return '/today';
       return null;
@@ -115,6 +117,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(path: 'photos', builder: (_, _) => const PhotosScreen(onboarding: false)),
               GoRoute(path: 'interests', builder: (_, _) => const InterestsScreen(onboarding: false)),
               GoRoute(path: 'settings', builder: (_, _) => const SettingsScreen()),
+              GoRoute(path: 'profiles', builder: (_, _) => const PersonasScreen()),
               GoRoute(path: 'notifications', builder: (_, _) => const NotificationsScreen()),
               GoRoute(path: 'feedback', builder: (_, _) => const FeedbackScreen()),
               GoRoute(path: 'invites', builder: (_, _) => const InvitesScreen()),

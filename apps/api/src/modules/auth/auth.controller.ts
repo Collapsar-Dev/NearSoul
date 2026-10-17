@@ -86,6 +86,14 @@ export class AuthController {
     res.clearCookie(REFRESH_COOKIE, { path: '/v1/auth', domain: env().COOKIE_DOMAIN });
   }
 
+  /** CR-17: move this device to another profile of the same account. */
+  @Post('switch')
+  @HttpCode(200)
+  async switchPersona(@CurrentUser() user: AuthUser, @Body() body: unknown, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const { personaId } = parse(z.object({ personaId: z.string().uuid() }).strict(), body);
+    return tokenResponse(req, res, await this.auth.switchPersona(user, personaId));
+  }
+
   @Post('logout-all')
   @HttpCode(204)
   async logoutAll(@CurrentUser() user: AuthUser, @Res({ passthrough: true }) res: Response) {

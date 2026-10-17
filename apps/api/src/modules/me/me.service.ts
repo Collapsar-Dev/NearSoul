@@ -4,6 +4,7 @@ import type { Prisma } from '@prisma/client';
 import { env } from '../../config/env';
 import { badRequest, forbidden } from '../../common/errors';
 import { NOTIFICATION_TYPES } from '../notifications/push-policy';
+import { familyIds } from '../../common/family';
 import { PrismaService } from '../../common/prisma.service';
 import { SoulCryptoService } from '../soul/soul-crypto.service';
 
@@ -28,7 +29,8 @@ export class MeService {
     const consents = await this.latestConsents(userId);
     return {
       id: u.id,
-      email: u.email,
+      email: u.email ?? (await this.prisma.user.findUnique({ where: { id: u.parentId ?? u.id }, select: { email: true } }))?.email ?? null,
+      persona: { isOwner: u.parentId === null, label: u.personaLabel },
       status: u.status,
       role: u.role,
       locale: u.locale,
@@ -165,15 +167,18 @@ export class MeService {
   }
 
   /** ACC-003: immediately invisible + signed out; the deletion job removes the data. */
+  /** Deleting the owner account deletes every persona with it; deleting a persona deletes only that profile (CR-17). */
   async requestDeletion(userId: string) {
-    // SOUL-007: crypto-shred Soul Talk data before anything else.
+    const u = await this.prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { parentId: true } });
+    const ids = u.parentId ? [userId] : await familyIds(this.prisma, userId);
     this.analytics.track(userId, 'account_deletion_requested');
-    await this.soulCrypto.destroy(userId);
+    // SOUL-007: crypto-shred Soul Talk data before anything else.
+    for (const id of ids) await this.soulCrypto.destroy(id);
     await this.prisma.$transaction([
-      this.prisma.user.update({ where: { id: userId }, data: { status: 'deletion_requested', deletionRequestedAt: new Date(), discoveryEnabled: false } }),
-      this.prisma.session.updateMany({ where: { userId, revokedAt: null }, data: { revokedAt: new Date() } }),
-      this.prisma.userLocation.deleteMany({ where: { userId } }),
-      this.prisma.nearbySession.updateMany({ where: { userId, endedAt: null }, data: { endedAt: new Date() } }),
+      this.prisma.user.updateMany({ where: { id: { in: ids } }, data: { status: 'deletion_requested', deletionRequestedAt: new Date(), discoveryEnabled: false } }),
+      this.prisma.session.updateMany({ where: { userId: { in: ids }, revokedAt: null }, data: { revokedAt: new Date() } }),
+      this.prisma.userLocation.deleteMany({ where: { userId: { in: ids } } }),
+      this.prisma.nearbySession.updateMany({ where: { userId: { in: ids }, endedAt: null }, data: { endedAt: new Date() } }),
     ]);
   }
 }

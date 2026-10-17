@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/api.dart';
 import '../../core/responsive.dart';
 import '../../core/session.dart';
+import '../onboarding/quick_scan_screen.dart';
 import '../../core/widgets/common.dart';
 import '../matches/safety_actions.dart';
 import '../shell.dart';
@@ -86,6 +87,23 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   Widget _empty(BuildContext context) {
     final l = context.l;
     final total = (_set!['cards'] as List).length;
+    if (total == 0 && _set!['needsAnswers'] == true) {
+      return ListView(children: [
+        const SizedBox(height: 80),
+        EmptyState(
+          icon: Icons.quiz_outlined,
+          text: l.todayNeedsAnswers,
+          action: FilledButton(
+            onPressed: () async {
+              // Re-open the Quick Scan with earlier answers kept; skipped questions can be answered now.
+              await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const QuickScanScreen(retake: true)));
+              await _load();
+            },
+            child: Text(l.answerQuestions),
+          ),
+        ),
+      ]);
+    }
     return ListView(children: [
       const SizedBox(height: 80),
       EmptyState(

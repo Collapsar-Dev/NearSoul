@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { createSign } from 'node:crypto';
 import webpush from 'web-push';
+import { familyIds } from '../../common/family';
 import { PrismaService } from '../../common/prisma.service';
 import { env } from '../../config/env';
 
@@ -184,7 +185,9 @@ export class PushService {
   }
 
   private async deliver(userId: string, msg: PushMessage): Promise<number> {
-    const tokens = await this.prisma.deviceToken.findMany({ where: { session: { userId, revokedAt: null } } });
+    // A device signed in to any profile of the person gets the push (CR-17); `profileId` lets the app switch on tap.
+    const tokens = await this.prisma.deviceToken.findMany({ where: { session: { userId: { in: await familyIds(this.prisma, userId) }, revokedAt: null } } });
+    msg = { ...msg, data: { ...msg.data, profileId: userId } };
     let sent = 0;
     for (const t of tokens) {
       let result: DeliveryResult;

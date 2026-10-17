@@ -36,7 +36,10 @@ export class DiscoveryController {
       cards.push({ ...view, action: facts.liked.has(id) ? 'like' : facts.passed.has(id) ? 'pass' : null });
     }
     this.analytics.track(user.id, 'daily_set_viewed', { count: cards.length });
-    return { date, refreshAt, remaining: cards.filter((c) => !c.action).length, cards };
+    // Too many skipped questions leave the engine nothing to compare (every score is 0): tell the app why it's empty.
+    const domains = viewer.profile ? Object.values(viewer.profile.domains) : [];
+    const needsAnswers = domains.length === 0 || domains.every((d) => d.score === null);
+    return { date, refreshAt, remaining: cards.filter((c) => !c.action).length, cards, needsAnswers };
   }
 
   /** Public profile: only for people in your daily set, nearby list or matches (prevents scraping by id). */

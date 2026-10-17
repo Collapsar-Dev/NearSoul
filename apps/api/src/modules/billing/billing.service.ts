@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { timingSafeEqual } from 'node:crypto';
 import { env } from '../../config/env';
 import { AppError } from '../../common/errors';
+import { accountRootId, familyIds } from '../../common/family';
 import { PrismaService } from '../../common/prisma.service';
 
 export const SOUL_PLUS = 'soul_plus';
@@ -70,16 +71,17 @@ export class BillingService {
 
   /** Sandbox purchases only count outside production (PAY-002: sandbox on staging/alpha). */
   async hasSoulPlus(userId: string, now = new Date()): Promise<boolean> {
-    const e = await this.prisma.entitlement.findUnique({ where: { userId_entitlement: { userId, entitlement: SOUL_PLUS } } });
-    if (!e?.active) return false;
-    if (e.environment === 'SANDBOX' && env().APP_ENV === 'production') return false;
-    return !e.expiresAt || e.expiresAt > now;
+    // Soul+ belongs to the person, so it covers all their profiles (CR-17 personas).
+    const rows = await this.prisma.entitlement.findMany({ where: { userId: { in: await familyIds(this.prisma, userId) }, entitlement: SOUL_PLUS, active: true } });
+    return rows.some((e) => !(e.environment === 'SANDBOX' && env().APP_ENV === 'production') && (!e.expiresAt || e.expiresAt > now));
   }
 
   async status(userId: string) {
+    // Purchases always attach to the owner account so every persona shares them (CR-17).
+    const rootId = await accountRootId(this.prisma, userId);
     const [user, e] = await Promise.all([
-      this.prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { billingId: true } }),
-      this.prisma.entitlement.findUnique({ where: { userId_entitlement: { userId, entitlement: SOUL_PLUS } } }),
+      this.prisma.user.findUniqueOrThrow({ where: { id: rootId }, select: { billingId: true } }),
+      this.prisma.entitlement.findUnique({ where: { userId_entitlement: { userId: rootId, entitlement: SOUL_PLUS } } }),
     ]);
     return {
       paywallEnabled: env().PAYWALL_ENABLED,

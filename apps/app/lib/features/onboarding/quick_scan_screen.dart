@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/api.dart';
 import '../../core/responsive.dart';
 import '../../core/session.dart';
+import 'onboarding_screens.dart';
 import '../../core/widgets/common.dart';
 
 /// ENG-002 Quick Scan: one question per screen, saved one by one, resumable.
@@ -163,7 +164,7 @@ class _QuickScanScreenState extends ConsumerState<QuickScanScreen> {
     if (_error != null) return Scaffold(body: ErrorState(error: _error!, onRetry: _load));
     if (_intro) {
       return Scaffold(
-        appBar: Navigator.of(context).canPop() ? AppBar() : null,
+        appBar: Navigator.of(context).canPop() || ref.watch(sessionProvider).me?.isPersona == true ? AppBar(actions: const [ProfilesShortcut()]) : null,
         body: SafeArea(
           child: FocusColumn(
             child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -190,6 +191,7 @@ class _QuickScanScreenState extends ConsumerState<QuickScanScreen> {
           LinearProgressIndicator(value: (_index + 1) / _items.length, borderRadius: BorderRadius.circular(8)),
         ]),
         actions: [
+          if (!widget.isDeep && !widget.retake) const ProfilesShortcut(),
           // Every question can be skipped (null); the engine just has less to go on.
           TextButton(onPressed: () => _answer(item.optional ? <String>[] : null), child: Text(l.skip)),
           const TestBadge(),

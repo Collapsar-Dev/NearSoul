@@ -3,8 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'node:crypto';
 import { env } from '../../config/env';
+import { accountEmail, familyIds } from '../../common/family';
 import { hmac, randomToken, safeEqualHex, sha256, sixDigitCode } from '../../common/crypto';
-import { AppError, badRequest, tooMany } from '../../common/errors';
+import { AppError, badRequest, notFound, tooMany } from '../../common/errors';
 import { PrismaService } from '../../common/prisma.service';
 import { RateLimiter } from '../../common/rate-limit';
 import { InvitesService } from '../invites/invites.service';
@@ -152,7 +153,7 @@ export class AuthService {
 
   /** AUTH-005: a fresh code for high-risk actions (account deletion, email change). */
   async requestSensitiveCode(userId: string): Promise<string | null> {
-    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+    const user = { email: await accountEmail(this.prisma, userId) };
     const recent = await this.prisma.authCode.findFirst({ where: { email: user.email, purpose: 'sensitive_action', createdAt: { gte: new Date(Date.now() - RESEND_COOLDOWN_MS) } } });
     if (recent) throw tooMany(60);
     const code = sixDigitCode();
@@ -163,7 +164,7 @@ export class AuthService {
   }
 
   async verifySensitiveCode(userId: string, code: string): Promise<void> {
-    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+    const user = { email: await accountEmail(this.prisma, userId) };
     const record = await this.prisma.authCode.findFirst({ where: { email: user.email, purpose: 'sensitive_action', usedAt: null }, orderBy: { createdAt: 'desc' } });
     const invalid = new AppError(400, 'INVALID_CODE', 'That code is wrong or has expired.');
     if (!record || record.expiresAt < new Date() || record.attempts >= MAX_ATTEMPTS) throw invalid;
@@ -179,9 +180,26 @@ export class AuthService {
     await this.prisma.deviceToken.deleteMany({ where: { sessionId } });
   }
 
+  /** Signs out every profile of the account (owner + personas) on every device. */
   async logoutAll(userId: string): Promise<void> {
-    await this.prisma.session.updateMany({ where: { userId, revokedAt: null }, data: { revokedAt: new Date() } });
-    await this.prisma.deviceToken.deleteMany({ where: { session: { userId } } });
+    const ids = await familyIds(this.prisma, userId);
+    await this.prisma.session.updateMany({ where: { userId: { in: ids }, revokedAt: null }, data: { revokedAt: new Date() } });
+    await this.prisma.deviceToken.deleteMany({ where: { session: { userId: { in: ids } } } });
+  }
+
+  /**
+   * CR-17: switch this device to another profile of the same account. The current session ends, a new one starts
+   * for the target, and this device's push subscriptions move with it.
+   */
+  async switchPersona(current: { id: string; sessionId: string }, targetId: string): Promise<TokenPair> {
+    const family = await familyIds(this.prisma, current.id);
+    const target = family.includes(targetId) ? await this.prisma.user.findUnique({ where: { id: targetId }, select: { status: true } }) : null;
+    if (!target || ['deleted', 'deletion_requested', 'suspended'].includes(target.status)) throw notFound('Profile not found');
+    const old = await this.prisma.session.findUnique({ where: { id: current.sessionId }, select: { deviceId: true, platform: true } });
+    const next = await this.issue(targetId, randomUUID(), old?.deviceId ?? undefined, old?.platform ?? undefined);
+    await this.prisma.session.updateMany({ where: { id: current.sessionId, revokedAt: null }, data: { revokedAt: new Date() } });
+    await this.prisma.deviceToken.updateMany({ where: { sessionId: current.sessionId }, data: { sessionId: next.sessionId } });
+    return { accessToken: next.accessToken, refreshToken: next.refreshToken, expiresIn: next.expiresIn };
   }
 }
 

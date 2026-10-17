@@ -2,6 +2,7 @@ import { AnalyticsService } from '../analytics/analytics.service';
 import { Injectable, Logger } from '@nestjs/common';
 import JSZip from 'jszip';
 import { AppError, notFound } from '../../common/errors';
+import { accountEmail } from '../../common/family';
 import { PrismaService } from '../../common/prisma.service';
 import { EmailService } from '../auth/email.service';
 import { SoulCryptoService } from '../soul/soul-crypto.service';
@@ -55,9 +56,9 @@ export class ExportService {
       await this.storage.put(key, body, 'application/zip');
       const expiresAt = new Date(Date.now() + LINK_TTL_SEC * 1000);
       await this.prisma.dataExportJob.update({ where: { id: job.id }, data: { status: 'ready', storageKey: key, completedAt: new Date(), expiresAt } });
-      const user = await this.prisma.user.findUniqueOrThrow({ where: { id: job.userId }, select: { email: true } });
+      const to = await accountEmail(this.prisma, job.userId);
       const url = await this.storage.signedUrl(key, Date.now(), LINK_TTL_SEC);
-      await this.email.send({ to: user.email, subject: 'Your NearSoul data export is ready', text: `Download your data (link valid for 24 hours):\n${url}\n\nIf you didn't request this, sign out of all devices in Settings.` });
+      await this.email.send({ to, subject: 'Your NearSoul data export is ready', text: `Download your data (link valid for 24 hours):\n${url}\n\nIf you didn't request this, sign out of all devices in Settings.` });
     } catch (e) {
       await this.prisma.dataExportJob.update({ where: { id: job.id }, data: { status: 'failed', error: (e as Error).message.slice(0, 200) } });
       throw e;

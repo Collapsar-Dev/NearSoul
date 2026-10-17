@@ -519,5 +519,19 @@
   "paletteNeutral": "Neutral",
   "paletteSage": "Sage",
   "paletteSand": "Sand",
-  "paletteCoral": "Coral"
+  "paletteCoral": "Coral",
+  "profiles": "My profiles",
+  "profilesHint": "Each profile is separate: its own questions, photos, matches and chats. Your age is the same in all of them, and your profiles never see each other.",
+  "profileOwner": "Main profile",
+  "profileCurrent": "Current",
+  "profileSwitch": "Switch",
+  "profileAdd": "Add a profile",
+  "profileLabel": "Name for yourself (only you see it)",
+  "profileRename": "Rename",
+  "profileNew": "New profile",
+  "profileUnfinished": "Not finished yet",
+  "profileMax": "You have the maximum of {max} profiles.",
+  "@profileMax": {"placeholders": {"max": {"type": "int"}}},
+  "todayNeedsAnswers": "You skipped most of the questions, so we have nothing to match you on yet. Answer them and your Today’s Souls will fill up.",
+  "answerQuestions": "Answer the questions"
 }

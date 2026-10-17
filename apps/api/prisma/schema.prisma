@@ -74,7 +74,12 @@ enum CodePurpose {
 
 model User {
   id                 String          @id @default(uuid(7)) @db.Uuid
-  email              String          @unique
+  /// Null for extra personas: they sign in through the account owner's email (parentId).
+  email              String?         @unique
+  /// Extra persona (founder request, CR-17): a full separate profile owned by the parent account.
+  parentId           String?         @map("parent_id") @db.Uuid
+  /// Owner-only name for the persona in the switcher (e.g. "Active"); never shown to others.
+  personaLabel       String?         @map("persona_label")
   status             UserStatus      @default(onboarding)
   role               UserRole        @default(user)
   onboardingStep     String          @default("dob") @map("onboarding_step")
@@ -126,8 +131,11 @@ model User {
   soulInsights       SoulInsight[]
   dataKey            UserDataKey?
   entitlements       Entitlement[]
+  parent             User?           @relation("personas", fields: [parentId], references: [id], onDelete: Cascade)
+  personas           User[]          @relation("personas")
 
   @@index([status, discoveryEnabled])
+  @@index([parentId])
   @@map("users")
 }
 

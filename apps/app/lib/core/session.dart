@@ -25,6 +25,8 @@ class Me {
   Map<String, dynamic> get settings => (json['settings'] as Map).cast<String, dynamic>();
   Map<String, dynamic> get onboarding => (json['onboarding'] as Map).cast<String, dynamic>();
   Map<String, dynamic> get consents => (json['consents'] as Map).cast<String, dynamic>();
+  String? get personaLabel => (json['persona'] as Map?)?['label'] as String?;
+  bool get isPersona => (json['persona'] as Map?)?['isOwner'] == false;
   bool get paywallEnabled => json['paywallEnabled'] == true;
   String get environment => json['environment'] as String? ?? '';
   bool get isActive => status == 'active';
@@ -98,6 +100,13 @@ class SessionNotifier extends Notifier<SessionState> {
     final me = Me(json);
     state = SessionState(Phase.signedIn, me);
     return me;
+  }
+
+  /// CR-17: move this device to another profile of the same account (new tokens, then a fresh /me).
+  Future<void> switchPersona(String personaId) async {
+    final data = await _api.post<Map<String, dynamic>>('/v1/auth/switch', {'personaId': personaId});
+    await _api.setTokens(data);
+    await reloadMe();
   }
 
   Future<void> signOut() async {

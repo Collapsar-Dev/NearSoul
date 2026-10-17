@@ -3,6 +3,7 @@ import type { Request } from 'express';
 import { z } from 'zod';
 import { Public } from '../../common/auth';
 import { badRequest, notFound } from '../../common/errors';
+import { familyIds } from '../../common/family';
 import { PrismaService } from '../../common/prisma.service';
 import { parse } from '../../common/zod';
 import { env } from '../../config/env';
@@ -123,7 +124,11 @@ export class AdminController {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw notFound();
     if (action === 'hide') await this.prisma.user.update({ where: { id: userId }, data: { hiddenByModeration: true } });
-    if (action === 'restore') await this.prisma.user.update({ where: { id: userId }, data: { hiddenByModeration: false, status: user.status === 'suspended' ? 'active' : user.status } });
+    if (action === 'restore') {
+      const family = await familyIds(this.prisma, userId);
+      await this.prisma.user.update({ where: { id: userId }, data: { hiddenByModeration: false } });
+      if (user.status === 'suspended') await this.prisma.user.updateMany({ where: { id: { in: family }, status: 'suspended' }, data: { status: 'active', hiddenByModeration: false } });
+    }
     if (action === 'remove_photo') {
       const photo = await this.prisma.photo.findFirst({ where: { id: photoId, userId } });
       if (!photo) throw badRequest('PHOTO', 'Choose a photo to remove.');
@@ -132,13 +137,15 @@ export class AdminController {
       if (photo.sha256) await this.prisma.auditEvent.create({ data: { actorType: 'admin', actorId: admin.id, action: 'photo_hash_banned', targetType: 'photo_hash', targetId: photo.sha256 } });
     }
     if (action === 'suspend') {
-      const photos = await this.prisma.photo.findMany({ where: { userId } });
+      // A suspension covers every profile of the person (CR-17 personas).
+      const family = await familyIds(this.prisma, userId);
+      const photos = await this.prisma.photo.findMany({ where: { userId: { in: family } } });
       await this.prisma.$transaction([
-        this.prisma.user.update({ where: { id: userId }, data: { status: 'suspended', hiddenByModeration: true } }),
-        this.prisma.session.updateMany({ where: { userId, revokedAt: null }, data: { revokedAt: new Date() } }),
+        this.prisma.user.updateMany({ where: { id: { in: family } }, data: { status: 'suspended', hiddenByModeration: true } }),
+        this.prisma.session.updateMany({ where: { userId: { in: family }, revokedAt: null }, data: { revokedAt: new Date() } }),
         ...photos.filter((p) => p.sha256).map((p) => this.prisma.auditEvent.create({ data: { actorType: 'admin', actorId: admin.id, action: 'photo_hash_banned', targetType: 'photo_hash', targetId: p.sha256! } })),
       ]);
-      this.rt.disconnectUser(userId);
+      for (const id of family) this.rt.disconnectUser(id);
     }
     await this.prisma.moderationAction.create({ data: { adminId: admin.id, targetUserId: userId, action, reason, reportId } });
     await this.audit(admin, `moderation_${action}`, 'user', userId);
@@ -150,7 +157,9 @@ export class AdminController {
     const u = await this.prisma.user.findUnique({ where: { id }, include: { profile: { select: { firstName: true } } } });
     if (!u) throw notFound();
     await this.audit(admin, 'user_viewed', 'user', id);
-    return { id: u.id, email: u.email, status: u.status, role: u.role, hidden: u.hiddenByModeration, createdAt: u.createdAt, lastActiveAt: u.lastActiveAt, firstName: u.profile?.firstName ?? null, deletionRequestedAt: u.deletionRequestedAt };
+    // Other profiles of the same person (CR-17), so moderation sees the whole picture.
+    const linkedProfiles = (await familyIds(this.prisma, u.id)).filter((x) => x !== u.id);
+    return { id: u.id, email: u.email ?? (u.parentId ? (await this.prisma.user.findUnique({ where: { id: u.parentId }, select: { email: true } }))?.email : null), status: u.status, role: u.role, hidden: u.hiddenByModeration, createdAt: u.createdAt, lastActiveAt: u.lastActiveAt, firstName: u.profile?.firstName ?? null, deletionRequestedAt: u.deletionRequestedAt, isPersona: u.parentId !== null, linkedProfiles };
   }
 
   @Get('users')

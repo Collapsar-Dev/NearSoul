@@ -10,6 +10,17 @@ import '../../core/session.dart';
 import '../../core/widgets/common.dart';
 
 /// Shared layout for onboarding steps: progress, title, body, primary action.
+/// Lets an unfinished extra profile go back to the profile switcher (CR-17).
+class ProfilesShortcut extends ConsumerWidget {
+  const ProfilesShortcut({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (ref.watch(sessionProvider).me?.isPersona != true) return const SizedBox.shrink();
+    return IconButton(tooltip: context.l.profiles, icon: const Icon(Icons.switch_account_outlined), onPressed: () => context.go('/me/profiles'));
+  }
+}
+
 /// "Skip" for optional onboarding steps; the server remembers it and the router moves on.
 class SkipStepButton extends ConsumerStatefulWidget {
   const SkipStepButton({super.key, required this.step});
@@ -56,7 +67,7 @@ class StepScaffold extends StatelessWidget {
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: LinearProgressIndicator(value: step / total, borderRadius: BorderRadius.circular(8)),
-          actions: [if (skip != null) SkipStepButton(step: skip!), const TestBadge(), const SizedBox(width: 12)],
+          actions: [const ProfilesShortcut(), if (skip != null) SkipStepButton(step: skip!), const TestBadge(), const SizedBox(width: 12)],
         ),
         body: SafeArea(
           child: FocusColumn(

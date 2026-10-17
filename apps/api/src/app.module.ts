@@ -39,6 +39,8 @@ import { LikesService } from './modules/matches/likes.service';
 import { MatchesController } from './modules/matches/matches.controller';
 import { MeController } from './modules/me/me.controller';
 import { MeService } from './modules/me/me.service';
+import { PersonasController } from './modules/me/personas.controller';
+import { PersonasService } from './modules/me/personas.service';
 import { NearbyController } from './modules/nearby/nearby.controller';
 import { NearbyService } from './modules/nearby/nearby.service';
 import { NotificationsController } from './modules/notifications/notifications.controller';
@@ -61,13 +63,13 @@ import { StorageService } from './modules/storage/storage.service';
 @Module({
   imports: [JwtModule.register({}), ScheduleModule.forRoot()],
   controllers: [
-    HealthController, AuthController, InvitesController, MeController, EngineController, CardController,
+    HealthController, AuthController, InvitesController, MeController, PersonasController, EngineController, CardController,
     ProfileController, ReferenceController, MediaController, DiscoveryController, MatchesController,
     NotificationsController, ReportsController, SafetyController, FeedbackController, NearbyController,
     AlphaController, AdminController, SoulController, ExportController, BillingController,
   ],
   providers: [
-    PrismaService, RateLimiter, EmailService, AuthService, InvitesService, MeService, EngineService, CardService,
+    PrismaService, RateLimiter, EmailService, AuthService, InvitesService, MeService, PersonasService, EngineService, CardService,
     { provide: StorageService, useFactory: (p: PrismaService) => new StorageService(p), inject: [PrismaService] }, ProfileService, SubjectsService, ProfileViewService, DailySetService, LikesService, ChatService,
     RealtimeGateway, PushService, NotificationsService, ReportsService, SafetyService, NearbyService, DemoService,
     RetentionService, AdminAuthService, AdminBootstrap, ExportService, AnalyticsService, BillingService, SoulCryptoService, SoulService,

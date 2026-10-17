@@ -85,7 +85,7 @@ class _RevealScreenState extends ConsumerState<RevealScreen> {
   Widget build(BuildContext context) {
     final l = context.l;
     return Scaffold(
-      appBar: AppBar(actions: const [SkipStepButton(step: 'reveal'), TestBadge(), SizedBox(width: 12)]),
+      appBar: AppBar(actions: const [ProfilesShortcut(), SkipStepButton(step: 'reveal'), TestBadge(), SizedBox(width: 12)]),
       body: SafeArea(
         child: _cardStep ? _cardView(context) : AsyncBody<Map<String, dynamic>>(
           future: _report,

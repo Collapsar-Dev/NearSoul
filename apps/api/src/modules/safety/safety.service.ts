@@ -2,6 +2,7 @@ import { AnalyticsService } from '../analytics/analytics.service';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { notFound } from '../../common/errors';
+import { familyIds } from '../../common/family';
 import { PrismaService } from '../../common/prisma.service';
 import { RateLimiter } from '../../common/rate-limit';
 import { pair } from '../matches/likes.service';
@@ -28,6 +29,11 @@ export class SafetyService {
       if (!(err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002')) throw err;
     }
     this.analytics.track(blockerId, 'block_created');
+    // CR-17: the blocked person can't keep talking through another of their profiles.
+    for (const otherId of await familyIds(this.prisma, blockedId)) await this.endMatch(blockerId, otherId);
+  }
+
+  private async endMatch(blockerId: string, blockedId: string) {
     const match = await this.prisma.match.findUnique({ where: { userLow_userHigh: pair(blockerId, blockedId) } });
     if (match && !match.endedAt) {
       await this.prisma.$transaction([
