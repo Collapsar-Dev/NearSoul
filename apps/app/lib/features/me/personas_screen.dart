@@ -80,7 +80,8 @@ class _PersonasScreenState extends ConsumerState<PersonasScreen> {
             final items = (data['items'] as List).cast<Map<String, dynamic>>();
             final max = data['max'] as int;
             return ListView(children: [
-              Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(l.profilesHint)),
+              Padding(padding: const EdgeInsets.only(top: 12), child: Text(l.profilesHint)),
+              Padding(padding: const EdgeInsets.only(top: 6, bottom: 12), child: Text(l.personasVipNote, style: Theme.of(context).textTheme.bodySmall)),
               for (final p in items)
                 Card(
                   margin: const EdgeInsets.only(bottom: 12),

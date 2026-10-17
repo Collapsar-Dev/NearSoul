@@ -4,6 +4,7 @@ import { eligibility, rankDailySet, type CompatResult } from '../../engine';
 import { env } from '../../config/env';
 import { PrismaService } from '../../common/prisma.service';
 import { EngineService } from '../engine/engine.service';
+import { BillingService, UNLIMITED_DAILY_CAP } from '../billing/billing.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { inQuietHours, localTime } from '../notifications/push-policy';
 import { SubjectsService, type Subject } from './subjects.service';
@@ -42,6 +43,7 @@ export class DailySetService {
     private readonly subjects: SubjectsService,
     private readonly engine: EngineService,
     private readonly notifications: NotificationsService,
+    private readonly billing: BillingService,
   ) {}
 
   /**
@@ -84,23 +86,32 @@ export class DailySetService {
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { timezone: true } });
     const date = dailyKey(now, user.timezone);
     const existing = await this.prisma.dailySet.findUnique({ where: { userId_date: { userId, date } } });
+    const size = (await this.billing.features(userId)).dailySetSize ?? UNLIMITED_DAILY_CAP;
     let ids = existing?.candidateIds ?? null;
     if (ids && ids.length > 0) {
       // If every candidate has since left (deleted, suspended, hidden), rebuild instead of showing an empty day.
       const alive = await this.prisma.user.count({ where: { id: { in: ids }, status: 'active', hiddenByModeration: false } });
       if (alive === 0) ids = null;
     }
-    ids ??= await this.generate(userId, date, now);
+    // An empty day (built before the profile was ready, or before new people joined) is retried every few minutes
+    // instead of staying empty until tomorrow.
+    if (ids && ids.length === 0 && existing && now.getTime() - existing.generatedAt.getTime() > 2 * 60_000) ids = null;
+    if (ids && existing && size > existing.size) {
+      // Upgraded today: keep today's people and add more up to the new level.
+      ids = await this.generate(userId, date, now, size, ids);
+    }
+    ids ??= await this.generate(userId, date, now, size);
     return { date, ids, refreshAt: nextRefresh(now, user.timezone) };
   }
 
   /** Builds and stores the set. Stable for the rest of the day. */
-  async generate(userId: string, date: string, now = new Date()): Promise<string[]> {
+  async generate(userId: string, date: string, now = new Date(), total = env().DAILY_SET_SIZE, keep: string[] = []): Promise<string[]> {
     const viewer = await this.subjects.one(userId, now);
-    if (!viewer?.profile) return [];
+    if (!viewer?.profile) return keep;
     const cfg = await this.engine.matchConfig();
     const seen = await this.recentlyShown(userId, now);
-    const size = env().DAILY_SET_SIZE;
+    for (const id of keep) seen.add(id);
+    const size = Math.max(0, total - keep.length);
     const ageSteps = [0, 2, 4];
     let picked: { s: Subject; c: CompatResult }[] = [];
     const flexible = (await this.prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { flexibleFallback: true } })).flexibleFallback;
@@ -109,18 +120,19 @@ export class DailySetService {
       picked = await this.candidates(viewer, seen, widen, step === 2, cfg);
       if (picked.length >= size) break;
     }
-    const ids = rankDailySet(
+    const added = rankDailySet(
       picked.map(({ s, c }) => ({ id: s.id, score: c.score, archetype: s.profile!.archetype, lastActiveAt: s.lastActiveAt.toISOString(), createdAt: s.createdAt.toISOString(), isDemo: s.isDemo })),
       now.toISOString(),
       size,
     );
+    const ids = [...keep, ...added];
     await this.prisma.dailySet.upsert({
       where: { userId_date: { userId, date } },
-      create: { userId, date, candidateIds: ids, configVersion: cfg.version },
-      update: { candidateIds: ids, configVersion: cfg.version, generatedAt: now },
+      create: { userId, date, candidateIds: ids, configVersion: cfg.version, size: total },
+      update: { candidateIds: ids, configVersion: cfg.version, generatedAt: now, size: total },
     });
     const byId = new Map(picked.map((p) => [p.s.id, p]));
-    for (const id of ids) {
+    for (const id of added) {
       const [low, high] = userId < id ? [userId, id] : [id, userId];
       await this.prisma.pairOutcome.upsert({
         where: { userLow_userHigh: { userLow: low, userHigh: high } },

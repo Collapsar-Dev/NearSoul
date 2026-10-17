@@ -57,7 +57,10 @@ class _PairReportScreenState extends ConsumerState<PairReportScreen> {
                 ],
               ] else
                 for (final s in ((r['locked'] as List?) ?? []).cast<Map<String, dynamic>>())
-                  ListTile(leading: const Icon(Icons.lock_outline), title: Text('${s['key']} · ${s['count']}'), subtitle: Text(l.locked), onTap: () => showPaywall(context)),
+                  ListTile(leading: const Icon(Icons.lock_outline), title: Text('${s['key']} · ${s['count']}'), subtitle: Text(l.locked), onTap: () async {
+                    await showPaywall(context);
+                    setState(() => _f = ref.read(apiProvider).get('/v1/matches/${widget.matchId}/report'));
+                  }),
               const SizedBox(height: 16),
               AccuracyRating(
                 title: l.pairAccuracy,

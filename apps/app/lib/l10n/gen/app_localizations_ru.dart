@@ -1222,4 +1222,122 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get answerQuestions => 'Ответить на вопросы';
+
+  @override
+  String get subscription => 'Подписка';
+
+  @override
+  String get tierFree => 'Бесплатно';
+
+  @override
+  String get tierPlus => 'Soul+';
+
+  @override
+  String get tierGold => 'Gold';
+
+  @override
+  String get tierVip => 'VIP';
+
+  @override
+  String get tierCurrent => 'Твой уровень';
+
+  @override
+  String featDaily(int count) {
+    return '«Души дня»: $count в день';
+  }
+
+  @override
+  String get featDailyUnlimited => '«Души дня»: без лимита';
+
+  @override
+  String get featReports => 'Полные отчёты о себе и о паре';
+
+  @override
+  String get featLikes => 'Видеть, кто тебя лайкнул, и отвечать взаимностью';
+
+  @override
+  String get featLikesCount => 'Видеть, сколько людей тебя лайкнули';
+
+  @override
+  String get featRewind => 'Вернуть последнего пропущенного';
+
+  @override
+  String get featPersonas => 'Видеть, сколько профилей у человека';
+
+  @override
+  String featLikeLimit(int count) {
+    return 'Лайки: $count в день';
+  }
+
+  @override
+  String get featLikeUnlimited => 'Лайки: без лимита';
+
+  @override
+  String perMonth(String price) {
+    return '$price в месяц';
+  }
+
+  @override
+  String get activateTest => 'Активировать (тест, бесплатно)';
+
+  @override
+  String get backToFree => 'Вернуться на бесплатный';
+
+  @override
+  String get testModeNote =>
+      'Тестовая версия: уровни переключаются бесплатно, без оплаты. Настоящие покупки появятся вместе с магазинами приложений.';
+
+  @override
+  String get storeSoon => 'Покупки откроются с выходом в магазинах приложений.';
+
+  @override
+  String get likedYou => 'Тебя лайкнули';
+
+  @override
+  String likedYouCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Тебя лайкнули $count человек',
+      few: 'Тебя лайкнули $count человека',
+      one: 'Тебя лайкнул $count человек',
+      zero: 'Пока новых лайков нет',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get likedYouUpsell => 'С Gold видно, кто это.';
+
+  @override
+  String get seePlans => 'Смотреть уровни';
+
+  @override
+  String get rewind => 'Вернуть';
+
+  @override
+  String get rewindDone => 'Снова в списке';
+
+  @override
+  String personaCountVip(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'У человека $count профилей',
+      few: 'У человека $count профиля',
+      one: 'У человека $count профиль',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get moreSoulsUpsell =>
+      'Хочешь больше людей в день? В Gold — 50, в VIP — без лимита.';
+
+  @override
+  String get personasVipNote =>
+      'Участники VIP видят, сколько у тебя профилей, но никогда — какие именно.';
+
+  @override
+  String get passed => 'Пропущено';
 }

@@ -2323,6 +2323,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Answer the questions'**
   String get answerQuestions;
+
+  /// No description provided for @subscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription'**
+  String get subscription;
+
+  /// No description provided for @tierFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get tierFree;
+
+  /// No description provided for @tierPlus.
+  ///
+  /// In en, this message translates to:
+  /// **'Soul+'**
+  String get tierPlus;
+
+  /// No description provided for @tierGold.
+  ///
+  /// In en, this message translates to:
+  /// **'Gold'**
+  String get tierGold;
+
+  /// No description provided for @tierVip.
+  ///
+  /// In en, this message translates to:
+  /// **'VIP'**
+  String get tierVip;
+
+  /// No description provided for @tierCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Your level'**
+  String get tierCurrent;
+
+  /// No description provided for @featDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Today’s Souls: {count} a day'**
+  String featDaily(int count);
+
+  /// No description provided for @featDailyUnlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Today’s Souls: no daily limit'**
+  String get featDailyUnlimited;
+
+  /// No description provided for @featReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Full self and pair reports'**
+  String get featReports;
+
+  /// No description provided for @featLikes.
+  ///
+  /// In en, this message translates to:
+  /// **'See who liked you and like back'**
+  String get featLikes;
+
+  /// No description provided for @featLikesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'See how many people liked you'**
+  String get featLikesCount;
+
+  /// No description provided for @featRewind.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo your last pass'**
+  String get featRewind;
+
+  /// No description provided for @featPersonas.
+  ///
+  /// In en, this message translates to:
+  /// **'See how many profiles someone has'**
+  String get featPersonas;
+
+  /// No description provided for @featLikeLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Likes: {count} a day'**
+  String featLikeLimit(int count);
+
+  /// No description provided for @featLikeUnlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Likes: no daily limit'**
+  String get featLikeUnlimited;
+
+  /// No description provided for @perMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'{price} / month'**
+  String perMonth(String price);
+
+  /// No description provided for @activateTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate (test, free)'**
+  String get activateTest;
+
+  /// No description provided for @backToFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Free'**
+  String get backToFree;
+
+  /// No description provided for @testModeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Test version: levels switch for free, no payment. Real purchases come with the app stores.'**
+  String get testModeNote;
+
+  /// No description provided for @storeSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases open with the app store release.'**
+  String get storeSoon;
+
+  /// No description provided for @likedYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Liked you'**
+  String get likedYou;
+
+  /// No description provided for @likedYouCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No new likes yet} =1{1 person liked you} other{{count} people liked you}}'**
+  String likedYouCount(int count);
+
+  /// No description provided for @likedYouUpsell.
+  ///
+  /// In en, this message translates to:
+  /// **'See who they are with Gold.'**
+  String get likedYouUpsell;
+
+  /// No description provided for @seePlans.
+  ///
+  /// In en, this message translates to:
+  /// **'See levels'**
+  String get seePlans;
+
+  /// No description provided for @rewind.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get rewind;
+
+  /// No description provided for @rewindDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Back in your list'**
+  String get rewindDone;
+
+  /// No description provided for @personaCountVip.
+  ///
+  /// In en, this message translates to:
+  /// **'Has {count, plural, =1{1 profile} other{{count} profiles}}'**
+  String personaCountVip(int count);
+
+  /// No description provided for @moreSoulsUpsell.
+  ///
+  /// In en, this message translates to:
+  /// **'Want more people a day? Gold has 50, VIP has no limit.'**
+  String get moreSoulsUpsell;
+
+  /// No description provided for @personasVipNote.
+  ///
+  /// In en, this message translates to:
+  /// **'VIP members can see how many profiles you have, never which ones.'**
+  String get personasVipNote;
+
+  /// No description provided for @passed.
+  ///
+  /// In en, this message translates to:
+  /// **'Passed'**
+  String get passed;
 }
 
 class _AppLocalizationsDelegate

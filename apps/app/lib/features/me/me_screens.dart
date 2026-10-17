@@ -31,6 +31,7 @@ class _MeScreenState extends ConsumerState<MeScreen> {
     final me = ref.watch(sessionProvider).me;
     final tiles = <(IconData, String, String)>[
       (Icons.switch_account_outlined, me?.personaLabel == null ? l.profiles : '${l.profiles} · ${me!.personaLabel}', '/me/profiles'),
+      (Icons.workspace_premium_outlined, l.subscription, '/me/subscription'),
       (Icons.edit_outlined, l.editProfile, '/me/edit'),
       (Icons.photo_library_outlined, l.photosTitle, '/me/photos'),
       (Icons.interests_outlined, l.interestsTitle, '/me/interests'),

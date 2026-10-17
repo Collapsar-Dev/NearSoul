@@ -1,6 +1,7 @@
 /**
- * ALPHA-002: seeds 48 clearly marked demo profiles with illustrated avatars (never photos of real people).
- * Refuses to run outside APP_ENV=alpha|development. Idempotent: existing demo users are replaced.
+ * ALPHA-002: seeds DEMO_COUNT (default 100) clearly marked demo profiles with illustrated avatars (never photos of
+ * real people). Some demo people also get a second profile (CR-17) so VIP's profile count can be tried.
+ * Refuses to run outside APP_ENV=alpha|development. Tops up missing demos on every start; --force recreates all.
  */
 import { PrismaClient, type Prisma } from '@prisma/client';
 import sharp from 'sharp';
@@ -30,6 +31,16 @@ function rng(seed: number) {
 const WOMEN = ['Mila', 'Sofia', 'Lena', 'Noor', 'Iris', 'Eva', 'Yara', 'Maya', 'Lotte', 'Anouk', 'Nina', 'Zara', 'Alina', 'Sara', 'Emma', 'Lea', 'Ines', 'Mara', 'Julia', 'Tess'];
 const MEN = ['Daan', 'Liam', 'Noah', 'Sem', 'Lucas', 'Milan', 'Finn', 'Adam', 'Levi', 'Omar', 'David', 'Max', 'Jonas', 'Elias', 'Ruben', 'Thijs', 'Arman', 'Leo', 'Bram', 'Tim'];
 const NB = ['Robin', 'Alex', 'Sam', 'Charlie', 'Quinn', 'Jules', 'Kai', 'Noa'];
+const WOMEN_RU = ['Аня', 'Даша', 'Катя', 'Полина', 'Вика', 'Оля', 'Маша', 'Лиза', 'Настя', 'Ксения'];
+const MEN_RU = ['Артём', 'Дима', 'Саша', 'Миша', 'Илья', 'Кирилл', 'Никита', 'Егор', 'Влад', 'Паша'];
+const BIOS_RU = [
+  'Люблю длинные прогулки, хороший кофе и честные разговоры.',
+  'По выходным в горах, по вечерам с книгой.',
+  'Готовлю лучше, чем пою. Пою часто.',
+  'Ищу человека, с которым интересно молчать и смеяться.',
+  'Велосипед, джаз и путешествия без плана.',
+  'Учусь рисовать, коллекционирую виниловые пластинки.',
+];
 const BIOS = [
   'Weekend hiker, weekday coffee snob. Looking for good conversations.',
   'Museums, long walks and trying every bakery in town.',
@@ -61,22 +72,20 @@ async function avatar(initial: string, r: () => number, variant: number): Promis
 async function main() {
   const prisma = new PrismaClient();
   const storage = new StorageService(prisma);
-  const r = rng(20261016);
-  if (!process.argv.includes('--force') && (await prisma.user.count({ where: { isDemo: true } })) > 0) {
-    console.log('Demo profiles already exist (use --force to recreate).');
-    await prisma.$disconnect();
-    return;
+  const target = Number(process.env.DEMO_COUNT ?? 100);
+  if (process.argv.includes('--force')) {
+    const old = await prisma.user.findMany({ where: { isDemo: true }, include: { photos: true } });
+    for (const u of old) for (const p of u.photos) await storage.delete(p.storageKey).catch(() => undefined);
+    await prisma.user.deleteMany({ where: { isDemo: true, parentId: { not: null } } });
+    await prisma.user.deleteMany({ where: { isDemo: true } });
   }
-  const old = await prisma.user.findMany({ where: { isDemo: true }, include: { photos: true } });
-  for (const u of old) for (const p of u.photos) await storage.delete(p.storageKey).catch(() => undefined);
-  await prisma.user.deleteMany({ where: { isDemo: true } });
   const intents = ['long_term', 'open_to_long', 'not_sure', 'open_to_long', 'long_term', 'casual'] as const;
   const now = new Date();
-  for (let i = 0; i < 48; i++) {
-    const g = i % 12 === 11 ? 'non_binary' : i % 2 === 0 ? 'woman' : 'man';
-    const name = g === 'woman' ? WOMEN[i % WOMEN.length]! : g === 'man' ? MEN[i % MEN.length]! : NB[i % NB.length]!;
+  let created = 0;
+
+  /** One demo profile; `parentId` makes it a second profile of an existing demo person. */
+  async function createDemo(i: number, r: () => number, g: 'woman' | 'man' | 'non_binary', name: string, bio: string, age: number, parentId?: string) {
     const interestedIn = g === 'non_binary' ? ['woman', 'man', 'non_binary'] : r() < 0.85 ? [g === 'woman' ? 'man' : 'woman'] : ['woman', 'man'];
-    const age = 21 + Math.floor(r() * 24);
     const dob = new Date(Date.UTC(now.getUTCFullYear() - age, Math.floor(r() * 12), 1 + Math.floor(r() * 27)));
     const answers: Answers = {};
     for (const item of QUICK_SCAN_ITEMS) {
@@ -95,18 +104,20 @@ async function main() {
     const interests = [...INTERESTS].sort(() => r() - 0.5).slice(0, 3 + Math.floor(r() * 5)).map((x) => x.id);
     const user = await prisma.user.create({
       data: {
-        email: `demo+${i}@demo.nearsoul.invalid`,
+        email: parentId ? null : `demo+${i}@demo.nearsoul.invalid`,
+        parentId: parentId ?? null,
+        personaLabel: parentId ? 'Demo 2' : null,
         status: 'active', isDemo: true, onboardingStep: 'done', dob, ageGatePassedAt: now, discoveryEnabled: true,
         shareLevel: 'standard', cardVisibility: 'everyone', lastActiveAt: new Date(now.getTime() - Math.floor(r() * 5) * 86_400_000),
         consents: { create: [{ type: 'terms', version: process.env.TERMS_VERSION ?? '2026-10-alpha', granted: true }] },
         profile: {
           create: {
             firstName: name, gender: g, interestedIn: interestedIn as ('woman' | 'man' | 'non_binary')[], intent: intents[i % intents.length]!,
-            bio: BIOS[i % BIOS.length]!, ageMin: Math.max(18, age - 7), ageMax: age + 8, cityId: process.env.LAUNCH_CITY ?? 'amsterdam',
+            bio, ageMin: Math.max(18, age - 7), ageMax: age + 8, cityId: process.env.LAUNCH_CITY ?? 'amsterdam',
             interests: { create: interests.map((interestId) => ({ interestId })) },
           },
         },
-        answers: { create: Object.entries(answers).map(([itemKey, a]) => ({ itemKey, itemVersion: 1, value: a.value as Prisma.InputJsonValue })) },
+        answers: { create: Object.entries(answers).map(([itemKey, a]) => ({ itemKey, itemVersion: 1, value: a.value as Prisma.InputJsonValue, locale: 'en' })) },
         soulProfile: { create: { profile: profile as unknown as Prisma.InputJsonValue, archetype: profile.archetype, depth: profile.depth, engineVersion: profile.engineVersion, normsVersion: profile.normsVersion } },
         card: { create: { headline: card.headline, summary: card.summary, communicationStyle: card.communication_style, idealFirstDate: card.ideal_first_date, strengths: card.strengths, source: 'template', promptVersion: 'template_v1', reviewed: true } },
       },
@@ -116,9 +127,25 @@ async function main() {
       await storage.put(key, await avatar(name[0]!, r, p), 'image/webp');
       await prisma.photo.create({ data: { userId: user.id, storageKey: key, position: p, status: 'ready', width: 800, height: 1000 } });
     }
+    created++;
+    return user;
+  }
+
+  for (let i = 0; i < target; i++) {
+    if (await prisma.user.findUnique({ where: { email: `demo+${i}@demo.nearsoul.invalid` }, select: { id: true } })) continue;
+    const r = rng(20261016 + i * 7919);
+    const g = i % 12 === 11 ? 'non_binary' : i % 2 === 0 ? 'woman' : 'man';
+    // From #48 on, every other demo is Russian-speaking so ru testers see familiar names and bios.
+    const ru = i >= 48 && Math.floor(i / 2) % 2 === 1;
+    const name = g === 'woman' ? (ru ? WOMEN_RU[i % WOMEN_RU.length]! : WOMEN[i % WOMEN.length]!) : g === 'man' ? (ru ? MEN_RU[i % MEN_RU.length]! : MEN[i % MEN.length]!) : NB[i % NB.length]!;
+    const bio = ru ? BIOS_RU[i % BIOS_RU.length]! : BIOS[i % BIOS.length]!;
+    const age = 21 + Math.floor(r() * 24);
+    const user = await createDemo(i, r, g, name, bio, age);
+    // Every 6th new demo person has a second profile (same person, different answers).
+    if (i >= 48 && i % 6 === 0 && g !== 'non_binary') await createDemo(i, r, g, name, ru ? BIOS_RU[(i + 1) % BIOS_RU.length]! : BIOS[(i + 1) % BIOS.length]!, age, user.id);
   }
   await prisma.$disconnect();
-  console.log('Seeded 48 demo profiles.');
+  console.log(created ? `Seeded ${created} demo profiles.` : 'Demo profiles already complete.');
 }
 
 void main();

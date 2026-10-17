@@ -126,6 +126,12 @@ class ProfileDetails extends StatelessWidget {
           ),
       ]),
       Text([p['distanceBand'] ?? p['city'], p['jobTitle']].whereType<String>().join(' · '), style: Theme.of(context).textTheme.bodyMedium),
+      // VIP only (CR-18): how many profiles this person has. The server sends it only to VIP viewers.
+      if (p['personaCount'] is int)
+        Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: Chip(avatar: const Icon(Icons.workspace_premium_outlined, size: 18), label: Text(l.personaCountVip(p['personaCount'] as int))),
+        ),
       const SizedBox(height: 12),
       if (compat != null)
         Card(

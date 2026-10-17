@@ -36,7 +36,7 @@ services:
       - key: INVITE_ONLY
         value: "false" # open registration for the first test; switch to "true" for invite-only
       - key: PAYWALL_ENABLED
-        value: "false"
+        value: "true" # levels are on; in the alpha anyone can switch levels for free (Me → Subscription → Activate (test))
       - key: LAUNCH_CITY
         value: amsterdam
       - key: STORAGE_DRIVER

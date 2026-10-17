@@ -2,7 +2,9 @@ import { AnalyticsService } from '../analytics/analytics.service';
 import { Controller, Get, Headers, Param, ParseUUIDPipe } from '@nestjs/common';
 import { CurrentUser, RequireGate, type AuthUser } from '../../common/auth';
 import { notFound } from '../../common/errors';
+import { familyIds } from '../../common/family';
 import { PrismaService } from '../../common/prisma.service';
+import { BillingService } from '../billing/billing.service';
 import { localeFrom } from '../engine/engine.controller';
 import { EngineService } from '../engine/engine.service';
 import { DailySetService } from './daily-set.service';
@@ -19,7 +21,15 @@ export class DiscoveryController {
     private readonly engine: EngineService,
     private readonly prisma: PrismaService,
     private readonly analytics: AnalyticsService,
+    private readonly billing: BillingService,
   ) {}
+
+  /** VIP (CR-18): how many profiles the person has. Only the number, never which ones. */
+  private async personaCount(viewerId: string, targetId: string): Promise<number | undefined> {
+    if (!(await this.billing.features(viewerId)).seePersonaCount) return undefined;
+    const ids = await familyIds(this.prisma, targetId);
+    return this.prisma.user.count({ where: { id: { in: ids }, status: 'active' } });
+  }
 
   @Get('daily-set')
   async dailySet(@CurrentUser() user: AuthUser, @Headers('accept-language') lang?: string) {
@@ -33,7 +43,7 @@ export class DiscoveryController {
       // Re-check at read time: blocks, suspensions or deletions since generation remove the card.
       if (!s || facts.blocked.has(id) || facts.matched.has(id) || s.eligibility.status !== 'active' || s.eligibility.hiddenByModeration) continue;
       const view = await this.views.build(viewer, s, this.subjects.compat(viewer, s, cfg), locale);
-      cards.push({ ...view, action: facts.liked.has(id) ? 'like' : facts.passed.has(id) ? 'pass' : null });
+      cards.push({ ...view, personaCount: await this.personaCount(user.id, id), action: facts.liked.has(id) ? 'like' : facts.passed.has(id) ? 'pass' : null });
     }
     this.analytics.track(user.id, 'daily_set_viewed', { count: cards.length });
     // Too many skipped questions leave the engine nothing to compare (every score is 0): tell the app why it's empty.
@@ -54,7 +64,8 @@ export class DiscoveryController {
     const facts = await this.subjects.pairFacts(user.id, [id]);
     if (facts.blocked.has(id)) throw notFound();
     const cfg = await this.engine.matchConfig();
-    return this.views.build(viewer, target, this.subjects.compat(viewer, target, cfg), localeFrom(lang), { matched: access.matched });
+    const view = await this.views.build(viewer, target, this.subjects.compat(viewer, target, cfg), localeFrom(lang), { matched: access.matched });
+    return { ...view, personaCount: await this.personaCount(user.id, id) };
   }
 
   async canView(viewerId: string, targetId: string): Promise<{ allowed: boolean; matched: boolean }> {
@@ -65,6 +76,9 @@ export class DiscoveryController {
     const since = new Date(Date.now() - 3 * 86_400_000).toISOString().slice(0, 10);
     const inSet = await this.prisma.dailySet.findFirst({ where: { userId: viewerId, date: { gte: since }, candidateIds: { has: targetId } } });
     if (inSet) return { allowed: true, matched: false };
+    // Gold+ can open profiles from "Liked you" (CR-18).
+    const likedMe = await this.prisma.like.findUnique({ where: { actorId_targetId: { actorId: targetId, targetId: viewerId } } });
+    if (likedMe?.action === 'like' && (await this.billing.features(viewerId)).seeLikes) return { allowed: true, matched: false };
     const nearby = await this.prisma.nearbyAlert.findFirst({
       where: { sentAt: { not: null, gte: new Date(Date.now() - 86_400_000) }, OR: [{ userA: viewerId, userB: targetId }, { userA: targetId, userB: viewerId }] },
     });

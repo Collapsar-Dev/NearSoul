@@ -17,6 +17,17 @@ export class MatchesController {
     return this.likes.act(user.id, input.targetId, input.action, input.source);
   }
 
+  @Get('likes/received')
+  received(@CurrentUser() user: AuthUser) {
+    return this.likes.received(user.id);
+  }
+
+  @Post('likes/rewind')
+  @HttpCode(200)
+  rewind(@CurrentUser() user: AuthUser) {
+    return this.likes.rewind(user.id);
+  }
+
   @Get('matches')
   matches(@CurrentUser() user: AuthUser) {
     return this.chat.list(user.id);

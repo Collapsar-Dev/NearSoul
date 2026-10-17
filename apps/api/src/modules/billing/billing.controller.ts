@@ -28,6 +28,14 @@ export class BillingController {
     return this.billing.status(user.id);
   }
 
+  /** Alpha/dev only: try any level without paying (CR-18). */
+  @Post('test-activate')
+  @HttpCode(200)
+  testActivate(@CurrentUser() user: AuthUser, @Body() body: unknown) {
+    const { tier } = parse(z.object({ tier: z.enum(['free', 'plus', 'gold', 'vip']) }).strict(), body);
+    return this.billing.testActivate(user.id, tier);
+  }
+
   /** RevenueCat webhook: authenticated by a shared Authorization header, not by a user token. */
   @Public()
   @Post('webhook')

@@ -5,7 +5,7 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 ## Evidence (commands run on 2026-10-16)
 | Command | Result |
 |---|---|
-| `cd apps/api && npx jest` | 22 suites, 233 tests passed (engine unit + property + golden snapshot tests; integration tests on real Postgres) |
+| `cd apps/api && npx jest` | 23 suites, 241 tests passed (engine unit + property + golden snapshot tests; integration tests on real Postgres) |
 | Browser check of Settings → «О чём уведомлять» | toggle saved (notify_prefs), browser timezone synced to the server |
 | Web Push round trip (headless Chromium 151) | subscribe via web/push.js → server PushService → Google push service → service worker shows the localized notification with the right deep link |
 | GitHub Actions CI (run 38901751005) | API, Flutter (web + APK), Windows, macOS green; Linux desktop fixed (libsecret) |
@@ -35,6 +35,7 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 | A1 Alpha release | IN PROGRESS | render.yaml ready (free tier, open registration) and needs **no accounts or keys**: sign-in codes are shown on screen (EMAIL_PROVIDER=screen, alpha only). Waiting for the founder: Render Blueprint. Later: own domain, R2, Anthropic key, APK signing, admin account |
 | M8 Deep Personality & Soul Talk | IN PROGRESS | Deep Personality (ENG-003) TESTED: 116 IPIP-NEO-120 items in 4 parts, 29 facets, domains switch to deep scores, background recompute on ENGINE_VERSION bump. Soul Talk IMPLEMENTED + TESTED behind `SOUL_TALK_ENABLED=false`: 8 topics, encrypted owner-only storage with crypto-shred, safety classifier + bilingual keyword backup, fixed crisis message (DRAFT), insights → traits only after Keep, Soul Map, purge job. **Cannot go live until the founder approves the crisis message and resources (CRISIS_TEXTS_APPROVED) and an Anthropic key is set** |
 | Personas (CR-17) | TESTED | Separate profiles under one sign-in: /v1/me/personas, /v1/auth/switch, family-wide blocks/suspension/deletion, shared Soul+, push to the active device; app: My profiles screen, switcher reachable from unfinished profiles; Today explains an empty set when most questions were skipped |
+| Subscription levels (CR-18) | TESTED | Soul+/Gold/VIP, test activation, tier-sized daily sets with same-day top-up, Liked you, rewind, VIP profile count; app: Subscription screen, Liked you, Undo snackbar, upsells. Live check: photo upload of a 4032×3024 JPEG on Render works |
 | M9 Payments & ops | IN PROGRESS | PAY-001..003 TESTED (RevenueCat webhook, entitlements, paywall sheet; store products not set up yet). ACC-002 data export TESTED. ANL-001 consent-gated server analytics TESTED (needs POSTHOG_KEY) |
 
 ## Fixed on 2026-10-17 from founder testing

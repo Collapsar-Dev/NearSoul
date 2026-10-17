@@ -9,6 +9,7 @@ import '../../core/session.dart';
 import '../../core/widgets/common.dart';
 import '../shell.dart';
 import 'chat_screen.dart';
+import 'liked_you_screen.dart';
 
 /// S24 matches list. On desktop the selected chat opens beside the list (two panes, §5.9).
 class MatchesScreen extends StatelessWidget {
@@ -37,6 +38,7 @@ class MatchesLayout extends ConsumerStatefulWidget {
 
 class _MatchesLayoutState extends ConsumerState<MatchesLayout> {
   List<Map<String, dynamic>>? _items;
+  Map<String, dynamic>? _liked;
   Object? _error;
   StreamSubscription<RealtimeEvent>? _sub;
 
@@ -57,8 +59,10 @@ class _MatchesLayoutState extends ConsumerState<MatchesLayout> {
 
   Future<void> _load() async {
     try {
-      final items = (await ref.read(apiProvider).get<List<dynamic>>('/v1/matches')).cast<Map<String, dynamic>>();
-      if (mounted) setState(() => (_items = items, _error = null));
+      final api = ref.read(apiProvider);
+      final items = (await api.get<List<dynamic>>('/v1/matches')).cast<Map<String, dynamic>>();
+      final liked = await api.get<Map<String, dynamic>>('/v1/likes/received').catchError((_) => <String, dynamic>{'count': 0});
+      if (mounted) setState(() => (_items = items, _liked = liked, _error = null));
     } catch (e) {
       if (mounted) setState(() => _error = e);
     }
@@ -89,12 +93,29 @@ class _MatchesLayoutState extends ConsumerState<MatchesLayout> {
     if (_error != null) return ErrorState(error: _error!, onRetry: _load);
     final items = _items;
     if (items == null) return const Center(child: CircularProgressIndicator());
-    if (items.isEmpty) return EmptyState(icon: Icons.favorite_border, text: l.noMatches);
+    final likedCount = (_liked?['count'] as int?) ?? 0;
+    final likedTile = likedCount == 0
+        ? null
+        : Card(
+            margin: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+            child: ListTile(
+              leading: Badge(label: Text('$likedCount'), child: const Icon(Icons.favorite)),
+              title: Text(l.likedYouCount(likedCount)),
+              subtitle: _liked?['canSee'] == true ? null : Text(l.likedYouUpsell),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () async {
+                await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LikedYouScreen()));
+                await _load();
+              },
+            ),
+          );
+    if (items.isEmpty) return likedTile == null ? EmptyState(icon: Icons.favorite_border, text: l.noMatches) : ListView(children: [likedTile, const SizedBox(height: 40), EmptyState(icon: Icons.favorite_border, text: l.noMatches)]);
     final fresh = items.where((m) => m['lastMessage'] == null).toList();
     final convos = items.where((m) => m['lastMessage'] != null).toList();
     return RefreshIndicator(
       onRefresh: _load,
       child: ListView(children: [
+        ?likedTile,
         if (fresh.isNotEmpty) ...[
           Padding(padding: const EdgeInsets.fromLTRB(16, 8, 16, 8), child: Text(l.newMatches, style: Theme.of(context).textTheme.titleSmall)),
           SizedBox(

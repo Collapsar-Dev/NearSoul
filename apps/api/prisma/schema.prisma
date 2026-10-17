@@ -338,6 +338,8 @@ model DailySet {
   candidateIds  String[] @map("candidate_ids")
   configVersion String   @map("config_version")
   generatedAt   DateTime @default(now()) @map("generated_at")
+  /// How many people the subscription level allowed when the set was built (CR-18); an upgrade tops the day up.
+  size          Int      @default(15)
 
   @@id([userId, date])
   @@map("daily_sets")

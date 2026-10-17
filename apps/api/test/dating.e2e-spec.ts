@@ -88,6 +88,16 @@ describe('Discovery, likes, matches, chat (ENG-011/014, LIKE-001..004, CHAT-001)
     expect(set.body.cards.map((x: { id: string }) => x.id)).toEqual([c.userId]);
   });
 
+  it('an empty day is rebuilt once people join instead of staying empty until tomorrow', async () => {
+    const ben = await onboard(ctx, 'ben@example.com', { gender: 'man', interestedIn: ['woman'] });
+    const empty = await ctx.http.get('/v1/daily-set').set(bearer(ben.token)).expect(200);
+    expect(empty.body.cards).toHaveLength(0);
+    const anna = await onboard(ctx, 'anna@example.com');
+    await ctx.prisma.dailySet.updateMany({ where: { userId: ben.userId }, data: { generatedAt: new Date(Date.now() - 5 * 60_000) } });
+    const later = await ctx.http.get('/v1/daily-set').set(bearer(ben.token)).expect(200);
+    expect(later.body.cards.map((c: { id: string }) => c.id)).toContain(anna.userId);
+  });
+
   it('exposes only allowlisted public fields (contract test)', async () => {
     const a = await onboard(ctx, 'anna@example.com');
     const b = await onboard(ctx, 'ben@example.com', { gender: 'man', interestedIn: ['woman'] });

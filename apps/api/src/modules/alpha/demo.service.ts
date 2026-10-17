@@ -33,6 +33,27 @@ export class DemoService implements OnModuleInit {
     }
     this.likes.onLikedDemo = (actor, demo, score) => this.likeBack(actor, demo, score);
     this.chat.onMessageToDemo = (matchId, demo) => this.replyOnce(matchId, demo);
+    this.likes.beforeReceived = (userId) => this.seedLikesFor(userId);
+  }
+
+  /**
+   * Once per tester: up to 5 demo profiles who'd want them (gender preferences both ways) like them, so the
+   * "Liked you" count, list and like-back can be tried. Only demo profiles (DEMO badge) ever do this.
+   */
+  async seedLikesFor(userId: string) {
+    const me = await this.prisma.user.findUnique({ where: { id: userId }, select: { isDemo: true, status: true, profile: { select: { gender: true, interestedIn: true } } } });
+    if (!me || me.isDemo || me.status !== 'active' || !me.profile) return;
+    const already = await this.prisma.like.count({ where: { targetId: userId, actor: { isDemo: true } } });
+    if (already > 0) return;
+    const demos = await this.prisma.user.findMany({
+      where: { isDemo: true, status: 'active', profile: { gender: { in: me.profile.interestedIn }, interestedIn: { has: me.profile.gender } } },
+      select: { id: true },
+      take: 40,
+    });
+    const picked = demos.sort(() => Math.random() - 0.5).slice(0, 5);
+    if (picked.length) {
+      await this.prisma.like.createMany({ data: picked.map((d) => ({ actorId: d.id, targetId: userId, action: 'like' as const, source: 'daily' as const })), skipDuplicates: true });
+    }
   }
 
   /** Probability by compatibility: score ≥ 55 → 60%, else 15%. Tests can force it. */

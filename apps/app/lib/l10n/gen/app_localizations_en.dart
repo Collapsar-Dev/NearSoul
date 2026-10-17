@@ -1218,4 +1218,120 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get answerQuestions => 'Answer the questions';
+
+  @override
+  String get subscription => 'Subscription';
+
+  @override
+  String get tierFree => 'Free';
+
+  @override
+  String get tierPlus => 'Soul+';
+
+  @override
+  String get tierGold => 'Gold';
+
+  @override
+  String get tierVip => 'VIP';
+
+  @override
+  String get tierCurrent => 'Your level';
+
+  @override
+  String featDaily(int count) {
+    return 'Today’s Souls: $count a day';
+  }
+
+  @override
+  String get featDailyUnlimited => 'Today’s Souls: no daily limit';
+
+  @override
+  String get featReports => 'Full self and pair reports';
+
+  @override
+  String get featLikes => 'See who liked you and like back';
+
+  @override
+  String get featLikesCount => 'See how many people liked you';
+
+  @override
+  String get featRewind => 'Undo your last pass';
+
+  @override
+  String get featPersonas => 'See how many profiles someone has';
+
+  @override
+  String featLikeLimit(int count) {
+    return 'Likes: $count a day';
+  }
+
+  @override
+  String get featLikeUnlimited => 'Likes: no daily limit';
+
+  @override
+  String perMonth(String price) {
+    return '$price / month';
+  }
+
+  @override
+  String get activateTest => 'Activate (test, free)';
+
+  @override
+  String get backToFree => 'Back to Free';
+
+  @override
+  String get testModeNote =>
+      'Test version: levels switch for free, no payment. Real purchases come with the app stores.';
+
+  @override
+  String get storeSoon => 'Purchases open with the app store release.';
+
+  @override
+  String get likedYou => 'Liked you';
+
+  @override
+  String likedYouCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people liked you',
+      one: '1 person liked you',
+      zero: 'No new likes yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get likedYouUpsell => 'See who they are with Gold.';
+
+  @override
+  String get seePlans => 'See levels';
+
+  @override
+  String get rewind => 'Undo';
+
+  @override
+  String get rewindDone => 'Back in your list';
+
+  @override
+  String personaCountVip(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count profiles',
+      one: '1 profile',
+    );
+    return 'Has $_temp0';
+  }
+
+  @override
+  String get moreSoulsUpsell =>
+      'Want more people a day? Gold has 50, VIP has no limit.';
+
+  @override
+  String get personasVipNote =>
+      'VIP members can see how many profiles you have, never which ones.';
+
+  @override
+  String get passed => 'Passed';
 }

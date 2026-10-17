@@ -6,6 +6,7 @@ import '../features/auth/download_screen.dart';
 import '../features/matches/matches_screen.dart';
 import '../features/matches/pair_report_screen.dart';
 import '../features/me/me_screens.dart';
+import '../features/me/paywall.dart';
 import '../features/me/personas_screen.dart';
 import '../features/nearby/nearby_screen.dart';
 import '../features/onboarding/onboarding_screens.dart';
@@ -118,6 +119,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(path: 'interests', builder: (_, _) => const InterestsScreen(onboarding: false)),
               GoRoute(path: 'settings', builder: (_, _) => const SettingsScreen()),
               GoRoute(path: 'profiles', builder: (_, _) => const PersonasScreen()),
+              GoRoute(path: 'subscription', builder: (_, _) => const SubscriptionScreen()),
               GoRoute(path: 'notifications', builder: (_, _) => const NotificationsScreen()),
               GoRoute(path: 'feedback', builder: (_, _) => const FeedbackScreen()),
               GoRoute(path: 'invites', builder: (_, _) => const InvitesScreen()),

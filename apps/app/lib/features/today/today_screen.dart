@@ -7,6 +7,7 @@ import '../../core/session.dart';
 import '../onboarding/quick_scan_screen.dart';
 import '../../core/widgets/common.dart';
 import '../matches/safety_actions.dart';
+import '../me/paywall.dart';
 import '../shell.dart';
 import 'profile_widgets.dart';
 
@@ -50,6 +51,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     try {
       final r = await ref.read(apiProvider).post<Map<String, dynamic>>('/v1/likes', {'targetId': p['id'], 'action': action, 'source': 'daily'});
       setState(() => _acted.add(p['id'] as String));
+      if (action == 'pass' && mounted) _offerRewind();
       final match = r['match'] as Map<String, dynamic>?;
       if (match != null && mounted) await showMatchDialog(context, person: p, matchId: match['id'] as String, nearby: match['nearby'] == true);
     } on ApiError catch (e) {
@@ -62,6 +64,34 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
         showSnack(context, errorText(context, e));
       }
     }
+  }
+
+  /// "Undo" after a pass (CR-18): Gold and VIP get the person back; others see the levels.
+  void _offerRewind() {
+    final l = context.l;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+        content: Text(l.passed),
+        action: SnackBarAction(
+          label: l.rewind,
+          onPressed: () async {
+            try {
+              final r = await ref.read(apiProvider).post<Map<String, dynamic>>('/v1/likes/rewind');
+              setState(() => _acted.remove(r['targetId']));
+              if (mounted) showSnack(context, l.rewindDone);
+            } on ApiError catch (e) {
+              if (!mounted) return;
+              if (e.code == 'UPGRADE_REQUIRED') {
+                await showPaywall(context);
+                await _load();
+              } else {
+                showSnack(context, errorText(context, e));
+              }
+            }
+          },
+        ),
+      ));
   }
 
   @override
@@ -111,6 +141,22 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
         text: total == 0 ? l.todayEmpty : l.todayDone,
         action: OutlinedButton(onPressed: () => context.go('/nearby'), child: Text(l.tryNearby)),
       ),
+      if (total > 0) ...[
+        const SizedBox(height: 24),
+        FocusColumn(
+          child: Column(children: [
+            Text(l.moreSoulsUpsell, textAlign: TextAlign.center),
+            const SizedBox(height: 8),
+            FilledButton.tonal(
+              onPressed: () async {
+                await showPaywall(context);
+                await _load();
+              },
+              child: Text(l.seePlans),
+            ),
+          ]),
+        ),
+      ],
     ]);
   }
 
