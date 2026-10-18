@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../theme.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/gen/app_localizations.dart';
 import '../api.dart';
@@ -195,12 +197,12 @@ class DemoBadge extends StatelessWidget {
 }
 
 /// The NearSoul mark: a friendly soul (ghost) holding a heart. Decorative next to the wordmark.
-class NsLogo extends StatelessWidget {
+class NsLogo extends ConsumerWidget {
   const NsLogo({super.key, this.size = 28});
   final double size;
 
   @override
-  Widget build(BuildContext context) => ExcludeSemantics(
-        child: Image.asset('assets/logo.png', width: size, height: size, filterQuality: FilterQuality.medium),
+  Widget build(BuildContext context, WidgetRef ref) => ExcludeSemantics(
+        child: Image.asset(ref.watch(appearanceProvider).logo.asset, width: size, height: size, filterQuality: FilterQuality.medium),
       );
 }

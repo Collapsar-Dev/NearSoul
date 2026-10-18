@@ -2821,6 +2821,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Write first, no mutual like needed (5 a day)'**
   String get featMessageFirst;
+
+  /// No description provided for @appLogo.
+  ///
+  /// In en, this message translates to:
+  /// **'Logo'**
+  String get appLogo;
+
+  /// No description provided for @logoSoul.
+  ///
+  /// In en, this message translates to:
+  /// **'Main'**
+  String get logoSoul;
+
+  /// No description provided for @logoPair.
+  ///
+  /// In en, this message translates to:
+  /// **'Two souls'**
+  String get logoPair;
+
+  /// No description provided for @logoHeart.
+  ///
+  /// In en, this message translates to:
+  /// **'Heart'**
+  String get logoHeart;
 }
 
 class _AppLocalizationsDelegate

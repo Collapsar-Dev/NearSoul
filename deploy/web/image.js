@@ -36,3 +36,14 @@
     },
   };
 })();
+
+// Browser-tab icon for the logo chosen in Settings → Appearance (the home-screen icon can't change on the web).
+window.nearsoulSetIcon = function (href) {
+  let link = document.querySelector('link[rel="icon"]');
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'icon';
+    document.head.appendChild(link);
+  }
+  link.href = href;
+};

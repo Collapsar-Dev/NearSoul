@@ -1523,4 +1523,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get featMessageFirst => 'Write first, no mutual like needed (5 a day)';
+
+  @override
+  String get appLogo => 'Logo';
+
+  @override
+  String get logoSoul => 'Main';
+
+  @override
+  String get logoPair => 'Two souls';
+
+  @override
+  String get logoHeart => 'Heart';
 }

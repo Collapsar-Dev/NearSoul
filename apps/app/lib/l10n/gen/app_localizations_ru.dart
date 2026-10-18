@@ -1529,4 +1529,16 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get featMessageFirst =>
       'Написать первым, без взаимного лайка (5 в день)';
+
+  @override
+  String get appLogo => 'Логотип';
+
+  @override
+  String get logoSoul => 'Основной';
+
+  @override
+  String get logoPair => 'Две души';
+
+  @override
+  String get logoHeart => 'Сердце';
 }

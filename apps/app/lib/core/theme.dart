@@ -58,37 +58,66 @@ ThemeData buildTheme(Brightness b, [NsPalette p = NsPalette.neutral]) {
 }
 
 /// Appearance chosen in Settings, kept on this device.
+/// App logo variants (CR-24): 1 is the main mark; 2 and 4 can be picked in Settings → Appearance.
+enum NsLogoVariant {
+  soul('assets/logo.png', 'icons/favicon-1.png'),
+  pair('assets/logo_2.png', 'icons/favicon-2.png'),
+  heart('assets/logo_4.png', 'icons/favicon-4.png');
+
+  const NsLogoVariant(this.asset, this.favicon);
+  final String asset;
+  final String favicon;
+}
+
+/// Appearance chosen in Settings, kept on this device.
 class Appearance {
-  const Appearance({this.mode = ThemeMode.system, this.palette = NsPalette.neutral});
+  const Appearance({this.mode = ThemeMode.system, this.palette = NsPalette.neutral, this.logo = NsLogoVariant.soul});
   final ThemeMode mode;
   final NsPalette palette;
+  final NsLogoVariant logo;
+
+  Appearance copyWith({ThemeMode? mode, NsPalette? palette, NsLogoVariant? logo}) => Appearance(mode: mode ?? this.mode, palette: palette ?? this.palette, logo: logo ?? this.logo);
 }
 
 class AppearanceNotifier extends Notifier<Appearance> {
   static const _modeKey = 'ns_theme_mode';
   static const _paletteKey = 'ns_theme_palette';
+  static const _logoKey = 'ns_logo';
+
+  /// Set by the web build to swap the browser-tab icon.
+  static void Function(String href)? onLogoChanged;
 
   @override
   Appearance build() {
     SharedPreferences.getInstance().then((p) {
       final mode = ThemeMode.values.where((m) => m.name == p.getString(_modeKey)).firstOrNull;
       final palette = NsPalette.values.where((v) => v.name == p.getString(_paletteKey)).firstOrNull;
-      if (mode != null || palette != null) state = Appearance(mode: mode ?? state.mode, palette: palette ?? state.palette);
+      final logo = NsLogoVariant.values.where((v) => v.name == p.getString(_logoKey)).firstOrNull;
+      if (mode != null || palette != null || logo != null) state = state.copyWith(mode: mode, palette: palette, logo: logo);
+      if (logo != null) onLogoChanged?.call(logo.favicon);
     }).catchError((_) {});
     return const Appearance();
   }
 
   Future<void> setMode(ThemeMode mode) async {
-    state = Appearance(mode: mode, palette: state.palette);
+    state = state.copyWith(mode: mode);
     try {
       await (await SharedPreferences.getInstance()).setString(_modeKey, mode.name);
     } catch (_) {}
   }
 
   Future<void> setPalette(NsPalette palette) async {
-    state = Appearance(mode: state.mode, palette: palette);
+    state = state.copyWith(palette: palette);
     try {
       await (await SharedPreferences.getInstance()).setString(_paletteKey, palette.name);
+    } catch (_) {}
+  }
+
+  Future<void> setLogo(NsLogoVariant logo) async {
+    state = state.copyWith(logo: logo);
+    onLogoChanged?.call(logo.favicon);
+    try {
+      await (await SharedPreferences.getInstance()).setString(_logoKey, logo.name);
     } catch (_) {}
   }
 }

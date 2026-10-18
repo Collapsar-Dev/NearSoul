@@ -711,5 +711,9 @@
         "type": "int"
       }
     }
-  }
+  },
+  "appLogo": "Logo",
+  "logoSoul": "Main",
+  "logoPair": "Two souls",
+  "logoHeart": "Heart"
 }

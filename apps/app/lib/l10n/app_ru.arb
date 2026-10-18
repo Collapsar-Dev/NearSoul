@@ -453,5 +453,9 @@
   "requestsCount": "{count, plural, one{{count} сообщение ждёт ответа} few{{count} сообщения ждут ответа} other{{count} сообщений ждут ответа}}",
   "reply": "Ответить",
   "decline": "Отклонить",
-  "featMessageFirst": "Написать первым, без взаимного лайка (5 в день)"
+  "featMessageFirst": "Написать первым, без взаимного лайка (5 в день)",
+  "appLogo": "Логотип",
+  "logoSoul": "Основной",
+  "logoPair": "Две души",
+  "logoHeart": "Сердце"
 }

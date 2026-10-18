@@ -260,6 +260,32 @@ class AppearanceTiles extends ConsumerWidget {
         ),
       ),
       Padding(
+        padding: const EdgeInsets.fromLTRB(72, 0, 16, 4),
+        child: Text(l.appLogo, style: Theme.of(context).textTheme.labelLarge),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(72, 4, 16, 12),
+        child: Wrap(spacing: 12, runSpacing: 8, children: [
+          for (final (v, name) in [(NsLogoVariant.soul, l.logoSoul), (NsLogoVariant.pair, l.logoPair), (NsLogoVariant.heart, l.logoHeart)])
+            InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => n.setLogo(v),
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: look.logo == v ? Theme.of(context).colorScheme.primary : Colors.transparent, width: 2),
+                ),
+                child: Column(children: [
+                  Image.asset(v.asset, width: 52, height: 52),
+                  const SizedBox(height: 4),
+                  Text(name, style: Theme.of(context).textTheme.bodySmall),
+                ]),
+              ),
+            ),
+        ]),
+      ),
+      Padding(
         padding: const EdgeInsets.fromLTRB(72, 0, 16, 12),
         child: Wrap(spacing: 8, runSpacing: 8, children: [
           for (final p in NsPalette.values)

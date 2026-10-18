@@ -8,11 +8,13 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'core/push.dart';
 import 'core/router.dart';
 import 'core/session.dart';
+import 'core/platform/icon_stub.dart' if (dart.library.js_interop) 'core/platform/icon_web.dart';
 import 'core/theme.dart';
 import 'l10n/gen/app_localizations.dart';
 
 void main() {
   usePathUrlStrategy(); // PLAT-003: path URLs on web (no #)
+  AppearanceNotifier.onLogoChanged = setBrowserIcon;
   runApp(const ProviderScope(child: NearSoulApp()));
   // Desktop web: always build the semantics tree so screen readers (and browser automation) see real elements (§5.7, §16.4).
   // Not on phones: forced semantics makes taps on text fields land on the semantics layer, so the keyboard sometimes
