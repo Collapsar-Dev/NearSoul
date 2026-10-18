@@ -39,6 +39,9 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 | Subscription levels (CR-18) | TESTED | Soul+/Gold/VIP, test activation, tier-sized daily sets with same-day top-up, Liked you, rewind, VIP profile count; app: Subscription screen, Liked you, Undo snackbar, upsells. Live check: photo upload of a 4032×3024 JPEG on Render works |
 | M9 Payments & ops | IN PROGRESS | PAY-001..003 TESTED (RevenueCat webhook, entitlements, paywall sheet; store products not set up yet). ACC-002 data export TESTED. ANL-001 consent-gated server analytics TESTED (needs POSTHOG_KEY) |
 
+## Responsive check 2026-10-18 (412 px phone, 820 px tablet, 1440 px desktop)
+- Checked Today (cards, list, ads, break), Nearby, Map, Matches, Soul, Me, Subscription. Fixed: with the alpha base of 200 every level showed "200 a day"; paid levels now always give more (Soul+ ×1.25, Gold ×1.5, VIP up to 500; production stays 15 / 25 / 50 / unlimited). Test added in `tiers.e2e-spec.ts`.
+
 ## Matches map (CR-29), 2026-10-18
 - API: `GET /v1/map`, `POST /v1/map/share {durationMin: 60|240|null}`, `POST /v1/map/stop`, public tile proxy `GET /v1/tiles/{z}/{x}/{y}.png` (OSM, LRU cache, rate-limited per IP). New table `map_shares` (migration 20261018170000_map_shares).
 - App: Nearby → «Матчи на карте» (flutter_map): pins with photo, name and «≈ 400 м», tap → «Написать» opens the chat; «Показывать меня матчам» switch with 1 h / 4 h / until off and a privacy note. Checked at 412 px and 1440 px.

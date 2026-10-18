@@ -20,6 +20,8 @@ describe('Subscription levels (CR-18): Soul+, Gold, VIP with test activation', (
     const free = await ctx.http.get('/v1/billing/status').set(bearer(anna.token)).expect(200);
     expect(free.body).toMatchObject({ tier: 'free', testPurchases: true, features: { dailySetSize: 2, seeLikes: false } });
     expect(free.body.tiers.map((t: { tier: string }) => t.tier)).toEqual(['free', 'plus', 'gold', 'vip']);
+    // every paid level gives more people a day than the one below it
+    expect(free.body.tiers.map((t: { features: { dailySetSize: number | null } }) => t.features.dailySetSize)).toEqual([2, 25, 50, null]);
     const vip = await activate(ctx, anna.token, 'vip');
     expect(vip.body).toMatchObject({ tier: 'vip', features: { dailySetSize: null, fullReports: true, seeLikes: true, rewind: true, seePersonaCount: true } });
     const gold = await activate(ctx, anna.token, 'gold');
