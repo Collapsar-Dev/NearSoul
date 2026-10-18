@@ -2881,6 +2881,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open in Maps'**
   String get openInMaps;
+
+  /// No description provided for @mapTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get mapTitle;
+
+  /// No description provided for @mapOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Matches on the map'**
+  String get mapOpen;
+
+  /// No description provided for @mapShowMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Show me to my matches'**
+  String get mapShowMe;
+
+  /// No description provided for @mapSharingUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'On until {time}'**
+  String mapSharingUntil(String time);
+
+  /// No description provided for @mapSharingForever.
+  ///
+  /// In en, this message translates to:
+  /// **'On until you turn it off'**
+  String get mapSharingForever;
+
+  /// No description provided for @mapGhost.
+  ///
+  /// In en, this message translates to:
+  /// **'Off: you\'re not on the map'**
+  String get mapGhost;
+
+  /// No description provided for @mapPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Matches see your approximate area (about 300–500 m), never your address. People you haven\'t matched with never see you on the map. You can turn it off at any time.'**
+  String get mapPrivacy;
+
+  /// No description provided for @map1h.
+  ///
+  /// In en, this message translates to:
+  /// **'For 1 hour'**
+  String get map1h;
+
+  /// No description provided for @map4h.
+  ///
+  /// In en, this message translates to:
+  /// **'For 4 hours'**
+  String get map4h;
+
+  /// No description provided for @mapUntilOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Until I turn it off'**
+  String get mapUntilOff;
+
+  /// No description provided for @mapTurnOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off'**
+  String get mapTurnOff;
+
+  /// No description provided for @mapMeters.
+  ///
+  /// In en, this message translates to:
+  /// **'≈ {n} m'**
+  String mapMeters(int n);
+
+  /// No description provided for @mapKm.
+  ///
+  /// In en, this message translates to:
+  /// **'≈ {km} km'**
+  String mapKm(String km);
+
+  /// No description provided for @mapUpdatedMin.
+  ///
+  /// In en, this message translates to:
+  /// **'updated {n} min ago'**
+  String mapUpdatedMin(int n);
+
+  /// No description provided for @mapUpdatedH.
+  ///
+  /// In en, this message translates to:
+  /// **'updated {n} h ago'**
+  String mapUpdatedH(int n);
+
+  /// No description provided for @mapEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'None of your matches is on the map yet. When a match turns on «Show me», they appear here.'**
+  String get mapEmpty;
+
+  /// No description provided for @mapNoLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow location to see how far your matches are.'**
+  String get mapNoLocation;
+
+  /// No description provided for @mapAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow'**
+  String get mapAllow;
+
+  /// No description provided for @mapPickPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a place (test)'**
+  String get mapPickPlace;
+
+  /// No description provided for @mapWrite.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get mapWrite;
+
+  /// No description provided for @mapCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} on the map'**
+  String mapCount(int n);
+
+  /// No description provided for @mapYou.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get mapYou;
 }
 
 class _AppLocalizationsDelegate

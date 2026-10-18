@@ -1555,4 +1555,84 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openInMaps => 'Open in Maps';
+
+  @override
+  String get mapTitle => 'Map';
+
+  @override
+  String get mapOpen => 'Matches on the map';
+
+  @override
+  String get mapShowMe => 'Show me to my matches';
+
+  @override
+  String mapSharingUntil(String time) {
+    return 'On until $time';
+  }
+
+  @override
+  String get mapSharingForever => 'On until you turn it off';
+
+  @override
+  String get mapGhost => 'Off: you\'re not on the map';
+
+  @override
+  String get mapPrivacy =>
+      'Matches see your approximate area (about 300–500 m), never your address. People you haven\'t matched with never see you on the map. You can turn it off at any time.';
+
+  @override
+  String get map1h => 'For 1 hour';
+
+  @override
+  String get map4h => 'For 4 hours';
+
+  @override
+  String get mapUntilOff => 'Until I turn it off';
+
+  @override
+  String get mapTurnOff => 'Turn off';
+
+  @override
+  String mapMeters(int n) {
+    return '≈ $n m';
+  }
+
+  @override
+  String mapKm(String km) {
+    return '≈ $km km';
+  }
+
+  @override
+  String mapUpdatedMin(int n) {
+    return 'updated $n min ago';
+  }
+
+  @override
+  String mapUpdatedH(int n) {
+    return 'updated $n h ago';
+  }
+
+  @override
+  String get mapEmpty =>
+      'None of your matches is on the map yet. When a match turns on «Show me», they appear here.';
+
+  @override
+  String get mapNoLocation => 'Allow location to see how far your matches are.';
+
+  @override
+  String get mapAllow => 'Allow';
+
+  @override
+  String get mapPickPlace => 'Pick a place (test)';
+
+  @override
+  String get mapWrite => 'Message';
+
+  @override
+  String mapCount(int n) {
+    return '$n on the map';
+  }
+
+  @override
+  String get mapYou => 'You';
 }

@@ -39,6 +39,12 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 | Subscription levels (CR-18) | TESTED | Soul+/Gold/VIP, test activation, tier-sized daily sets with same-day top-up, Liked you, rewind, VIP profile count; app: Subscription screen, Liked you, Undo snackbar, upsells. Live check: photo upload of a 4032×3024 JPEG on Render works |
 | M9 Payments & ops | IN PROGRESS | PAY-001..003 TESTED (RevenueCat webhook, entitlements, paywall sheet; store products not set up yet). ACC-002 data export TESTED. ANL-001 consent-gated server analytics TESTED (needs POSTHOG_KEY) |
 
+## Matches map (CR-29), 2026-10-18
+- API: `GET /v1/map`, `POST /v1/map/share {durationMin: 60|240|null}`, `POST /v1/map/stop`, public tile proxy `GET /v1/tiles/{z}/{x}/{y}.png` (OSM, LRU cache, rate-limited per IP). New table `map_shares` (migration 20261018170000_map_shares).
+- App: Nearby → «Матчи на карте» (flutter_map): pins with photo, name and «≈ 400 м», tap → «Написать» opens the chat; «Показывать меня матчам» switch with 1 h / 4 h / until off and a privacy note. Checked at 412 px and 1440 px.
+- Tests: `test/map.e2e-spec.ts` (only matches, approximate area, stop/expiry/block, durations, tile bounds). `npm test` 26 suites / 254 ✓, lint ✓, tsc ✓, `flutter analyze` ✓, `flutter test` ✓.
+- Note: OSM tiles are fine for the alpha; for production use a paid tile provider or our own tiles (added to "Before production").
+
 ## Founder feedback 2026-10-18, round 4 (checked at 412 px Android, 820 px tablet, 1440 px desktop)
 - Today's Souls: up to 200 a day in the alpha, paged by 30 (`/v1/daily-set?offset&limit`), short days top up every 2 min (CR-27).
 - «Узнай себя» break after every 50 people; ads after every 10 (not at 50s); partner ad lists its venues with «На карте» (CR-28).
@@ -82,6 +88,7 @@ Checked and fine: age range defaults to own age ±5; photo upload; match → cha
 - Founder review of band texts, archetype texts and golden persona pairs.
 
 ## Before production (founder: "prepare for production")
+- Map tiles: switch `/v1/tiles` from the volunteer OpenStreetMap servers to a paid provider or self-hosted tiles before public launch (OSM tile policy).
 - Email: EMAIL_PROVIDER=brevo (or resend) + API key + verified EMAIL_FROM. `screen` is refused by the server in staging/production; with `screen` anyone who types an email can sign in as it.
 - Render free Postgres is for testing only (limited lifetime and no backups): move to a paid database.
 - Own domain, R2/S3 storage instead of photos in Postgres, APK signing, Anthropic key, Firebase for native push.

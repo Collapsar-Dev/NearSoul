@@ -164,6 +164,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> with WidgetsBinding
     final me = ref.watch(sessionProvider).me;
     return Scaffold(
       appBar: AppBar(title: NsTitle(l.tabNearby), actions: [
+        IconButton(tooltip: l.mapOpen, icon: const Icon(Icons.map_outlined), onPressed: () => context.push('/nearby/map')),
         if (me?.isTester == true) IconButton(tooltip: l.simulateLocation, icon: const Icon(Icons.science_outlined), onPressed: () => context.push('/me/alpha').then((_) => _load())),
       ]),
       body: _error != null
@@ -177,6 +178,17 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> with WidgetsBinding
                       maxWidth: 720,
                       padding: EdgeInsets.zero,
                       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                        // CR-29: the matches map sits at the top of Nearby.
+                        Card(
+                          child: ListTile(
+                            leading: const Icon(Icons.map_outlined),
+                            title: Text(l.mapOpen),
+                            subtitle: Text(l.mapShowMe),
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: () => context.push('/nearby/map'),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
                         if (!open) _offCard(context) else _onCard(context),
                         if (_locationProblem != null) ...[
                           const SizedBox(height: 12),

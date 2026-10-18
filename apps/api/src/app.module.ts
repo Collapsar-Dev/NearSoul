@@ -45,6 +45,8 @@ import { RequestsService } from './modules/matches/requests.service';
 import { PersonasController } from './modules/me/personas.controller';
 import { PersonasService } from './modules/me/personas.service';
 import { NearbyController } from './modules/nearby/nearby.controller';
+import { MapService } from './modules/nearby/map.service';
+import { TilesController } from './modules/nearby/tiles.controller';
 import { NearbyService } from './modules/nearby/nearby.service';
 import { NotificationsController } from './modules/notifications/notifications.controller';
 import { NotificationsService } from './modules/notifications/notifications.service';
@@ -68,13 +70,13 @@ import { StorageService } from './modules/storage/storage.service';
   controllers: [
     HealthController, AuthController, InvitesController, MeController, PersonasController, AdsController, EngineController, CardController,
     ProfileController, ReferenceController, MediaController, DiscoveryController, MatchesController,
-    NotificationsController, ReportsController, SafetyController, FeedbackController, NearbyController,
+    NotificationsController, ReportsController, SafetyController, FeedbackController, NearbyController, TilesController,
     AlphaController, AdminController, SoulController, ExportController, BillingController,
   ],
   providers: [
     PrismaService, RateLimiter, EmailService, AuthService, InvitesService, MeService, PersonasService, AdsService, RequestsService, EngineService, CardService,
     { provide: StorageService, useFactory: (p: PrismaService) => new StorageService(p), inject: [PrismaService] }, ProfileService, SubjectsService, ProfileViewService, DailySetService, LikesService, ChatService,
-    RealtimeGateway, PushService, NotificationsService, ReportsService, SafetyService, NearbyService, DemoService,
+    RealtimeGateway, PushService, NotificationsService, ReportsService, SafetyService, NearbyService, MapService, DemoService,
     RetentionService, AdminAuthService, AdminBootstrap, ExportService, AnalyticsService, BillingService, SoulCryptoService, SoulService,
     { provide: AiProvider, useClass: AnthropicProvider },
     { provide: APP_GUARD, useClass: AuthGuard },

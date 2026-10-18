@@ -9,6 +9,7 @@ import '../features/me/me_screens.dart';
 import '../features/me/paywall.dart';
 import '../features/me/personas_screen.dart';
 import '../features/nearby/nearby_screen.dart';
+import '../features/nearby/map_screen.dart';
 import '../features/onboarding/onboarding_screens.dart';
 import '../features/onboarding/quick_scan_screen.dart';
 import '../features/onboarding/reveal_screen.dart';
@@ -99,7 +100,9 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(path: 'profile/:id', builder: (_, s) => ProfileScreen(userId: s.pathParameters['id']!, withActions: s.uri.queryParameters['act'] == '1')),
             ]),
           ]),
-          StatefulShellBranch(routes: [GoRoute(path: '/nearby', builder: (_, _) => const NearbyScreen())]),
+          StatefulShellBranch(routes: [
+            GoRoute(path: '/nearby', builder: (_, _) => const NearbyScreen(), routes: [GoRoute(path: 'map', builder: (_, _) => const MatchMapScreen())]),
+          ]),
           StatefulShellBranch(routes: [
             GoRoute(path: '/soul', builder: (_, _) => const SoulScreen(), routes: [
               GoRoute(path: 'report', builder: (_, _) => const SelfReportScreen()),

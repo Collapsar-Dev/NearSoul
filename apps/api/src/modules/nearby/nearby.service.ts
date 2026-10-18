@@ -12,6 +12,7 @@ import { EngineService } from '../engine/engine.service';
 import { ProfileViewService } from '../discovery/profile-view.service';
 import { SubjectsService } from '../discovery/subjects.service';
 import { NotificationsService, pushText } from '../notifications/notifications.service';
+import { MapService } from './map.service';
 import { BAND_LABEL, bandFor, distanceM, RADIUS_OPTIONS_M, snap, type Band } from './geo';
 
 const FRESH_MS = 15 * 60_000;
@@ -36,6 +37,7 @@ export class NearbyService {
     private readonly views: ProfileViewService,
     private readonly notifications: NotificationsService,
     private readonly analytics: AnalyticsService,
+    private readonly map: MapService,
   ) {}
 
   private async activeSession(userId: string, now = new Date()) {
@@ -46,7 +48,7 @@ export class NearbyService {
     this.limiter.check(`loc:${userId}`, 30, 3_600_000);
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { discoveryEnabled: true } });
     const session = await this.activeSession(userId);
-    if (!user.discoveryEnabled && !session) throw badRequest('LOCATION_NOT_NEEDED', 'Turn on Open to meet to share your approximate area.');
+    if (!user.discoveryEnabled && !session && !(await this.map.isSharing(userId))) throw badRequest('LOCATION_NOT_NEEDED', 'Turn on Open to meet to share your approximate area.');
     if (input.accuracyM > MAX_ACCURACY_M) throw badRequest('LOCATION_INACCURATE', 'Your location is too imprecise right now. Try again outside or on your phone.');
     const snapped = snap(input.lat, input.lng);
     const prev = await this.prisma.userLocation.findUnique({ where: { userId } });
@@ -205,7 +207,7 @@ export class NearbyService {
     await this.prisma.nearbySession.update({ where: { id: sessionId }, data: { endedAt: new Date() } });
     await this.prisma.nearbyLater.deleteMany({ where: { sessionId } });
     const u = await this.prisma.user.findUnique({ where: { id: userId }, select: { discoveryEnabled: true } });
-    if (!u?.discoveryEnabled) await this.prisma.userLocation.deleteMany({ where: { userId } });
+    if (!u?.discoveryEnabled && !(await this.map.isSharing(userId))) await this.prisma.userLocation.deleteMany({ where: { userId } });
   }
 
   /** Server is the source of truth for expiry (GEO-005) and location TTL (D29). */
@@ -218,6 +220,7 @@ export class NearbyService {
       if (!already) await this.notifications.notify(s.userId, 'open_ending', { sessionId: s.id });
     }
     await this.prisma.userLocation.deleteMany({ where: { updatedAt: { lt: new Date(now.getTime() - LOCATION_TTL_MS) } } });
+    await this.map.housekeeping(now);
     return expired.length;
   }
 

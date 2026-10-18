@@ -1561,4 +1561,85 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get openInMaps => 'На карте';
+
+  @override
+  String get mapTitle => 'Карта';
+
+  @override
+  String get mapOpen => 'Матчи на карте';
+
+  @override
+  String get mapShowMe => 'Показывать меня матчам';
+
+  @override
+  String mapSharingUntil(String time) {
+    return 'Включено до $time';
+  }
+
+  @override
+  String get mapSharingForever => 'Включено, пока не выключишь';
+
+  @override
+  String get mapGhost => 'Выключено: тебя нет на карте';
+
+  @override
+  String get mapPrivacy =>
+      'Матчи видят примерный район (около 300–500 м), а не твой адрес. Люди без матча с тобой никогда не видят тебя на карте. Выключить можно в любой момент.';
+
+  @override
+  String get map1h => 'На 1 час';
+
+  @override
+  String get map4h => 'На 4 часа';
+
+  @override
+  String get mapUntilOff => 'Пока не выключу';
+
+  @override
+  String get mapTurnOff => 'Выключить';
+
+  @override
+  String mapMeters(int n) {
+    return '≈ $n м';
+  }
+
+  @override
+  String mapKm(String km) {
+    return '≈ $km км';
+  }
+
+  @override
+  String mapUpdatedMin(int n) {
+    return 'обновлено $n мин назад';
+  }
+
+  @override
+  String mapUpdatedH(int n) {
+    return 'обновлено $n ч назад';
+  }
+
+  @override
+  String get mapEmpty =>
+      'Пока никого из матчей нет на карте. Когда матч включит «Показывать меня», он появится здесь.';
+
+  @override
+  String get mapNoLocation =>
+      'Разреши геолокацию, чтобы видеть, как далеко твои матчи.';
+
+  @override
+  String get mapAllow => 'Разрешить';
+
+  @override
+  String get mapPickPlace => 'Выбрать место (тест)';
+
+  @override
+  String get mapWrite => 'Написать';
+
+  @override
+  String mapCount(int n) {
+    return '$n на карте';
+  }
+
+  @override
+  String get mapYou => 'Ты';
 }

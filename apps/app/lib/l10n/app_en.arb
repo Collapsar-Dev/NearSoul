@@ -728,5 +728,69 @@
     }
   },
   "adPlaces": "Places",
-  "openInMaps": "Open in Maps"
+  "openInMaps": "Open in Maps",
+  "mapTitle": "Map",
+  "mapOpen": "Matches on the map",
+  "mapShowMe": "Show me to my matches",
+  "mapSharingUntil": "On until {time}",
+  "@mapSharingUntil": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "mapSharingForever": "On until you turn it off",
+  "mapGhost": "Off: you're not on the map",
+  "mapPrivacy": "Matches see your approximate area (about 300–500 m), never your address. People you haven't matched with never see you on the map. You can turn it off at any time.",
+  "map1h": "For 1 hour",
+  "map4h": "For 4 hours",
+  "mapUntilOff": "Until I turn it off",
+  "mapTurnOff": "Turn off",
+  "mapMeters": "≈ {n} m",
+  "@mapMeters": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "mapKm": "≈ {km} km",
+  "@mapKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "mapUpdatedMin": "updated {n} min ago",
+  "@mapUpdatedMin": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "mapUpdatedH": "updated {n} h ago",
+  "@mapUpdatedH": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "mapEmpty": "None of your matches is on the map yet. When a match turns on «Show me», they appear here.",
+  "mapNoLocation": "Allow location to see how far your matches are.",
+  "mapAllow": "Allow",
+  "mapPickPlace": "Pick a place (test)",
+  "mapWrite": "Message",
+  "mapCount": "{n} on the map",
+  "@mapCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "mapYou": "You"
 }

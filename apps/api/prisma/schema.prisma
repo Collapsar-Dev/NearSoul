@@ -73,68 +73,69 @@ enum CodePurpose {
 }
 
 model User {
-  id                 String          @id @default(uuid(7)) @db.Uuid
+  id                    String         @id @default(uuid(7)) @db.Uuid
   /// Null for extra personas: they sign in through the account owner's email (parentId).
-  email              String?         @unique
+  email                 String?        @unique
   /// Extra persona (founder request, CR-17): a full separate profile owned by the parent account.
-  parentId           String?         @map("parent_id") @db.Uuid
+  parentId              String?        @map("parent_id") @db.Uuid
   /// Owner-only name for the persona in the switcher (e.g. "Active"); never shown to others.
-  personaLabel       String?         @map("persona_label")
-  status             UserStatus      @default(onboarding)
-  role               UserRole        @default(user)
-  onboardingStep     String          @default("dob") @map("onboarding_step")
-  dob                DateTime?       @db.Date
-  ageGatePassedAt    DateTime?       @map("age_gate_passed_at")
-  discoveryEnabled   Boolean         @default(false) @map("discovery_enabled")
-  hideDistance       Boolean         @default(false) @map("hide_distance")
-  readReceipts       Boolean         @default(true) @map("read_receipts")
-  cardVisibility     CardVisibility  @default(matches_only) @map("card_visibility")
-  shareLevel         ShareLevel?     @map("share_level")
-  flexibleFallback   Boolean         @default(true) @map("flexible_fallback")
-  locale             String          @default("en")
-  timezone           String          @default("Europe/Amsterdam")
-  analyticsId        String          @default(uuid()) @map("analytics_id")
-  billingId          String          @unique @default(uuid()) @map("billing_id")
-  isDemo             Boolean         @default(false) @map("is_demo")
-  hiddenByModeration Boolean         @default(false) @map("hidden_by_moderation")
-  soulKeepConversations Boolean      @default(false) @map("soul_keep_conversations")
+  personaLabel          String?        @map("persona_label")
+  status                UserStatus     @default(onboarding)
+  role                  UserRole       @default(user)
+  onboardingStep        String         @default("dob") @map("onboarding_step")
+  dob                   DateTime?      @db.Date
+  ageGatePassedAt       DateTime?      @map("age_gate_passed_at")
+  discoveryEnabled      Boolean        @default(false) @map("discovery_enabled")
+  hideDistance          Boolean        @default(false) @map("hide_distance")
+  readReceipts          Boolean        @default(true) @map("read_receipts")
+  cardVisibility        CardVisibility @default(matches_only) @map("card_visibility")
+  shareLevel            ShareLevel?    @map("share_level")
+  flexibleFallback      Boolean        @default(true) @map("flexible_fallback")
+  locale                String         @default("en")
+  timezone              String         @default("Europe/Amsterdam")
+  analyticsId           String         @default(uuid()) @map("analytics_id")
+  billingId             String         @unique @default(uuid()) @map("billing_id")
+  isDemo                Boolean        @default(false) @map("is_demo")
+  hiddenByModeration    Boolean        @default(false) @map("hidden_by_moderation")
+  soulKeepConversations Boolean        @default(false) @map("soul_keep_conversations")
   /// NOTIF-001 push toggles per type ({ type: false } turns a push off); missing = on.
-  notifyPrefs        Json            @default("{}") @map("notify_prefs")
+  notifyPrefs           Json           @default("{}") @map("notify_prefs")
   /// Local date (YYYY-MM-DD) of the last non-conversation push, for the 1-per-day cap (§5.8).
-  lastReminderPushDay String?        @map("last_reminder_push_day")
+  lastReminderPushDay   String?        @map("last_reminder_push_day")
   /// Daily-set key (dailyKey) we last announced with daily_set_ready.
-  dailyAnnouncedKey  String?         @map("daily_announced_key")
-  invitesLeft        Int             @default(0) @map("invites_left")
+  dailyAnnouncedKey     String?        @map("daily_announced_key")
+  invitesLeft           Int            @default(0) @map("invites_left")
   /// Optional onboarding steps the person chose to skip (photos, interests, reveal).
-  onboardingSkipped  String[]        @default([]) @map("onboarding_skipped")
-  createdAt          DateTime        @default(now()) @map("created_at")
-  lastActiveAt       DateTime        @default(now()) @map("last_active_at")
-  deletionRequestedAt DateTime?      @map("deletion_requested_at")
+  onboardingSkipped     String[]       @default([]) @map("onboarding_skipped")
+  createdAt             DateTime       @default(now()) @map("created_at")
+  lastActiveAt          DateTime       @default(now()) @map("last_active_at")
+  deletionRequestedAt   DateTime?      @map("deletion_requested_at")
 
-  profile            Profile?
-  photos             Photo[]
-  sessions           Session[]
-  consents           Consent[]
-  answers            EngineAnswer[]
-  soulProfile        SoulProfileRow?
-  overrides          LayerOverride[]
-  card               PersonalityCard?
-  location           UserLocation?
-  notifications      Notification[]
-  likesGiven         Like[]          @relation("likeActor")
-  likesReceived      Like[]          @relation("likeTarget")
-  blocksMade         Block[]         @relation("blocker")
-  blocksReceived     Block[]         @relation("blocked")
-  feedback           Feedback[]
-  ratings            Rating[]
-  soulSessions       SoulSession[]
-  soulInsights       SoulInsight[]
-  dataKey            UserDataKey?
-  entitlements       Entitlement[]
-  parent             User?           @relation("personas", fields: [parentId], references: [id], onDelete: Cascade)
-  requestsSent       MessageRequest[] @relation("requestsSent")
-  requestsReceived   MessageRequest[] @relation("requestsReceived")
-  personas           User[]          @relation("personas")
+  profile          Profile?
+  photos           Photo[]
+  sessions         Session[]
+  consents         Consent[]
+  answers          EngineAnswer[]
+  soulProfile      SoulProfileRow?
+  overrides        LayerOverride[]
+  card             PersonalityCard?
+  location         UserLocation?
+  mapShare         MapShare?
+  notifications    Notification[]
+  likesGiven       Like[]           @relation("likeActor")
+  likesReceived    Like[]           @relation("likeTarget")
+  blocksMade       Block[]          @relation("blocker")
+  blocksReceived   Block[]          @relation("blocked")
+  feedback         Feedback[]
+  ratings          Rating[]
+  soulSessions     SoulSession[]
+  soulInsights     SoulInsight[]
+  dataKey          UserDataKey?
+  entitlements     Entitlement[]
+  parent           User?            @relation("personas", fields: [parentId], references: [id], onDelete: Cascade)
+  requestsSent     MessageRequest[] @relation("requestsSent")
+  requestsReceived MessageRequest[] @relation("requestsReceived")
+  personas         User[]           @relation("personas")
 
   @@index([status, discoveryEnabled])
   @@index([parentId])
@@ -156,17 +157,17 @@ model AuthCode {
 }
 
 model Session {
-  id               String    @id @default(uuid(7)) @db.Uuid
-  userId           String    @map("user_id") @db.Uuid
-  familyId         String    @map("family_id") @db.Uuid
-  refreshTokenHash String    @unique @map("refresh_token_hash")
-  deviceId         String?   @map("device_id")
+  id               String        @id @default(uuid(7)) @db.Uuid
+  userId           String        @map("user_id") @db.Uuid
+  familyId         String        @map("family_id") @db.Uuid
+  refreshTokenHash String        @unique @map("refresh_token_hash")
+  deviceId         String?       @map("device_id")
   platform         String?
-  createdAt        DateTime  @default(now()) @map("created_at")
-  lastUsedAt       DateTime  @default(now()) @map("last_used_at")
-  revokedAt        DateTime? @map("revoked_at")
-  replacedById     String?   @map("replaced_by") @db.Uuid
-  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime      @default(now()) @map("created_at")
+  lastUsedAt       DateTime      @default(now()) @map("last_used_at")
+  revokedAt        DateTime?     @map("revoked_at")
+  replacedById     String?       @map("replaced_by") @db.Uuid
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   devices          DeviceToken[]
 
   @@index([userId])
@@ -200,19 +201,19 @@ model Consent {
 }
 
 model City {
-  id          String  @id
+  id          String    @id
   name        Json
-  countryCode String  @map("country_code")
+  countryCode String    @map("country_code")
   lat         Float
   lng         Float
-  active      Boolean @default(true)
+  active      Boolean   @default(true)
   profiles    Profile[]
 
   @@map("cities")
 }
 
 model Interest {
-  id       String @id
+  id       String            @id
   category String
   labels   Json
   profiles ProfileInterest[]
@@ -221,20 +222,20 @@ model Interest {
 }
 
 model Profile {
-  userId       String   @id @map("user_id") @db.Uuid
-  firstName    String   @map("first_name")
+  userId       String            @id @map("user_id") @db.Uuid
+  firstName    String            @map("first_name")
   gender       Gender
-  interestedIn Gender[] @map("interested_in")
+  interestedIn Gender[]          @map("interested_in")
   intent       Intent
-  bio          String   @default("")
-  ageMin       Int      @map("age_min")
-  ageMax       Int      @map("age_max")
-  cityId       String?  @map("city_id")
-  heightCm     Int?     @map("height_cm")
-  jobTitle     String?  @map("job_title")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  city         City?    @relation(fields: [cityId], references: [id])
+  bio          String            @default("")
+  ageMin       Int               @map("age_min")
+  ageMax       Int               @map("age_max")
+  cityId       String?           @map("city_id")
+  heightCm     Int?              @map("height_cm")
+  jobTitle     String?           @map("job_title")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  city         City?             @relation(fields: [cityId], references: [id])
   interests    ProfileInterest[]
 
   @@map("profiles")
@@ -267,14 +268,14 @@ model Photo {
 }
 
 model EngineAnswer {
-  userId     String   @map("user_id") @db.Uuid
-  itemKey    String   @map("item_key")
-  itemVersion Int     @map("item_version")
-  value      Json
+  userId      String   @map("user_id") @db.Uuid
+  itemKey     String   @map("item_key")
+  itemVersion Int      @map("item_version")
+  value       Json
   /// Language the item was shown in (CR-8: ru IPIP items are a draft translation, kept apart for norms).
-  locale     String?
-  answeredAt DateTime @default(now()) @map("answered_at")
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  locale      String?
+  answeredAt  DateTime @default(now()) @map("answered_at")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, itemKey])
   @@map("engine_answers")
@@ -317,19 +318,19 @@ model MatchConfigRow {
 }
 
 model PersonalityCard {
-  userId            String   @id @map("user_id") @db.Uuid
-  headline          String
-  summary           String
-  communicationStyle String  @map("communication_style")
-  idealFirstDate    String   @map("ideal_first_date")
-  strengths         String[]
-  source            String
-  model             String?
-  promptVersion     String   @map("prompt_version")
-  userEdited        Boolean  @default(false) @map("user_edited")
-  reviewed          Boolean  @default(false)
-  generatedAt       DateTime @default(now()) @map("generated_at")
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             String   @id @map("user_id") @db.Uuid
+  headline           String
+  summary            String
+  communicationStyle String   @map("communication_style")
+  idealFirstDate     String   @map("ideal_first_date")
+  strengths          String[]
+  source             String
+  model              String?
+  promptVersion      String   @map("prompt_version")
+  userEdited         Boolean  @default(false) @map("user_edited")
+  reviewed           Boolean  @default(false)
+  generatedAt        DateTime @default(now()) @map("generated_at")
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("personality_cards")
 }
@@ -363,14 +364,14 @@ model Like {
 }
 
 model Match {
-  id        String    @id @default(uuid(7)) @db.Uuid
-  userLow   String    @map("user_low") @db.Uuid
-  userHigh  String    @map("user_high") @db.Uuid
+  id        String     @id @default(uuid(7)) @db.Uuid
+  userLow   String     @map("user_low") @db.Uuid
+  userHigh  String     @map("user_high") @db.Uuid
   source    LikeSource
-  createdAt DateTime  @default(now()) @map("created_at")
-  endedAt   DateTime? @map("ended_at")
-  endedBy   String?   @map("ended_by") @db.Uuid
-  endReason String?   @map("end_reason")
+  createdAt DateTime   @default(now()) @map("created_at")
+  endedAt   DateTime?  @map("ended_at")
+  endedBy   String?    @map("ended_by") @db.Uuid
+  endReason String?    @map("end_reason")
   messages  Message[]
   reports   Report[]
 
@@ -397,17 +398,17 @@ model Message {
 }
 
 model Report {
-  id                  String     @id @default(uuid(7)) @db.Uuid
+  id                  String      @id @default(uuid(7)) @db.Uuid
   type                String // self | pair
-  ownerId             String     @map("owner_id") @db.Uuid
-  otherId             String?    @map("other_id") @db.Uuid
-  matchId             String?    @map("match_id") @db.Uuid
+  ownerId             String      @map("owner_id") @db.Uuid
+  otherId             String?     @map("other_id") @db.Uuid
+  matchId             String?     @map("match_id") @db.Uuid
   effectiveShareLevel ShareLevel? @map("effective_share_level")
   data                Json
   sections            Json
-  sourceVersions      String     @map("source_versions")
-  generatedAt         DateTime   @default(now()) @map("generated_at")
-  match               Match?     @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  sourceVersions      String      @map("source_versions")
+  generatedAt         DateTime    @default(now()) @map("generated_at")
+  match               Match?      @relation(fields: [matchId], references: [id], onDelete: Cascade)
 
   @@unique([type, ownerId, matchId])
   @@map("reports")
@@ -425,18 +426,18 @@ model Block {
 }
 
 model ModerationReport {
-  id          String    @id @default(uuid(7)) @db.Uuid
-  reporterId  String    @map("reporter_id") @db.Uuid
-  reportedId  String    @map("reported_id") @db.Uuid
-  matchId     String?   @map("match_id") @db.Uuid
-  category    String
-  comment     String?
-  urgent      Boolean   @default(false)
-  status      String    @default("open")
-  assignedTo  String?   @map("assigned_to") @db.Uuid
-  resolution  String?
-  createdAt   DateTime  @default(now()) @map("created_at")
-  resolvedAt  DateTime? @map("resolved_at")
+  id         String    @id @default(uuid(7)) @db.Uuid
+  reporterId String    @map("reporter_id") @db.Uuid
+  reportedId String    @map("reported_id") @db.Uuid
+  matchId    String?   @map("match_id") @db.Uuid
+  category   String
+  comment    String?
+  urgent     Boolean   @default(false)
+  status     String    @default("open")
+  assignedTo String?   @map("assigned_to") @db.Uuid
+  resolution String?
+  createdAt  DateTime  @default(now()) @map("created_at")
+  resolvedAt DateTime? @map("resolved_at")
 
   @@index([status, urgent, createdAt])
   @@index([reportedId, createdAt])
@@ -494,15 +495,15 @@ model Notification {
 }
 
 model Invite {
-  id          String   @id @default(uuid(7)) @db.Uuid
-  code        String   @unique
-  createdBy   String?  @map("created_by") @db.Uuid
-  createdByAdmin Boolean @default(false) @map("created_by_admin")
-  maxUses     Int      @default(1) @map("max_uses")
-  uses        Int      @default(0)
-  expiresAt   DateTime? @map("expires_at")
-  createdAt   DateTime @default(now()) @map("created_at")
-  redemptions InviteRedemption[]
+  id             String             @id @default(uuid(7)) @db.Uuid
+  code           String             @unique
+  createdBy      String?            @map("created_by") @db.Uuid
+  createdByAdmin Boolean            @default(false) @map("created_by_admin")
+  maxUses        Int                @default(1) @map("max_uses")
+  uses           Int                @default(0)
+  expiresAt      DateTime?          @map("expires_at")
+  createdAt      DateTime           @default(now()) @map("created_at")
+  redemptions    InviteRedemption[]
 
   @@map("invites")
 }
@@ -546,6 +547,16 @@ model Rating {
   @@map("ratings")
 }
 
+/// CR-29: "Show me on the map" to matches only, approximate area, time-limited or until turned off.
+model MapShare {
+  userId    String    @id @map("user_id") @db.Uuid
+  until     DateTime? // null = until turned off
+  createdAt DateTime  @default(now()) @map("created_at")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("map_shares")
+}
+
 model UserLocation {
   userId    String   @id @map("user_id") @db.Uuid
   h3Cell    String   @map("h3_cell")
@@ -574,9 +585,9 @@ model NearbySession {
 }
 
 model NearbyAlert {
-  id     String   @id @default(uuid(7)) @db.Uuid
-  userA  String   @map("user_a") @db.Uuid
-  userB  String   @map("user_b") @db.Uuid
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userA     String    @map("user_a") @db.Uuid
+  userB     String    @map("user_b") @db.Uuid
   band      String
   score     Int
   createdAt DateTime  @default(now()) @map("created_at")
@@ -636,24 +647,24 @@ model UserDataKey {
 }
 
 model SoulSession {
-  id               String        @id @default(uuid(7)) @db.Uuid
-  userId           String        @map("user_id") @db.Uuid
-  topicKey         String        @map("topic_key")
-  topicVersion     Int           @default(1) @map("topic_version")
-  status           String        @default("active") // active | finished | abandoned | paused_safety
-  turnCount        Int           @default(0) @map("turn_count")
-  summaryEnc       String?       @map("summary_enc")
-  questionEnc      String?       @map("question_enc")
-  model            String?
-  promptVersion    String        @map("prompt_version")
-  tokensIn         Int           @default(0) @map("tokens_in")
-  tokensOut        Int           @default(0) @map("tokens_out")
-  startedAt        DateTime      @default(now()) @map("started_at")
-  finishedAt       DateTime?     @map("finished_at")
-  resumeUntil      DateTime      @map("resume_until")
-  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages         SoulMessage[]
-  insights         SoulInsight[]
+  id            String        @id @default(uuid(7)) @db.Uuid
+  userId        String        @map("user_id") @db.Uuid
+  topicKey      String        @map("topic_key")
+  topicVersion  Int           @default(1) @map("topic_version")
+  status        String        @default("active") // active | finished | abandoned | paused_safety
+  turnCount     Int           @default(0) @map("turn_count")
+  summaryEnc    String?       @map("summary_enc")
+  questionEnc   String?       @map("question_enc")
+  model         String?
+  promptVersion String        @map("prompt_version")
+  tokensIn      Int           @default(0) @map("tokens_in")
+  tokensOut     Int           @default(0) @map("tokens_out")
+  startedAt     DateTime      @default(now()) @map("started_at")
+  finishedAt    DateTime?     @map("finished_at")
+  resumeUntil   DateTime      @map("resume_until")
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages      SoulMessage[]
+  insights      SoulInsight[]
 
   @@index([userId, startedAt])
   @@map("soul_sessions")

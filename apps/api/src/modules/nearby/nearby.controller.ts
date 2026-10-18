@@ -3,12 +3,13 @@ import { z } from 'zod';
 import { CurrentUser, RequireGate, type AuthUser } from '../../common/auth';
 import { parse } from '../../common/zod';
 import { localeFrom } from '../engine/engine.controller';
+import { MapService, MAP_DURATIONS_MIN } from './map.service';
 import { NearbyService } from './nearby.service';
 
 @Controller('v1')
 @RequireGate('active')
 export class NearbyController {
-  constructor(private readonly nearby: NearbyService) {}
+  constructor(private readonly nearby: NearbyService, private readonly map: MapService) {}
 
   @Post('location')
   @HttpCode(200)
@@ -52,5 +53,24 @@ export class NearbyController {
   async later(@CurrentUser() user: AuthUser, @Body() body: unknown) {
     const { userId } = parse(z.object({ userId: z.string().uuid() }).strict(), body);
     await this.nearby.later(user.id, userId);
+  }
+
+  /** CR-29: matches who share their approximate area, plus your own spot. */
+  @Get('map')
+  mapView(@CurrentUser() user: AuthUser) {
+    return this.map.view(user.id);
+  }
+
+  @Post('map/share')
+  @HttpCode(200)
+  mapShare(@CurrentUser() user: AuthUser, @Body() body: unknown) {
+    const { durationMin } = parse(z.object({ durationMin: z.union([z.literal(MAP_DURATIONS_MIN[0]), z.literal(MAP_DURATIONS_MIN[1]), z.null()]) }).strict(), body);
+    return this.map.share(user.id, durationMin);
+  }
+
+  @Post('map/stop')
+  @HttpCode(200)
+  mapStop(@CurrentUser() user: AuthUser) {
+    return this.map.stop(user.id);
   }
 }
