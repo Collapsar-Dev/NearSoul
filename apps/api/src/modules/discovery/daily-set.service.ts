@@ -96,8 +96,10 @@ export class DailySetService {
     // An empty day (built before the profile was ready, or before new people joined) is retried every few minutes
     // instead of staying empty until tomorrow.
     if (ids && ids.length === 0 && existing && now.getTime() - existing.generatedAt.getTime() > 2 * 60_000) ids = null;
-    if (ids && existing && size > existing.size) {
-      // Upgraded today: keep today's people and add more up to the new level.
+    const stale = !!existing && now.getTime() - existing.generatedAt.getTime() > 2 * 60_000;
+    if (ids && existing && (size > existing.size || (ids.length < size && stale))) {
+      // Upgraded today, or fewer people than the level allows (new people joined since): keep today's people
+      // and add more up to the level.
       ids = await this.generate(userId, date, now, size, ids);
     }
     ids ??= await this.generate(userId, date, now, size);

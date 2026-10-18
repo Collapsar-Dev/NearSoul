@@ -106,6 +106,21 @@ describe('Discovery, likes, matches, chat (ENG-011/014, LIKE-001..004, CHAT-001)
     expect(later.body.cards.map((c: { id: string }) => c.id)).toContain(anna.userId);
   });
 
+  it('pages a large daily set and reports totals', async () => {
+    const ben = await onboard(ctx, 'ben@example.com', { gender: 'man', interestedIn: ['woman'] });
+    for (let i = 0; i < 3; i++) await onboard(ctx, `w${i}@example.com`);
+    const all = await ctx.http.get('/v1/daily-set').set(bearer(ben.token)).expect(200);
+    expect(all.body.total).toBe(3);
+    const p1 = await ctx.http.get('/v1/daily-set?offset=0&limit=2').set(bearer(ben.token)).expect(200);
+    const p2 = await ctx.http.get('/v1/daily-set?offset=2&limit=2').set(bearer(ben.token)).expect(200);
+    expect(p1.body.cards).toHaveLength(2);
+    expect(p2.body.cards).toHaveLength(1);
+    expect([...p1.body.cards, ...p2.body.cards].map((c: { id: string }) => c.id)).toEqual(all.body.cards.map((c: { id: string }) => c.id));
+    await ctx.http.post('/v1/likes').set(bearer(ben.token)).send({ targetId: p2.body.cards[0].id, action: 'like' }).expect(200);
+    const after = await ctx.http.get('/v1/daily-set?offset=0&limit=1').set(bearer(ben.token)).expect(200);
+    expect(after.body).toMatchObject({ total: 3, actedCount: 1, remaining: 2 });
+  });
+
   it('exposes only allowlisted public fields (contract test)', async () => {
     const a = await onboard(ctx, 'anna@example.com');
     const b = await onboard(ctx, 'ben@example.com', { gender: 'man', interestedIn: ['woman'] });

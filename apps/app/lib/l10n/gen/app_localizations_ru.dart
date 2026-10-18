@@ -1541,4 +1541,24 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get logoHeart => 'Сердце';
+
+  @override
+  String get breakTitle => 'Пауза: узнай себя';
+
+  @override
+  String breakBody(int count) {
+    return 'Ты посмотрел(а) уже $count человек. Ответь на несколько вопросов о себе — и следующие «Души дня» подойдут тебе ещё точнее.';
+  }
+
+  @override
+  String get breakGo => 'Пройти';
+
+  @override
+  String get breakSkip => 'Пропустить';
+
+  @override
+  String get adPlaces => 'Где это';
+
+  @override
+  String get openInMaps => 'На карте';
 }

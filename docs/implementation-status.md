@@ -39,6 +39,13 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 | Subscription levels (CR-18) | TESTED | Soul+/Gold/VIP, test activation, tier-sized daily sets with same-day top-up, Liked you, rewind, VIP profile count; app: Subscription screen, Liked you, Undo snackbar, upsells. Live check: photo upload of a 4032×3024 JPEG on Render works |
 | M9 Payments & ops | IN PROGRESS | PAY-001..003 TESTED (RevenueCat webhook, entitlements, paywall sheet; store products not set up yet). ACC-002 data export TESTED. ANL-001 consent-gated server analytics TESTED (needs POSTHOG_KEY) |
 
+## Founder feedback 2026-10-18, round 4 (checked at 412 px Android, 820 px tablet, 1440 px desktop)
+- Today's Souls: up to 200 a day in the alpha, paged by 30 (`/v1/daily-set?offset&limit`), short days top up every 2 min (CR-27).
+- «Узнай себя» break after every 50 people; ads after every 10 (not at 50s); partner ad lists its venues with «На карте» (CR-28).
+- 200 demo people (extras from bigger runs are removed), illustrated portraits redrawn: men no longer get long hair, proper beards, «DEMO PROFILE» moved to the top so it never covers card text, names spread so neighbours rarely repeat.
+- Fixed: the «Пропущено / Вернуть» snackbar stayed forever and covered the buttons and the places sheet; it now hides after 3 s and when leaving Today. «Написать первым» button added to the list and desktop views.
+- Commands: `npm run lint` ✓, `npx tsc --noEmit` ✓, `npm test` 25 suites / 250 tests ✓, `flutter analyze` ✓, `flutter test` 7 ✓, `scripts/build-web-dist.sh` ✓.
+
 ## Founder feedback 2026-10-18, round 3
 - Ads as cards (CR-25) for Free/Soul+, none for Gold/VIP ("Без рекламы" in Subscription).
 - VIP «Написать первым» (CR-26): ✉ on the card and in the profile (non-VIP see Subscription before typing), «Тебе написали первыми» in Matches.

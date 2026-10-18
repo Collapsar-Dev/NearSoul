@@ -769,6 +769,8 @@ model AdCard {
   /// Background colour of the card (hex), e.g. "#5B6B8C".
   color       String   @default("#5B6B8C")
   sponsor     String
+  /// Partner venues: [{ name, address, mapsUrl }] (e.g. a café chain with several places).
+  locations   Json     @default("[]")
   /// true for the placeholder cards used in the alpha (labelled "test ad").
   isTest      Boolean  @default(false) @map("is_test")
   active      Boolean  @default(true)

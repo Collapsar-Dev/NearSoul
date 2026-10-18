@@ -715,5 +715,18 @@
   "appLogo": "Logo",
   "logoSoul": "Main",
   "logoPair": "Two souls",
-  "logoHeart": "Heart"
+  "logoHeart": "Heart",
+  "breakTitle": "A pause to know yourself",
+  "breakBody": "You’ve seen {count} people. Answer a few questions about yourself and your next Today’s Souls will fit you even better.",
+  "breakGo": "Let’s go",
+  "breakSkip": "Skip",
+  "@breakBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "adPlaces": "Places",
+  "openInMaps": "Open in Maps"
 }

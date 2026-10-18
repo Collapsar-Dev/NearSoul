@@ -1535,4 +1535,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logoHeart => 'Heart';
+
+  @override
+  String get breakTitle => 'A pause to know yourself';
+
+  @override
+  String breakBody(int count) {
+    return 'You’ve seen $count people. Answer a few questions about yourself and your next Today’s Souls will fit you even better.';
+  }
+
+  @override
+  String get breakGo => 'Let’s go';
+
+  @override
+  String get breakSkip => 'Skip';
+
+  @override
+  String get adPlaces => 'Places';
+
+  @override
+  String get openInMaps => 'Open in Maps';
 }

@@ -1,5 +1,5 @@
 /**
- * ALPHA-002: seeds DEMO_COUNT (default 100) clearly marked demo profiles with illustrated avatars (never photos of
+ * ALPHA-002: seeds DEMO_COUNT (default 400) clearly marked demo profiles with illustrated avatars (never photos of
  * real people). Some demo people also get a second profile (CR-17) so VIP's profile count can be tried.
  * Refuses to run outside APP_ENV=alpha|development. Tops up missing demos on every start; --force recreates all.
  */
@@ -31,6 +31,21 @@ function rng(seed: number) {
 const WOMEN = ['Mila', 'Sofia', 'Lena', 'Noor', 'Iris', 'Eva', 'Yara', 'Maya', 'Lotte', 'Anouk', 'Nina', 'Zara', 'Alina', 'Sara', 'Emma', 'Lea', 'Ines', 'Mara', 'Julia', 'Tess'];
 const MEN = ['Daan', 'Liam', 'Noah', 'Sem', 'Lucas', 'Milan', 'Finn', 'Adam', 'Levi', 'Omar', 'David', 'Max', 'Jonas', 'Elias', 'Ruben', 'Thijs', 'Arman', 'Leo', 'Bram', 'Tim'];
 const NB = ['Robin', 'Alex', 'Sam', 'Charlie', 'Quinn', 'Jules', 'Kai', 'Noa'];
+const WOMEN_AM = ['Ани', 'Мариам', 'Лилит', 'Наре', 'Анаит', 'Асмик', 'Гаяне', 'Татев', 'Элен', 'Сона', 'Мане', 'Арпи', 'Луиза', 'Кристине', 'Ева', 'Нарине', 'Шушан', 'Ануш', 'Мелине', 'Седа'];
+const MEN_AM = ['Арам', 'Давид', 'Тигран', 'Айк', 'Нарек', 'Гор', 'Ваге', 'Левон', 'Арсен', 'Карен', 'Самвел', 'Эрик', 'Ашот', 'Грант', 'Вардан', 'Артур', 'Рубен', 'Мгер', 'Севак', 'Армен'];
+const JOBS = ['Дизайнер', 'Разработчик', 'Врач', 'Учитель', 'Архитектор', 'Фотограф', 'Маркетолог', 'Бариста', 'Инженер', 'Психолог', 'Юрист', 'Музыкант', 'Product manager', 'Data analyst', 'Chef', 'Nurse', 'Pilot', 'Student'];
+const MORE_BIOS = [
+  'Варю лучший кофе в районе и ищу, с кем его пить.',
+  'Горы по выходным, книги по вечерам, честность всегда.',
+  'Люблю старые фильмы, новые города и долгие прогулки по Еревану.',
+  'Ищу человека, с которым можно и помолчать, и спорить до утра.',
+  'Играю на гитаре, плохо пою, хорошо готовлю долму.',
+  'Танцую сальсу и учу испанский. Расскажи мне про своё место силы.',
+  'Running in the morning, board games at night.',
+  'I collect vinyl and bad puns. Looking for someone curious.',
+  'Weekend trips, slow breakfasts, honest talks.',
+  'Volunteer at an animal shelter. Dog people welcome 🐶',
+];
 const WOMEN_RU = ['Аня', 'Даша', 'Катя', 'Полина', 'Вика', 'Оля', 'Маша', 'Лиза', 'Настя', 'Ксения'];
 const MEN_RU = ['Артём', 'Дима', 'Саша', 'Миша', 'Илья', 'Кирилл', 'Никита', 'Егор', 'Влад', 'Паша'];
 const BIOS_RU = [
@@ -53,26 +68,54 @@ const BIOS = [
 ];
 const PALETTES = [['#E8636F', '#3B3B98'], ['#F2A65A', '#4C5B8F'], ['#6BC3A5', '#2E3A59'], ['#B48EDB', '#1F2A44'], ['#F07F9A', '#5B4B8A'], ['#7FB5E6', '#33446B']];
 
-async function avatar(initial: string, r: () => number, variant: number): Promise<Buffer> {
+const SKIN = ['#F2D3BD', '#E8B996', '#C98E6B', '#A26B4C', '#7A4B32', '#F5DCCB'];
+const HAIR = ['#2B1D14', '#4A2E1F', '#7A4A2A', '#B07A44', '#D9B26F', '#1C1C1C', '#8E8E8E', '#A23B2C'];
+const CLOTHES = ['#3F4A5A', '#4F6F5F', '#7A6248', '#5E4BA8', '#B5485A', '#2E6F8E', '#C2853D', '#555B6E'];
+
+/** Illustrated, clearly fictional portrait (never a real person): head, hair, shoulders, simple face. */
+async function avatar(gender: 'woman' | 'man' | 'non_binary', r: () => number, variant: number): Promise<Buffer> {
   const [c1, c2] = PALETTES[Math.floor(r() * PALETTES.length)]!;
-  const shapes = Array.from({ length: 6 }, () => {
-    const x = Math.round(r() * 800), y = Math.round(r() * 800), s = 60 + Math.round(r() * 160);
-    return `<circle cx="${x}" cy="${y}" r="${s}" fill="#fff" opacity="${(0.06 + r() * 0.12).toFixed(2)}"/>`;
+  const skin = SKIN[Math.floor(r() * SKIN.length)]!;
+  const hair = HAIR[Math.floor(r() * HAIR.length)]!;
+  const cloth = CLOTHES[Math.floor(r() * CLOTHES.length)]!;
+  const long = gender === 'woman' ? r() < 0.8 : gender === 'non_binary' ? r() < 0.5 : false;
+  const beard = gender === 'man' && r() < 0.35;
+  const glasses = r() < 0.25;
+  const curly = r() < 0.25;
+  const shapes = Array.from({ length: 5 }, () => {
+    const x = Math.round(r() * 800), y = Math.round(r() * 700), s = 60 + Math.round(r() * 150);
+    return `<circle cx="${x}" cy="${y}" r="${s}" fill="#fff" opacity="${(0.05 + r() * 0.1).toFixed(2)}"/>`;
   }).join('');
+  const backHair = long ? `<path d="M250 420 C230 600 250 760 300 820 L500 820 C550 760 570 600 550 420 Z" fill="${hair}"/>` : '';
+  const topHair = curly
+    ? Array.from({ length: 9 }, (_, i) => `<circle cx="${290 + i * 28}" cy="${300 + (i % 2) * 18}" r="46" fill="${hair}"/>`).join('')
+    : `<path d="M262 430 C250 300 330 240 400 240 C470 240 550 300 538 430 C520 360 470 330 400 330 C330 330 280 360 262 430 Z" fill="${hair}"/>`;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000">
     <defs><linearGradient id="g" x1="0" y1="0" x2="${variant}" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs>
     <rect width="800" height="1000" fill="url(#g)"/>${shapes}
-    <circle cx="400" cy="430" r="190" fill="#fff" opacity="0.18"/>
-    <text x="400" y="500" font-family="Georgia, serif" font-size="220" fill="#fff" text-anchor="middle">${initial}</text>
-    <text x="400" y="900" font-family="Arial, sans-serif" font-size="44" fill="#fff" opacity="0.85" text-anchor="middle">DEMO PROFILE</text>
+    ${backHair}
+    <path d="M150 1000 C160 820 270 740 400 740 C530 740 640 820 650 1000 Z" fill="${cloth}"/>
+    <rect x="360" y="610" width="80" height="150" rx="30" fill="${skin}"/>
+    <ellipse cx="400" cy="460" rx="140" ry="170" fill="${skin}"/>
+    ${topHair}
+    ${beard ? `<path d="M262 470 C262 600 330 655 400 655 C470 655 538 600 538 470 C525 555 475 590 400 590 C325 590 275 555 262 470 Z" fill="${hair}"/><path d="M350 535 Q400 515 450 535 Q400 528 350 535 Z" fill="${hair}" stroke="${hair}" stroke-width="10"/>` : ''}
+    <ellipse cx="350" cy="470" rx="12" ry="15" fill="#2a2a2a"/><ellipse cx="450" cy="470" rx="12" ry="15" fill="#2a2a2a"/>
+    ${glasses ? `<circle cx="350" cy="470" r="34" fill="none" stroke="#222" stroke-width="7"/><circle cx="450" cy="470" r="34" fill="none" stroke="#222" stroke-width="7"/><line x1="384" y1="470" x2="416" y2="470" stroke="#222" stroke-width="7"/>` : ''}
+    <path d="M360 548 Q400 ${variant ? 575 : 565} 440 548" stroke="${beard ? '#f2d6c4' : '#7a3b2e'}" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <ellipse cx="320" cy="515" rx="20" ry="11" fill="#ff8fa3" opacity="0.35"/><ellipse cx="480" cy="515" rx="20" ry="11" fill="#ff8fa3" opacity="0.35"/>
+    <text x="760" y="110" font-family="Arial, sans-serif" font-size="30" fill="#fff" opacity="0.75" text-anchor="end">DEMO PROFILE</text>
   </svg>`;
   return sharp(Buffer.from(svg)).webp({ quality: 80 }).toBuffer();
 }
 
+/** Spreads names so neighbours in the feed rarely share one (plain `i % n` repeated with the language stride). */
+const pickName = (list: string[], i: number) => list[Math.floor(rng(i * 31 + 5)() * list.length)]!;
+const NAME_LISTS = [WOMEN, MEN, NB, WOMEN_AM, MEN_AM, WOMEN_RU, MEN_RU];
+
 async function main() {
   const prisma = new PrismaClient();
   const storage = new StorageService(prisma);
-  const target = Number(process.env.DEMO_COUNT ?? 100);
+  const target = Number(process.env.DEMO_COUNT ?? 200);
   if (process.argv.includes('--force')) {
     const old = await prisma.user.findMany({ where: { isDemo: true }, include: { photos: true } });
     for (const u of old) for (const p of u.photos) await storage.delete(p.storageKey).catch(() => undefined);
@@ -113,7 +156,10 @@ async function main() {
         profile: {
           create: {
             firstName: name, gender: g, interestedIn: interestedIn as ('woman' | 'man' | 'non_binary')[], intent: intents[i % intents.length]!,
-            bio, ageMin: Math.max(18, age - 7), ageMax: age + 8, cityId: process.env.LAUNCH_CITY ?? 'amsterdam',
+            // Demos accept any adult tester so Today's Souls is full.
+            bio, ageMin: 18, ageMax: 70, cityId: process.env.LAUNCH_CITY ?? 'amsterdam',
+            jobTitle: JOBS[Math.floor(r() * JOBS.length)]!,
+            heightCm: g === 'man' ? 170 + Math.floor(r() * 25) : 155 + Math.floor(r() * 25),
             interests: { create: interests.map((interestId) => ({ interestId })) },
           },
         },
@@ -124,11 +170,50 @@ async function main() {
     });
     for (let p = 0; p < 2; p++) {
       const key = `photos/${user.id}/${randomUUID()}.webp`;
-      await storage.put(key, await avatar(name[0]!, r, p), 'image/webp');
+      await storage.put(key, await avatar(g, r, p), 'image/webp');
       await prisma.photo.create({ data: { userId: user.id, storageKey: key, position: p, status: 'ready', width: 800, height: 1000 } });
     }
     created++;
     return user;
+  }
+
+  // One-time upgrade of older demos: illustrated portraits instead of letters, plus job and height.
+  const AVATAR_VERSION = '7';
+  const marker = await prisma.appSecret.findUnique({ where: { key: 'demo_avatar_version' } });
+  if (marker?.value !== AVATAR_VERSION) {
+    const old = await prisma.user.findMany({ where: { isDemo: true }, include: { photos: true, profile: { select: { gender: true } } } });
+    for (const [n, u] of old.entries()) {
+      const r = rng(777 + n);
+      const g = (u.profile?.gender ?? 'woman') as 'woman' | 'man' | 'non_binary';
+      for (const ph of u.photos) {
+        await storage.put(ph.storageKey, await avatar(g, r, ph.position), 'image/webp');
+      }
+      await prisma.profile.updateMany({ where: { userId: u.id, jobTitle: null }, data: { jobTitle: JOBS[n % JOBS.length]!, heightCm: g === 'man' ? 170 + (n % 25) : 155 + (n % 25) } });
+    }
+    await prisma.profile.updateMany({ where: { user: { isDemo: true } }, data: { ageMin: 18, ageMax: 70 } });
+    // Re-spread names within each person's original language list; second profiles keep their parent's name.
+    const roots = await prisma.user.findMany({ where: { isDemo: true, parentId: null }, select: { id: true, email: true, profile: { select: { firstName: true } } } });
+    for (const u of roots) {
+      const i = Number(/demo\+(\d+)@/.exec(u.email ?? '')?.[1] ?? -1);
+      const list = NAME_LISTS.find((l) => l.includes(u.profile?.firstName ?? ''));
+      if (i < 0 || !list) continue;
+      const firstName = pickName(list, i);
+      await prisma.profile.updateMany({ where: { OR: [{ userId: u.id }, { user: { parentId: u.id } }] }, data: { firstName } });
+    }
+    await prisma.appSecret.upsert({ where: { key: 'demo_avatar_version' }, create: { key: 'demo_avatar_version', value: AVATAR_VERSION }, update: { value: AVATAR_VERSION } });
+    console.log(`Refreshed ${old.length} demo portraits.`);
+  }
+
+  // Keep exactly `target` demo people: remove extras from earlier, larger runs (their second profiles go with them).
+  const extra = (await prisma.user.findMany({ where: { isDemo: true, parentId: null }, select: { id: true, email: true } }))
+    .filter((u) => Number(/demo\+(\d+)@/.exec(u.email ?? '')?.[1] ?? -1) >= target);
+  if (extra.length) {
+    const ids = extra.map((u) => u.id);
+    const photos = await prisma.photo.findMany({ where: { user: { OR: [{ id: { in: ids } }, { parentId: { in: ids } }] } }, select: { storageKey: true } });
+    for (const ph of photos) await storage.delete(ph.storageKey).catch(() => undefined);
+    await prisma.user.deleteMany({ where: { parentId: { in: ids } } });
+    await prisma.user.deleteMany({ where: { id: { in: ids } } });
+    console.log(`Removed ${extra.length} extra demo profiles.`);
   }
 
   for (let i = 0; i < target; i++) {
@@ -137,8 +222,11 @@ async function main() {
     const g = i % 12 === 11 ? 'non_binary' : i % 2 === 0 ? 'woman' : 'man';
     // From #48 on, every other demo is Russian-speaking so ru testers see familiar names and bios.
     const ru = i >= 48 && Math.floor(i / 2) % 2 === 1;
-    const name = g === 'woman' ? (ru ? WOMEN_RU[i % WOMEN_RU.length]! : WOMEN[i % WOMEN.length]!) : g === 'man' ? (ru ? MEN_RU[i % MEN_RU.length]! : MEN[i % MEN.length]!) : NB[i % NB.length]!;
-    const bio = ru ? BIOS_RU[i % BIOS_RU.length]! : BIOS[i % BIOS.length]!;
+    const am = i >= 100 && Math.floor(i / 2) % 3 === 0;
+    const name = g === 'woman'
+      ? pickName(am ? WOMEN_AM : ru ? WOMEN_RU : WOMEN, i)
+      : pickName(g === 'man' ? (am ? MEN_AM : ru ? MEN_RU : MEN) : NB, i);
+    const bio = i >= 100 ? MORE_BIOS[i % MORE_BIOS.length]! : ru ? BIOS_RU[i % BIOS_RU.length]! : BIOS[i % BIOS.length]!;
     const age = 21 + Math.floor(r() * 24);
     const user = await createDemo(i, r, g, name, bio, age);
     // Every 6th new demo person has a second profile (same person, different answers).

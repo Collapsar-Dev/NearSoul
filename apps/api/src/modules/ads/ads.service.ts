@@ -28,6 +28,7 @@ export class AdsService {
         color: a.color,
         sponsor: a.sponsor,
         isTest: a.isTest,
+        locations: a.locations,
       })),
     };
   }

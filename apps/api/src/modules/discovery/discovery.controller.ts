@@ -1,5 +1,5 @@
 import { AnalyticsService } from '../analytics/analytics.service';
-import { Controller, Get, Headers, Param, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Headers, Param, ParseUUIDPipe, Query } from '@nestjs/common';
 import { CurrentUser, RequireGate, type AuthUser } from '../../common/auth';
 import { readyForDating } from '../../engine';
 import { notFound } from '../../common/errors';
@@ -33,26 +33,38 @@ export class DiscoveryController {
   }
 
   @Get('daily-set')
-  async dailySet(@CurrentUser() user: AuthUser, @Headers('accept-language') lang?: string) {
+  async dailySet(
+    @CurrentUser() user: AuthUser,
+    @Headers('accept-language') lang?: string,
+    @Query('offset') offsetRaw?: string,
+    @Query('limit') limitRaw?: string,
+  ) {
     const locale = localeFrom(lang);
+    // Large sets (up to a few hundred people) come in pages; without paging params everything is returned.
+    const offset = Math.max(0, Number.parseInt(offsetRaw ?? '0', 10) || 0);
+    const limit = Math.min(1000, Math.max(1, Number.parseInt(limitRaw ?? '1000', 10) || 1000));
     const { date, ids, refreshAt } = await this.daily.get(user.id);
     const [subjects, facts, cfg] = await Promise.all([this.subjects.load([user.id, ...ids]), this.subjects.pairFacts(user.id, ids), this.engine.matchConfig()]);
     const viewer = subjects.get(user.id)!;
-    const cards = [];
-    for (const id of ids) {
+    // Re-check at read time: blocks, suspensions or deletions since generation remove the card.
+    const visible = ids.filter((id) => {
       const s = subjects.get(id);
-      // Re-check at read time: blocks, suspensions or deletions since generation remove the card.
-      if (!s || facts.blocked.has(id) || facts.matched.has(id) || s.eligibility.status !== 'active' || s.eligibility.hiddenByModeration) continue;
+      return s && !facts.blocked.has(id) && !facts.matched.has(id) && s.eligibility.status === 'active' && !s.eligibility.hiddenByModeration;
+    });
+    const cards = [];
+    for (const id of visible.slice(offset, offset + limit)) {
+      const s = subjects.get(id)!;
       const view = await this.views.build(viewer, s, this.subjects.compat(viewer, s, cfg), locale);
       cards.push({ ...view, personaCount: await this.personaCount(user.id, id), action: facts.liked.has(id) ? 'like' : facts.passed.has(id) ? 'pass' : null });
     }
+    const actedCount = visible.filter((id) => facts.liked.has(id) || facts.passed.has(id)).length;
     this.analytics.track(user.id, 'daily_set_viewed', { count: cards.length });
     // Too many skipped questions leave the engine nothing to compare (every score is 0): tell the app why it's empty.
     const domains = viewer.profile ? Object.values(viewer.profile.domains) : [];
     const needsAnswers = domains.length === 0 || domains.every((d) => d.score === null);
     // Matching is mutual, so the viewer must be ready too (2 photos, discoverable…); tell the app what's missing.
     const viewerBlocked = readyForDating(viewer.eligibility, 'daily');
-    return { date, refreshAt, remaining: cards.filter((c) => !c.action).length, cards, needsAnswers, viewerBlocked };
+    return { date, refreshAt, total: visible.length, offset, actedCount, remaining: visible.length - actedCount, cards, needsAnswers, viewerBlocked };
   }
 
   /** Public profile: only for people in your daily set, nearby list or matches (prevents scraping by id). */

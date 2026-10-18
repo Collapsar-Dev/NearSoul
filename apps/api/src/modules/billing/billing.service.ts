@@ -32,7 +32,8 @@ export const UNLIMITED_DAILY_CAP = 300;
 export function tierFeatures(tier: Tier): TierFeatures {
   const rank = TIER_ORDER.indexOf(tier);
   return {
-    dailySetSize: tier === 'vip' ? null : tier === 'gold' ? 50 : tier === 'plus' ? 25 : env().DAILY_SET_SIZE,
+    // Paid levels never get fewer people than the base size (the alpha raises the base to 200 for demos).
+    dailySetSize: tier === 'vip' ? null : tier === 'gold' ? Math.max(50, env().DAILY_SET_SIZE) : tier === 'plus' ? Math.max(25, env().DAILY_SET_SIZE) : env().DAILY_SET_SIZE,
     fullReports: rank >= 1,
     seeLikes: rank >= 2,
     rewind: rank >= 2,

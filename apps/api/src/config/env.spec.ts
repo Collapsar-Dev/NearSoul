@@ -19,6 +19,12 @@ describe('environment guards', () => {
     expect(loadEnv({ ...alpha, PUBLIC_API_URL: 'https://app.nearsoul.com', RENDER_EXTERNAL_URL: 'https://x.onrender.com' }).PUBLIC_API_URL).toBe('https://app.nearsoul.com');
   });
 
+  it('the alpha defaults to 200 Today’s Souls; production keeps 15', () => {
+    expect(loadEnv(alpha).DAILY_SET_SIZE).toBe(200);
+    expect(loadEnv({ ...alpha, DAILY_SET_SIZE: '30' }).DAILY_SET_SIZE).toBe(30);
+    expect(loadEnv({ ...base, APP_ENV: 'production', EMAIL_PROVIDER: 'brevo', BREVO_API_KEY: 'k', STORAGE_DRIVER: 's3' }).DAILY_SET_SIZE).toBe(15);
+  });
+
   it('on-screen codes are allowed for the alpha but never in staging/production', () => {
     expect(loadEnv({ ...base, APP_ENV: 'alpha', EMAIL_PROVIDER: 'screen', STORAGE_DRIVER: 'db' }).EMAIL_PROVIDER).toBe('screen');
     for (const APP_ENV of ['staging', 'production']) {

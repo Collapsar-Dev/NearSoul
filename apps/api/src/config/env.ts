@@ -33,7 +33,7 @@ const EnvSchema = z.object({
   S3_SECRET_ACCESS_KEY: z.string().optional(),
   PAYWALL_ENABLED: bool.default('false'),
   LAUNCH_CITY: z.string().default('amsterdam'),
-  DAILY_SET_SIZE: z.coerce.number().int().min(1).max(50).default(15),
+  DAILY_SET_SIZE: z.coerce.number().int().min(1).max(300).default(15),
   TERMS_VERSION: z.string().default('2026-10-alpha'),
   SOUL_TALK_ENABLED: bool.default('false'),
   /** base64 of 32 random bytes; wraps per-user data keys (SOUL-007). Required when Soul Talk is enabled outside dev/test. */
@@ -83,6 +83,8 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
     if (!env.CRISIS_TEXTS_APPROVED || !env.CRISIS_RESOURCES) throw new Error('SOUL_TALK_ENABLED requires CRISIS_RESOURCES and CRISIS_TEXTS_APPROVED=true');
   }
   if (env.AI_ENABLED && !env.ANTHROPIC_API_KEY) throw new Error('AI_ENABLED requires ANTHROPIC_API_KEY');
+  // Alpha demos: long Today's Souls unless DAILY_SET_SIZE is set explicitly (production stays at 15).
+  if (env.APP_ENV === 'alpha' && !source.DAILY_SET_SIZE) env.DAILY_SET_SIZE = 200;
   // Render gives every web service its real URL (it may add a suffix like "-y6qr" to the name). On an onrender.com
   // host, trust that over whatever was configured so links (photo URLs, export links) point at this service.
   const renderUrl = source.RENDER_EXTERNAL_URL?.replace(/\/$/, '');

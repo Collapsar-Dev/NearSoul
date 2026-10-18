@@ -2845,6 +2845,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Heart'**
   String get logoHeart;
+
+  /// No description provided for @breakTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A pause to know yourself'**
+  String get breakTitle;
+
+  /// No description provided for @breakBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You’ve seen {count} people. Answer a few questions about yourself and your next Today’s Souls will fit you even better.'**
+  String breakBody(int count);
+
+  /// No description provided for @breakGo.
+  ///
+  /// In en, this message translates to:
+  /// **'Let’s go'**
+  String get breakGo;
+
+  /// No description provided for @breakSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get breakSkip;
+
+  /// No description provided for @adPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Places'**
+  String get adPlaces;
+
+  /// No description provided for @openInMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Maps'**
+  String get openInMaps;
 }
 
 class _AppLocalizationsDelegate
