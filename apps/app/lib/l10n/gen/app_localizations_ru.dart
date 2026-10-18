@@ -1454,4 +1454,28 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get create => 'Создать';
+
+  @override
+  String matchPercent(int percent) {
+    return '$percent% совпадение';
+  }
+
+  @override
+  String moreReasons(int count) {
+    return 'И ещё $count общих черт: узнайте их друг о друге в разговоре.';
+  }
+
+  @override
+  String refineNudge(int count) {
+    return 'Ты прошёл(а) 10 вопросов о себе 🎉 Ещё $count — и подбор станет точнее. Можно по чуть-чуть, ответы сохраняются.';
+  }
+
+  @override
+  String get refineNudgeCta => 'Продолжить';
+
+  @override
+  String get cardTemplateOther => 'Составлено по ответам в анкете';
+
+  @override
+  String get cardAiOther => 'Написано AI по ответам в анкете';
 }

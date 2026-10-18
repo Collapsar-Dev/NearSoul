@@ -1451,4 +1451,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get create => 'Create';
+
+  @override
+  String matchPercent(int percent) {
+    return '$percent% match';
+  }
+
+  @override
+  String moreReasons(int count) {
+    return 'Plus $count more things in common: find them out together.';
+  }
+
+  @override
+  String refineNudge(int count) {
+    return 'You’ve answered 10 questions about yourself 🎉 $count more make your matches sharper. A few at a time is fine, answers are saved.';
+  }
+
+  @override
+  String get refineNudgeCta => 'Continue';
+
+  @override
+  String get cardTemplateOther => 'Based on their answers';
+
+  @override
+  String get cardAiOther => 'Written by AI from their answers';
 }

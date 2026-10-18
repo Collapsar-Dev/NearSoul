@@ -664,5 +664,32 @@
     }
   },
   "personGone": "This person is no longer available.",
-  "create": "Create"
+  "create": "Create",
+  "matchPercent": "{percent}% match",
+  "moreReasons": "Plus {count} more things in common: find them out together.",
+  "@matchPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "@moreReasons": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "refineNudge": "You’ve answered 10 questions about yourself 🎉 {count} more make your matches sharper. A few at a time is fine, answers are saved.",
+  "refineNudgeCta": "Continue",
+  "@refineNudge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cardTemplateOther": "Based on their answers",
+  "cardAiOther": "Written by AI from their answers"
 }

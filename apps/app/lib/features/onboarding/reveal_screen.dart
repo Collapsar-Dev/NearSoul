@@ -141,8 +141,10 @@ class _RevealScreenState extends ConsumerState<RevealScreen> {
 }
 
 class PersonalityCardView extends StatelessWidget {
-  const PersonalityCardView({super.key, required this.card});
+  const PersonalityCardView({super.key, required this.card, this.own = true});
   final Map<String, dynamic> card;
+  /// false when showing someone else's card (the footnote then doesn't say "your answers").
+  final bool own;
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +170,7 @@ class PersonalityCardView extends StatelessWidget {
         const SizedBox(height: 12),
         Wrap(spacing: 6, runSpacing: 6, children: [for (final s in (card['strengths'] as List).cast<String>()) Chip(label: Text(s), visualDensity: VisualDensity.compact)]),
         const SizedBox(height: 8),
-        Text(ai ? l.cardAi : l.cardTemplate, style: Theme.of(context).textTheme.bodySmall),
+        Text(own ? (ai ? l.cardAi : l.cardTemplate) : (ai ? l.cardAiOther : l.cardTemplateOther), style: Theme.of(context).textTheme.bodySmall),
       ]),
     );
   }

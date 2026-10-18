@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/widgets/common.dart';
 import '../onboarding/reveal_screen.dart';
@@ -111,11 +112,22 @@ class SoulCard extends StatelessWidget {
                 if (place != null) Text(place, style: const TextStyle(color: Colors.white70)),
                 const SizedBox(height: 8),
                 Wrap(spacing: 8, runSpacing: 6, crossAxisAlignment: WrapCrossAlignment.center, children: [
-                  if (compat != null) TierChip(compat['tier'] as String, onDark: true),
+                  if (compat?['percent'] is int) MatchPercentPill(percent: compat!['percent'] as int, onDark: true) else if (compat != null) TierChip(compat['tier'] as String, onDark: true),
                   Text((p['archetype'] as Map)['name'] as String, style: const TextStyle(color: Colors.white, fontStyle: FontStyle.italic)),
                   if (p['activity'] != null) Chip(label: Text(p['activity'] as String), visualDensity: VisualDensity.compact),
                 ]),
-                if (reasons.isNotEmpty) ...[const SizedBox(height: 8), Text('“${reasons.first}”', maxLines: 2, overflow: TextOverflow.ellipsis)],
+                // Two reasons only: enough to spark interest, the rest is for the conversation.
+                if (reasons.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  for (final r in reasons.take(2))
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 2),
+                      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        const Text('•  ', style: TextStyle(color: Colors.white)),
+                        Expanded(child: Text(r, maxLines: 2, overflow: TextOverflow.ellipsis)),
+                      ]),
+                    ),
+                ],
               ]),
             ),
           ),
@@ -169,12 +181,21 @@ class ProfileDetails extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [TierChip(compat['tier'] as String), const Spacer(), Text(archetype['name'] as String, style: TextStyle(color: scheme.secondary, fontStyle: FontStyle.italic))]),
+              Row(children: [
+                if (compat['percent'] is int) MatchPercentPill(percent: compat['percent'] as int) else TierChip(compat['tier'] as String),
+                const Spacer(),
+                Flexible(child: Text(archetype['name'] as String, style: TextStyle(color: scheme.secondary, fontStyle: FontStyle.italic), overflow: TextOverflow.ellipsis)),
+              ]),
               const SizedBox(height: 12),
               Text(l.whyClick, style: Theme.of(context).textTheme.titleSmall),
               const SizedBox(height: 6),
               for (final r in (compat['reasons'] as List).cast<String>())
                 Padding(padding: const EdgeInsets.only(bottom: 6), child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(Icons.check_circle, size: 18, color: scheme.secondary), const SizedBox(width: 8), Expanded(child: Text(r))])),
+              if (((compat['moreReasons'] as int?) ?? 0) > 0)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(l.moreReasons(compat['moreReasons'] as int), style: Theme.of(context).textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic)),
+                ),
               if (compat['difference'] != null) ...[
                 const SizedBox(height: 6),
                 Text(l.oneDifference, style: Theme.of(context).textTheme.titleSmall),
@@ -185,7 +206,7 @@ class ProfileDetails extends StatelessWidget {
           ),
         ),
       if ((p['bio'] as String?)?.isNotEmpty == true) ...[SectionTitle(l.aboutPerson), Text(p['bio'] as String)],
-      if (p['card'] != null) ...[const SizedBox(height: 16), PersonalityCardView(card: (p['card'] as Map).cast<String, dynamic>())],
+      if (p['card'] != null) ...[const SizedBox(height: 16), PersonalityCardView(card: (p['card'] as Map).cast<String, dynamic>(), own: false)],
       SectionTitle(l.interests),
       Wrap(spacing: 8, runSpacing: 8, children: [
         for (final i in interests)
@@ -435,4 +456,29 @@ Future<void> showPhotoViewer(BuildContext context, List<Map<String, dynamic>> ph
       ]),
     ),
   );
+}
+
+/// "80% match" pill: the rounded compatibility percentage with a colour that follows the tier.
+class MatchPercentPill extends StatelessWidget {
+  const MatchPercentPill({super.key, required this.percent, this.onDark = false});
+  final int percent;
+  final bool onDark;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = percent >= 75 ? NsColors.success : percent >= 55 ? Theme.of(context).colorScheme.primary : NsColors.warning;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: onDark ? Colors.black.withValues(alpha: 0.35) : color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: onDark ? Colors.white54 : color.withValues(alpha: 0.4)),
+      ),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(Icons.favorite_rounded, size: 14, color: onDark ? Colors.white : color),
+        const SizedBox(width: 6),
+        Text(context.l.matchPercent(percent), style: TextStyle(fontWeight: FontWeight.w700, color: onDark ? Colors.white : color)),
+      ]),
+    );
+  }
 }

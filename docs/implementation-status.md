@@ -39,6 +39,14 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 | Subscription levels (CR-18) | TESTED | Soul+/Gold/VIP, test activation, tier-sized daily sets with same-day top-up, Liked you, rewind, VIP profile count; app: Subscription screen, Liked you, Undo snackbar, upsells. Live check: photo upload of a 4032×3024 JPEG on Render works |
 | M9 Payments & ops | IN PROGRESS | PAY-001..003 TESTED (RevenueCat webhook, entitlements, paywall sheet; store products not set up yet). ACC-002 data export TESTED. ANL-001 consent-gated server analytics TESTED (needs POSTHOG_KEY) |
 
+## Founder feedback 2026-10-18, round 2
+- Logo (ghost-soul with a heart) in icons, favicon, welcome, navigation rail.
+- Match percentage + 2 reasons on cards, 3 + "N more" in profiles (CR-23).
+- Template personality cards render in the viewer's language (demo cards were English); "based on their answers" on others' cards.
+- My profiles: cards no longer squeeze text; full-width switch button.
+- Daily "keep discovering yourself" nudge on Today after 3 cards while Quick Scan questions remain.
+- Checked at 412 (phone, Android UA), 820 (tablet) and 1440 (desktop) widths: card view, feed grid (1/2/3 columns), profiles.
+
 ## Founder feedback 2026-10-18 (fixed, checked at phone size with an Android user agent)
 - Keyboard on phones: forced semantics is now desktop-only (it intercepted taps on text fields on mobile web).
 - Quick Scan ends with «Первый этап пройден!» and a «Смотреть результат» button.

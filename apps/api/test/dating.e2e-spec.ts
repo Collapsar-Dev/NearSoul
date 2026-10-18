@@ -116,7 +116,10 @@ describe('Discovery, likes, matches, chat (ENG-011/014, LIKE-001..004, CHAT-001)
     expect(JSON.stringify(publicCard)).not.toMatch(FORBIDDEN);
     expect(JSON.stringify(publicCard)).not.toContain('ben@example.com');
     expect(card.compatibility.tier).toMatch(/strong|good|some|low/);
-    expect(card.compatibility.percent).toBeUndefined();
+    // CR-23: a rounded match percentage is shown; individual trait scores never are.
+    expect(card.compatibility.percent % 5).toBe(0);
+    expect(card.compatibility.percent).toBeGreaterThanOrEqual(0);
+    expect(card.compatibility.percent).toBeLessThanOrEqual(100);
     expect(card.card).toBeNull(); // matches_only by default
     const prof = await ctx.http.get(`/v1/profiles/${b.userId}`).set(bearer(a.token)).expect(200);
     expect(Object.keys(prof.body).sort()).toEqual(PUBLIC_KEYS);

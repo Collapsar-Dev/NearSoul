@@ -193,3 +193,14 @@ class DemoBadge extends StatelessWidget {
         child: Text(context.l.demoBadge, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
       );
 }
+
+/// The NearSoul mark: a friendly soul (ghost) holding a heart. Decorative next to the wordmark.
+class NsLogo extends StatelessWidget {
+  const NsLogo({super.key, this.size = 28});
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => ExcludeSemantics(
+        child: Image.asset('assets/logo.png', width: size, height: size, filterQuality: FilterQuality.medium),
+      );
+}

@@ -88,20 +88,33 @@ class _PersonasScreenState extends ConsumerState<PersonasScreen> {
               for (final p in items)
                 Card(
                   margin: const EdgeInsets.only(bottom: 12),
-                  child: ListTile(
-                    leading: Badge(
-                      isLabelVisible: (p['unread'] as int) > 0 && p['current'] != true,
-                      label: Text('${p['unread']}'),
-                      child: CircleAvatar(child: Text(((p['firstName'] ?? p['label'] ?? '?') as String).characters.first.toUpperCase())),
-                    ),
-                    title: Text([p['label'] ?? (p['isOwner'] == true ? l.profileOwner : ''), if (p['firstName'] != null) p['firstName']].where((s) => (s as String).isNotEmpty).join(' · ')),
-                    subtitle: Text(p['onboarded'] == true ? (p['archetype'] as String? ?? '') : l.profileUnfinished),
-                    trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-                      IconButton(tooltip: l.profileRename, icon: const Icon(Icons.edit_outlined), onPressed: () => _rename(p['id'] as String, p['label'] as String?)),
-                      if (p['current'] == true)
-                        Chip(label: Text(l.profileCurrent))
-                      else
-                        BusyButton(label: l.profileSwitch, outlined: true, onPressed: () => _switch(p['id'] as String)),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Row(children: [
+                        Badge(
+                          isLabelVisible: (p['unread'] as int) > 0 && p['current'] != true,
+                          label: Text('${p['unread']}'),
+                          child: CircleAvatar(child: Text(((p['firstName'] ?? p['label'] ?? '?') as String).characters.first.toUpperCase())),
+                        ),
+                        const SizedBox(width: 12),
+                        // Text gets the full width, so long names and labels wrap instead of being squeezed.
+                        Expanded(
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text((p['label'] as String?) ?? (p['isOwner'] == true ? l.profileOwner : ''), style: Theme.of(context).textTheme.titleMedium),
+                            if (p['firstName'] != null) Text(p['firstName'] as String, style: Theme.of(context).textTheme.bodyMedium),
+                            Text(p['onboarded'] == true ? (p['archetype'] as String? ?? '') : l.profileUnfinished, style: Theme.of(context).textTheme.bodySmall),
+                          ]),
+                        ),
+                        IconButton(tooltip: l.profileRename, icon: const Icon(Icons.edit_outlined), onPressed: () => _rename(p['id'] as String, p['label'] as String?)),
+                      ]),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: p['current'] == true
+                            ? Chip(avatar: const Icon(Icons.check, size: 18), label: Text(l.profileCurrent))
+                            : SizedBox(width: double.infinity, child: BusyButton(label: l.profileSwitch, outlined: true, icon: Icons.swap_horiz, onPressed: () => _switch(p['id'] as String))),
+                      ),
                     ]),
                   ),
                 ),

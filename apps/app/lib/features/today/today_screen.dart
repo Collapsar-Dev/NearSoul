@@ -30,18 +30,64 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   /// One-time "swipe right to like" hint for card mode.
   bool _showSwipeHint = false;
   static const _hintKey = 'ns_swipe_hint_seen';
+  /// Gentle "keep discovering yourself" nudge: after a few cards, at most once a day, while questions remain.
+  int _refineRemaining = 0;
+  bool _nudgeDismissedToday = true;
+  static const _nudgeKey = 'ns_refine_nudge_day';
+  String get _today => DateTime.now().toIso8601String().substring(0, 10);
 
   @override
   void initState() {
     super.initState();
     _load();
+    _loadRefine();
     SharedPreferences.getInstance().then((p) {
       if (!mounted) return;
       setState(() {
         _list = p.getString(_viewKey) == 'list';
         _showSwipeHint = p.getBool(_hintKey) != true;
+        _nudgeDismissedToday = p.getString(_nudgeKey) == _today;
       });
     }).catchError((_) {});
+  }
+
+  Future<void> _loadRefine() async {
+    try {
+      final pr = await ref.read(apiProvider).get<Map<String, dynamic>>('/v1/engine/progress');
+      if (mounted) setState(() => _refineRemaining = (pr['refineRemaining'] as int?) ?? 0);
+    } catch (_) {}
+  }
+
+  bool get _showNudge => _refineRemaining > 0 && !_nudgeDismissedToday && _acted.length >= 3;
+
+  void _dismissNudge() {
+    setState(() => _nudgeDismissedToday = true);
+    SharedPreferences.getInstance().then((p) => p.setString(_nudgeKey, _today)).catchError((_) => true);
+  }
+
+  Widget _refineNudge(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.fromLTRB(14, 10, 4, 10),
+      decoration: BoxDecoration(color: scheme.tertiaryContainer, borderRadius: BorderRadius.circular(14)),
+      child: Row(children: [
+        Icon(Icons.auto_awesome, color: scheme.onTertiaryContainer),
+        const SizedBox(width: 10),
+        Expanded(child: Text(context.l.refineNudge(_refineRemaining), style: TextStyle(color: scheme.onTertiaryContainer))),
+        Column(mainAxisSize: MainAxisSize.min, children: [
+          TextButton(
+            onPressed: () async {
+              _dismissNudge();
+              await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const QuickScanScreen(refine: true)));
+              await _loadRefine();
+            },
+            child: Text(context.l.refineNudgeCta),
+          ),
+          IconButton(tooltip: MaterialLocalizations.of(context).closeButtonTooltip, icon: const Icon(Icons.close, size: 18), onPressed: _dismissNudge),
+        ]),
+      ]),
+    );
   }
 
   void _hideSwipeHint() {
@@ -62,6 +108,12 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
         TextButton(onPressed: _hideSwipeHint, child: Text(context.l.gotIt)),
       ]),
     );
+  }
+
+  /// Full profile with its own pass/like; the choice comes back here and is sent like any other.
+  Future<void> _openProfile(Map<String, dynamic> p) async {
+    final choice = await context.push<String>('/today/profile/${p['id']}?act=1');
+    if (choice == 'like' || choice == 'pass') await _act(p, choice!);
   }
 
   void _setView(bool list) {
@@ -243,18 +295,16 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       );
     }
     // Phones: card + buttons fit the screen, no scrolling; details open with «Подробнее» or a tap on the photo.
-    Future<void> openProfile() async {
-      final choice = await context.push<String>('/today/profile/${p['id']}?act=1');
-      if (choice == 'like' || choice == 'pass') await _act(p, choice!);
-    }
+    Future<void> openProfile() => _openProfile(p);
     return LayoutBuilder(builder: (context, c) {
-      final reserved = 130 + (_showSwipeHint ? 76 : 0);
+      final reserved = 130 + (_showSwipeHint ? 76 : 0) + (!_showSwipeHint && _showNudge ? 110 : 0);
       final cardMaxHeight = (c.maxHeight - reserved).clamp(260.0, 2000.0);
       return ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 16), children: [
         FocusColumn(
           padding: EdgeInsets.zero,
           child: Column(children: [
             if (_showSwipeHint) _swipeHint(context),
+            if (!_showSwipeHint && _showNudge) _refineNudge(context),
             Center(
               child: ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: cardMaxHeight * 0.8),
@@ -278,9 +328,9 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   Widget _feed(BuildContext context, List<Map<String, dynamic>> people) {
     final columns = sizeClassOf(context) == SizeClass.expanded ? 3 : sizeClassOf(context) == SizeClass.medium ? 2 : 1;
     Widget item(Map<String, dynamic> p) => Column(mainAxisSize: MainAxisSize.min, children: [
-          SoulCard(p: p, onTap: () => context.push('/today/profile/${p['id']}')),
+          SoulCard(p: p, onTap: () => _openProfile(p)),
           const SizedBox(height: 10),
-          LikePassBar(onLike: () => _act(p, 'like'), onPass: () => _act(p, 'pass')),
+          LikePassBar(onLike: () => _act(p, 'like'), onPass: () => _act(p, 'pass'), onInfo: () => _openProfile(p)),
           const SizedBox(height: 28),
         ]);
     if (columns == 1) {

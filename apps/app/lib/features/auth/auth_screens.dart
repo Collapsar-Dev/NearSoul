@@ -52,7 +52,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           child: Column(children: [
             const SizedBox(height: 24),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Icon(Icons.favorite, color: scheme.primary),
+              const NsLogo(size: 32),
               const SizedBox(width: 8),
               Text('NearSoul', style: Theme.of(context).textTheme.headlineSmall),
               const TestBadge(),
@@ -64,12 +64,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 children: [
                   for (final s in slides)
                     Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      Container(
-                        width: 160,
-                        height: 160,
-                        decoration: BoxDecoration(shape: BoxShape.circle, gradient: LinearGradient(colors: [scheme.primary.withValues(alpha: 0.25), scheme.secondary.withValues(alpha: 0.25)])),
-                        child: Icon(s.$1, size: 72, color: scheme.secondary),
-                      ),
+                      if (s == slides.first)
+                        const NsLogo(size: 168)
+                      else
+                        Container(
+                          width: 160,
+                          height: 160,
+                          decoration: BoxDecoration(shape: BoxShape.circle, gradient: LinearGradient(colors: [scheme.primary.withValues(alpha: 0.25), scheme.secondary.withValues(alpha: 0.25)])),
+                          child: Icon(s.$1, size: 72, color: scheme.secondary),
+                        ),
                       const SizedBox(height: 32),
                       Text(s.$2, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall),
                     ]),

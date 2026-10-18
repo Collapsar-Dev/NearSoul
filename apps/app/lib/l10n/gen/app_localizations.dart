@@ -2707,6 +2707,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create'**
   String get create;
+
+  /// No description provided for @matchPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% match'**
+  String matchPercent(int percent);
+
+  /// No description provided for @moreReasons.
+  ///
+  /// In en, this message translates to:
+  /// **'Plus {count} more things in common: find them out together.'**
+  String moreReasons(int count);
+
+  /// No description provided for @refineNudge.
+  ///
+  /// In en, this message translates to:
+  /// **'You’ve answered 10 questions about yourself 🎉 {count} more make your matches sharper. A few at a time is fine, answers are saved.'**
+  String refineNudge(int count);
+
+  /// No description provided for @refineNudgeCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get refineNudgeCta;
+
+  /// No description provided for @cardTemplateOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on their answers'**
+  String get cardTemplateOther;
+
+  /// No description provided for @cardAiOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Written by AI from their answers'**
+  String get cardAiOther;
 }
 
 class _AppLocalizationsDelegate

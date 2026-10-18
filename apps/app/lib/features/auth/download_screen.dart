@@ -30,7 +30,7 @@ class DownloadScreen extends StatelessWidget {
         child: FocusColumn(
           child: ListView(children: [
             const SizedBox(height: 32),
-            Row(children: [Icon(Icons.favorite, color: Theme.of(context).colorScheme.primary), const SizedBox(width: 8), Text(l.downloadTitle, style: Theme.of(context).textTheme.headlineMedium), const TestBadge()]),
+            Row(children: [const NsLogo(size: 28), const SizedBox(width: 8), Text(l.downloadTitle, style: Theme.of(context).textTheme.headlineMedium), const TestBadge()]),
             const SizedBox(height: 8),
             Text(l.tagline),
             const SizedBox(height: 24),

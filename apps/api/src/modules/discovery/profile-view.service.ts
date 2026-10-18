@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { buildSelfReportData, DOMAINS, type CompatResult } from '../../engine';
 import { ARCHETYPES, ARCHETYPE_DISCLAIMER, codeText, tr, type L, type Locale } from '../../content/texts';
+import { templateCard } from '../ai/card.service';
 import { PrismaService } from '../../common/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import type { Subject } from './subjects.service';
@@ -44,13 +45,22 @@ export class ProfileViewService {
       interests: target.interests.map((id) => ({ id, label: labels[id] ? tr(labels[id]!, locale) : id, shared: viewerInterests.has(id) })),
       archetype: { key: archetype, name: tr(ARCHETYPES[archetype].name, locale), line: tr(ARCHETYPES[archetype].line, locale), disclaimer: tr(ARCHETYPE_DISCLAIMER, locale) },
       card: showCard
-        ? { headline: user.card!.headline, summary: user.card!.summary, communicationStyle: user.card!.communicationStyle, idealFirstDate: user.card!.idealFirstDate, strengths: user.card!.strengths, aiWritten: user.card!.source === 'ai' }
+        ? user.card!.source === 'template' && !user.card!.userEdited && target.profile
+          ? (() => {
+              // Template cards are rebuilt in the viewer's language; AI-written or edited cards stay as written.
+              const c = templateCard(target.profile, locale);
+              return { headline: c.headline, summary: c.summary, communicationStyle: c.communication_style, idealFirstDate: c.ideal_first_date, strengths: c.strengths, aiWritten: false };
+            })()
+          : { headline: user.card!.headline, summary: user.card!.summary, communicationStyle: user.card!.communicationStyle, idealFirstDate: user.card!.idealFirstDate, strengths: user.card!.strengths, aiWritten: user.card!.source === 'ai' }
         : null,
       compatibility: compat
         ? {
             tier: compat.tier,
-            ...(process.env.SHOW_SCORE_PERCENT === 'true' ? { percent: Math.round(compat.score / 5) * 5 } : {}),
+            // Founder decision 2026-10-18 (CR-23): show a match percentage, rounded to 5 so it never looks falsely precise.
+            percent: Math.round(compat.score / 5) * 5,
+            // Only the top reasons; the rest is left for the two of them to discover in conversation.
             reasons: compat.reasons.slice(0, 3).map((c) => codeText(c, locale, { interests: labels })),
+            moreReasons: Math.max(0, compat.reasons.length - 3),
             difference: showDifference ? codeText(compat.frictions[0]!, locale) : null,
           }
         : null,

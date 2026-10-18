@@ -43,7 +43,7 @@ class AppShell extends StatelessWidget {
           leading: Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Icon(Icons.favorite, color: Theme.of(context).colorScheme.primary),
+              const NsLogo(size: 28),
               if (extended) ...[const SizedBox(width: 8), Text('NearSoul', style: Theme.of(context).textTheme.titleLarge), const TestBadge()],
             ]),
           ),
