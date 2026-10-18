@@ -17,3 +17,6 @@ apps/*/dist/
 .data/
 apps/app/build/
 apps/api/.env
+
+# Promo video renders (large binaries, kept locally)
+design/promo/*.mp4
