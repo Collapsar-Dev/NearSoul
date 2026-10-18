@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7FA48F"/><stop offset="1" stop-color="#3E5B4B"/></linearGradient>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#E7EFEA"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#bg)"/>
+  <!-- two small souls leaning towards each other -->
+  <g transform="rotate(-8 180 290)">
+    <path d="M100 380V250a80 80 0 0 1 160 0v130q-10 18-20 0q-10-18-20 0q-10 18-20 0q-10-18-20 0q-10 18-20 0q-10-18-20 0q-10 18-20 0q-10-18-20 0z" fill="url(#g)"/>
+    <circle cx="160" cy="250" r="10" fill="#2F4A3C"/><circle cx="205" cy="250" r="10" fill="#2F4A3C"/>
+    <ellipse cx="145" cy="275" rx="10" ry="6" fill="#FF9DB0" opacity="0.6"/>
+  </g>
+  <g transform="rotate(8 332 290)">
+    <path d="M252 380V250a80 80 0 0 1 160 0v130q-10 18-20 0q-10-18-20 0q-10 18-20 0q-10-18-20 0q-10 18-20 0q-10-18-20 0q-10 18-20 0q-10-18-20 0z" fill="url(#g)"/>
+    <circle cx="307" cy="250" r="10" fill="#2F4A3C"/><circle cx="352" cy="250" r="10" fill="#2F4A3C"/>
+    <ellipse cx="367" cy="275" rx="10" ry="6" fill="#FF9DB0" opacity="0.6"/>
+  </g>
+  <path d="M256 168c-4-5-30-19-30-38 0-11 8-19 18-19 6 0 10 3 12 7 2-4 6-7 12-7 10 0 18 8 18 19 0 19-26 33-30 38z" fill="#F0607A"/>
+</svg>

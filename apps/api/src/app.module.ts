@@ -39,6 +39,9 @@ import { LikesService } from './modules/matches/likes.service';
 import { MatchesController } from './modules/matches/matches.controller';
 import { MeController } from './modules/me/me.controller';
 import { MeService } from './modules/me/me.service';
+import { AdsController } from './modules/ads/ads.controller';
+import { AdsService } from './modules/ads/ads.service';
+import { RequestsService } from './modules/matches/requests.service';
 import { PersonasController } from './modules/me/personas.controller';
 import { PersonasService } from './modules/me/personas.service';
 import { NearbyController } from './modules/nearby/nearby.controller';
@@ -63,13 +66,13 @@ import { StorageService } from './modules/storage/storage.service';
 @Module({
   imports: [JwtModule.register({}), ScheduleModule.forRoot()],
   controllers: [
-    HealthController, AuthController, InvitesController, MeController, PersonasController, EngineController, CardController,
+    HealthController, AuthController, InvitesController, MeController, PersonasController, AdsController, EngineController, CardController,
     ProfileController, ReferenceController, MediaController, DiscoveryController, MatchesController,
     NotificationsController, ReportsController, SafetyController, FeedbackController, NearbyController,
     AlphaController, AdminController, SoulController, ExportController, BillingController,
   ],
   providers: [
-    PrismaService, RateLimiter, EmailService, AuthService, InvitesService, MeService, PersonasService, EngineService, CardService,
+    PrismaService, RateLimiter, EmailService, AuthService, InvitesService, MeService, PersonasService, AdsService, RequestsService, EngineService, CardService,
     { provide: StorageService, useFactory: (p: PrismaService) => new StorageService(p), inject: [PrismaService] }, ProfileService, SubjectsService, ProfileViewService, DailySetService, LikesService, ChatService,
     RealtimeGateway, PushService, NotificationsService, ReportsService, SafetyService, NearbyService, DemoService,
     RetentionService, AdminAuthService, AdminBootstrap, ExportService, AnalyticsService, BillingService, SoulCryptoService, SoulService,

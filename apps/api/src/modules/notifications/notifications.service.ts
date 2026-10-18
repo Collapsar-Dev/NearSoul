@@ -5,7 +5,7 @@ import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { localTime, pushDecision, REMINDER_TYPES } from './push-policy';
 import { PushService } from './push.service';
 
-export type NotificationType = 'new_match' | 'new_message' | 'daily_set_ready' | 'nearby_alert' | 'open_ending' | 'report_update';
+export type NotificationType = 'new_match' | 'new_message' | 'daily_set_ready' | 'nearby_alert' | 'open_ending' | 'report_update' | 'message_request';
 
 type PushLocale = 'en' | 'ru';
 
@@ -33,6 +33,10 @@ const PUSH_TEXT: Record<NotificationType, Record<PushLocale, { title: string; bo
   report_update: {
     en: { title: 'NearSoul', body: 'There’s an update on your report.' },
     ru: { title: 'NearSoul', body: 'По вашей жалобе есть новости.' },
+  },
+  message_request: {
+    en: { title: 'NearSoul', body: 'Someone wrote to you first ✉️' },
+    ru: { title: 'NearSoul', body: 'Тебе написали первыми ✉️' },
   },
 };
 

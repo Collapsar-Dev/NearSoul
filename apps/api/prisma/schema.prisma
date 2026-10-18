@@ -132,6 +132,8 @@ model User {
   dataKey            UserDataKey?
   entitlements       Entitlement[]
   parent             User?           @relation("personas", fields: [parentId], references: [id], onDelete: Cascade)
+  requestsSent       MessageRequest[] @relation("requestsSent")
+  requestsReceived   MessageRequest[] @relation("requestsReceived")
   personas           User[]          @relation("personas")
 
   @@index([status, discoveryEnabled])
@@ -754,4 +756,44 @@ model AppSecret {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("app_secrets")
+}
+
+/// Sponsored cards in Today's Souls (CR-25): contextual only, no targeting by personal data. Gold/VIP see none.
+model AdCard {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  /// Shown title/body/CTA per locale: { en: string, ru: string }.
+  title       Json
+  body        Json
+  cta         Json
+  url         String
+  /// Background colour of the card (hex), e.g. "#5B6B8C".
+  color       String   @default("#5B6B8C")
+  sponsor     String
+  /// true for the placeholder cards used in the alpha (labelled "test ad").
+  isTest      Boolean  @default(false) @map("is_test")
+  active      Boolean  @default(true)
+  impressions Int      @default(0)
+  clicks      Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("ad_cards")
+}
+
+/// VIP "message first" (CR-26): a message sent without a mutual like. The recipient accepts (a match with this
+/// message as the first one) or declines. One request per pair.
+model MessageRequest {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  fromId      String    @map("from_id") @db.Uuid
+  toId        String    @map("to_id") @db.Uuid
+  body        String
+  status      String    @default("pending") // pending | accepted | declined
+  matchId     String?   @map("match_id") @db.Uuid
+  createdAt   DateTime  @default(now()) @map("created_at")
+  respondedAt DateTime? @map("responded_at")
+  from        User      @relation("requestsSent", fields: [fromId], references: [id], onDelete: Cascade)
+  to          User      @relation("requestsReceived", fields: [toId], references: [id], onDelete: Cascade)
+
+  @@unique([fromId, toId])
+  @@index([toId, status])
+  @@map("message_requests")
 }

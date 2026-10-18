@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="116" fill="#F6F4EF"/>
+  <!-- minimal mark: two overlapping souls, the overlap forms a heart -->
+  <circle cx="206" cy="256" r="110" fill="none" stroke="#2E3647" stroke-width="22"/>
+  <circle cx="306" cy="256" r="110" fill="none" stroke="#2E3647" stroke-width="22"/>
+  <path d="M256 334c-6-7-46-30-46-60 0-17 12-29 28-29 9 0 15 5 18 10 3-5 9-10 18-10 16 0 28 12 28 29 0 30-40 53-46 60z" fill="#E8636F"/>
+</svg>

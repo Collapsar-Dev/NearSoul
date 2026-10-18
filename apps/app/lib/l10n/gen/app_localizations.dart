@@ -2743,6 +2743,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Written by AI from their answers'**
   String get cardAiOther;
+
+  /// No description provided for @adLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sponsored'**
+  String get adLabel;
+
+  /// No description provided for @adTestLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Test ad'**
+  String get adTestLabel;
+
+  /// No description provided for @adHide.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get adHide;
+
+  /// No description provided for @featNoAds.
+  ///
+  /// In en, this message translates to:
+  /// **'No ads'**
+  String get featNoAds;
+
+  /// No description provided for @writeFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get writeFirst;
+
+  /// No description provided for @writeFirstTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Write first'**
+  String get writeFirstTitle;
+
+  /// No description provided for @writeFirstHint.
+  ///
+  /// In en, this message translates to:
+  /// **'They’ll see your message and decide whether to reply. Up to 5 people a day. VIP.'**
+  String get writeFirstHint;
+
+  /// No description provided for @writeFirstSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Message sent. If they reply, the chat opens.'**
+  String get writeFirstSent;
+
+  /// No description provided for @requestsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'They wrote to you first'**
+  String get requestsTitle;
+
+  /// No description provided for @requestsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 message is waiting} other{{count} messages are waiting}}'**
+  String requestsCount(int count);
+
+  /// No description provided for @reply.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply'**
+  String get reply;
+
+  /// No description provided for @decline.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get decline;
+
+  /// No description provided for @featMessageFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Write first, no mutual like needed (5 a day)'**
+  String get featMessageFirst;
 }
 
 class _AppLocalizationsDelegate

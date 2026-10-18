@@ -45,6 +45,8 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       f['seeLikes'] == true ? l.featLikes : l.featLikesCount,
       if (f['rewind'] == true) l.featRewind,
       if (f['seePersonaCount'] == true) l.featPersonas,
+      if (f['showAds'] == false) l.featNoAds,
+      if (f['messageFirst'] == true) l.featMessageFirst,
     ];
   }
 

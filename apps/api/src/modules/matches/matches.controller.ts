@@ -4,17 +4,43 @@ import { CurrentUser, RequireGate, type AuthUser } from '../../common/auth';
 import { parse } from '../../common/zod';
 import { ChatService } from './chat.service';
 import { LikesService } from './likes.service';
+import { RequestsService } from './requests.service';
 
 @Controller('v1')
 @RequireGate('active')
 export class MatchesController {
-  constructor(private readonly likes: LikesService, private readonly chat: ChatService) {}
+  constructor(private readonly likes: LikesService, private readonly chat: ChatService, private readonly requests: RequestsService) {}
 
   @Post('likes')
   @HttpCode(200)
   like(@CurrentUser() user: AuthUser, @Body() body: unknown) {
     const input = parse(z.object({ targetId: z.string().uuid(), action: z.enum(['like', 'pass']), source: z.enum(['daily', 'nearby', 'profile']).default('daily') }).strict(), body);
     return this.likes.act(user.id, input.targetId, input.action, input.source);
+  }
+
+  /** VIP: write first (CR-26). */
+  @Post('requests')
+  @HttpCode(200)
+  sendRequest(@CurrentUser() user: AuthUser, @Body() body: unknown) {
+    const input = parse(z.object({ targetId: z.string().uuid(), body: z.string().max(1000) }).strict(), body);
+    return this.requests.send(user.id, input.targetId, input.body);
+  }
+
+  @Get('requests')
+  incomingRequests(@CurrentUser() user: AuthUser) {
+    return this.requests.incoming(user.id);
+  }
+
+  @Post('requests/:id/accept')
+  @HttpCode(200)
+  acceptRequest(@CurrentUser() user: AuthUser, @Param('id', new ParseUUIDPipe()) id: string) {
+    return this.requests.accept(user.id, id);
+  }
+
+  @Post('requests/:id/decline')
+  @HttpCode(204)
+  async declineRequest(@CurrentUser() user: AuthUser, @Param('id', new ParseUUIDPipe()) id: string) {
+    await this.requests.decline(user.id, id);
   }
 
   @Get('likes/received')

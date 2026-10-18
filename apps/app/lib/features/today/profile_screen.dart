@@ -29,7 +29,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ? SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: LikePassBar(onLike: () async => context.pop('like'), onPass: () async => context.pop('pass')),
+                  child: LikePassBar(
+                    onLike: () async => context.pop('like'),
+                    onPass: () async => context.pop('pass'),
+                    onMessage: () async {
+                      final matchId = await writeFirstFlow(context, ref, userId: widget.userId, name: '');
+                      if (matchId != null && context.mounted) context.go('/matches/$matchId');
+                    },
+                  ),
                 ),
               )
             : null,

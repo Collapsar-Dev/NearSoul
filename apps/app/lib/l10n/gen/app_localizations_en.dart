@@ -1475,4 +1475,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cardAiOther => 'Written by AI from their answers';
+
+  @override
+  String get adLabel => 'Sponsored';
+
+  @override
+  String get adTestLabel => 'Test ad';
+
+  @override
+  String get adHide => 'Hide';
+
+  @override
+  String get featNoAds => 'No ads';
+
+  @override
+  String get writeFirst => 'Message';
+
+  @override
+  String get writeFirstTitle => 'Write first';
+
+  @override
+  String get writeFirstHint =>
+      'They’ll see your message and decide whether to reply. Up to 5 people a day. VIP.';
+
+  @override
+  String get writeFirstSent => 'Message sent. If they reply, the chat opens.';
+
+  @override
+  String get requestsTitle => 'They wrote to you first';
+
+  @override
+  String requestsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count messages are waiting',
+      one: '1 message is waiting',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reply => 'Reply';
+
+  @override
+  String get decline => 'Decline';
+
+  @override
+  String get featMessageFirst => 'Write first, no mutual like needed (5 a day)';
 }

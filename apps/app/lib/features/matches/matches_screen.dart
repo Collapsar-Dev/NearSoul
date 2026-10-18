@@ -10,6 +10,7 @@ import '../../core/widgets/common.dart';
 import '../shell.dart';
 import 'chat_screen.dart';
 import 'liked_you_screen.dart';
+import 'requests_screen.dart';
 
 /// S24 matches list. On desktop the selected chat opens beside the list (two panes, §5.9).
 class MatchesScreen extends StatelessWidget {
@@ -39,6 +40,7 @@ class MatchesLayout extends ConsumerStatefulWidget {
 class _MatchesLayoutState extends ConsumerState<MatchesLayout> {
   List<Map<String, dynamic>>? _items;
   Map<String, dynamic>? _liked;
+  List<Map<String, dynamic>> _requests = [];
   Object? _error;
   StreamSubscription<RealtimeEvent>? _sub;
 
@@ -47,7 +49,7 @@ class _MatchesLayoutState extends ConsumerState<MatchesLayout> {
     super.initState();
     _load();
     _sub = ref.read(realtimeProvider).events.listen((e) {
-      if (const ['message.new', 'match.new', 'match.ended', 'message.read'].contains(e.name)) _load();
+      if (const ['message.new', 'match.new', 'match.ended', 'message.read', 'request.new'].contains(e.name)) _load();
     });
   }
 
@@ -62,7 +64,8 @@ class _MatchesLayoutState extends ConsumerState<MatchesLayout> {
       final api = ref.read(apiProvider);
       final items = (await api.get<List<dynamic>>('/v1/matches')).cast<Map<String, dynamic>>();
       final liked = await api.get<Map<String, dynamic>>('/v1/likes/received').catchError((_) => <String, dynamic>{'count': 0});
-      if (mounted) setState(() => (_items = items, _liked = liked, _error = null));
+      final requests = await api.get<List<dynamic>>('/v1/requests').then((r) => r.cast<Map<String, dynamic>>()).catchError((_) => <Map<String, dynamic>>[]);
+      if (mounted) setState(() => (_items = items, _liked = liked, _requests = requests, _error = null));
     } catch (e) {
       if (mounted) setState(() => _error = e);
     }
@@ -109,12 +112,29 @@ class _MatchesLayoutState extends ConsumerState<MatchesLayout> {
               },
             ),
           );
+    final requestsTile = _requests.isEmpty
+        ? null
+        : Card(
+            margin: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+            child: ListTile(
+              leading: Badge(label: Text('${_requests.length}'), child: const Icon(Icons.mark_email_unread_outlined)),
+              title: Text(l.requestsTitle),
+              subtitle: Text(l.requestsCount(_requests.length)),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () async {
+                await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RequestsScreen()));
+                await _load();
+              },
+            ),
+          );
+    if (items.isEmpty && requestsTile != null) return ListView(children: [requestsTile, ?likedTile, const SizedBox(height: 40), EmptyState(icon: Icons.favorite_border, text: l.noMatches)]);
     if (items.isEmpty) return likedTile == null ? EmptyState(icon: Icons.favorite_border, text: l.noMatches) : ListView(children: [likedTile, const SizedBox(height: 40), EmptyState(icon: Icons.favorite_border, text: l.noMatches)]);
     final fresh = items.where((m) => m['lastMessage'] == null).toList();
     final convos = items.where((m) => m['lastMessage'] != null).toList();
     return RefreshIndicator(
       onRefresh: _load,
       child: ListView(children: [
+        ?requestsTile,
         ?likedTile,
         if (fresh.isNotEmpty) ...[
           Padding(padding: const EdgeInsets.fromLTRB(16, 8, 16, 8), child: Text(l.newMatches, style: Theme.of(context).textTheme.titleSmall)),

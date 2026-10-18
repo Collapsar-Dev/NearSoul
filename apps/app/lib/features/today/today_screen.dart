@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/api.dart';
 import '../../core/responsive.dart';
 import '../../core/session.dart';
@@ -30,6 +31,42 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   /// One-time "swipe right to like" hint for card mode.
   bool _showSwipeHint = false;
   static const _hintKey = 'ns_swipe_hint_seen';
+  /// Sponsored cards (CR-25): empty for Gold/VIP. An ad shows after every [_adEvery] people.
+  List<Map<String, dynamic>> _ads = [];
+  int _adEvery = 10;
+  final Set<int> _adsShownAt = {};
+  final Set<String> _adsCounted = {};
+
+  Future<void> _loadAds() async {
+    try {
+      final r = await ref.read(apiProvider).get<Map<String, dynamic>>('/v1/ads');
+      if (mounted) {
+        setState(() {
+          _ads = (r['ads'] as List).cast<Map<String, dynamic>>();
+          _adEvery = (r['every'] as int?) ?? 10;
+        });
+      }
+    } catch (_) {}
+  }
+
+  void _countAd(Map<String, dynamic> ad, String kind) {
+    if (kind == 'impression' && !_adsCounted.add(ad['id'] as String)) return;
+    ref.read(apiProvider).post('/v1/ads/${ad['id']}/$kind').catchError((_) => null);
+  }
+
+  Future<void> _openAd(Map<String, dynamic> ad) async {
+    _countAd(ad, 'click');
+    await launchUrl(Uri.parse(ad['url'] as String), mode: LaunchMode.externalApplication);
+  }
+
+  Widget _adCard(Map<String, dynamic> ad, {VoidCallback? onClose}) {
+    _countAd(ad, 'impression');
+    return AdCardView(ad: ad, onOpen: () => _openAd(ad), onClose: onClose ?? () {});
+  }
+
+  /// Card mode: after every N people decided today, one ad sits in the stack until closed or swiped away.
+  bool get _adDue => _ads.isNotEmpty && _acted.isNotEmpty && _acted.length % _adEvery == 0 && !_adsShownAt.contains(_acted.length);
+
   /// Gentle "keep discovering yourself" nudge: after a few cards, at most once a day, while questions remain.
   int _refineRemaining = 0;
   bool _nudgeDismissedToday = true;
@@ -41,6 +78,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     super.initState();
     _load();
     _loadRefine();
+    _loadAds();
     SharedPreferences.getInstance().then((p) {
       if (!mounted) return;
       setState(() {
@@ -108,6 +146,14 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
         TextButton(onPressed: _hideSwipeHint, child: Text(context.l.gotIt)),
       ]),
     );
+  }
+
+  /// VIP: write first. Opens the chat right away if the other side already accepted (alpha demos).
+  Future<void> _writeFirst(Map<String, dynamic> p) async {
+    final matchId = await writeFirstFlow(context, ref, userId: p['id'] as String, name: p['firstName'] as String);
+    if (!mounted) return;
+    setState(() => _acted.add(p['id'] as String));
+    if (matchId != null) context.go('/matches/$matchId');
   }
 
   /// Full profile with its own pass/like; the choice comes back here and is sent like any other.
@@ -208,7 +254,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
           ? ErrorState(error: _error!, onRetry: _load)
           : _set == null
               ? const Center(child: CircularProgressIndicator())
-              : RefreshIndicator(onRefresh: _load, child: remaining.isEmpty ? _empty(context) : _list ? _feed(context, remaining) : _content(context, remaining.first)),
+              : RefreshIndicator(onRefresh: _load, child: remaining.isEmpty ? _empty(context) : _list ? _feed(context, remaining) : _adDue ? _adInStack(context) : _content(context, remaining.first)),
     );
   }
 
@@ -261,6 +307,10 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
         text: total == 0 ? l.todayEmpty : l.todayDone,
         action: OutlinedButton(onPressed: () => context.go('/nearby'), child: Text(l.tryNearby)),
       ),
+      if (total > 0 && _ads.isNotEmpty) ...[
+        const SizedBox(height: 24),
+        FocusColumn(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 360), child: _adCard(_ads.first, onClose: () => setState(() => _ads = [])))),
+      ],
       if (total > 0) ...[
         const SizedBox(height: 24),
         FocusColumn(
@@ -317,7 +367,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            LikePassBar(onLike: () => _act(p, 'like'), onPass: () => _act(p, 'pass'), onInfo: openProfile),
+            LikePassBar(onLike: () => _act(p, 'like'), onPass: () => _act(p, 'pass'), onInfo: openProfile, onMessage: () => _writeFirst(p)),
           ]),
         ),
       ]);
@@ -325,26 +375,51 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   }
 
   /// Feed: everyone left today, one under another, each with its own pass/like.
+  Widget _adInStack(BuildContext context) {
+    final ad = _ads[(_acted.length ~/ _adEvery - 1) % _ads.length];
+    void done() => setState(() => _adsShownAt.add(_acted.length));
+    return LayoutBuilder(builder: (context, c) {
+      final cardMaxHeight = (c.maxHeight - 40).clamp(260.0, 2000.0);
+      return ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 16), children: [
+        Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: cardMaxHeight * 0.8),
+            child: SwipeCard(key: ValueKey('ad-${_acted.length}'), onLike: () async => done(), onPass: () async => done(), child: _adCard(ad, onClose: done)),
+          ),
+        ),
+      ]);
+    });
+  }
+
   Widget _feed(BuildContext context, List<Map<String, dynamic>> people) {
     final columns = sizeClassOf(context) == SizeClass.expanded ? 3 : sizeClassOf(context) == SizeClass.medium ? 2 : 1;
+    // People with an ad after every N of them (none for Gold/VIP).
+    final entries = <Object>[];
+    for (var i = 0; i < people.length; i++) {
+      entries.add(people[i]);
+      if (_ads.isNotEmpty && (i + 1) % _adEvery == 0) entries.add(_ads[((i + 1) ~/ _adEvery - 1) % _ads.length]);
+    }
     Widget item(Map<String, dynamic> p) => Column(mainAxisSize: MainAxisSize.min, children: [
           SoulCard(p: p, onTap: () => _openProfile(p)),
           const SizedBox(height: 10),
           LikePassBar(onLike: () => _act(p, 'like'), onPass: () => _act(p, 'pass'), onInfo: () => _openProfile(p)),
           const SizedBox(height: 28),
         ]);
+    Widget entry(Object e) => e is Map<String, dynamic> && e.containsKey('sponsor')
+        ? Padding(padding: const EdgeInsets.only(bottom: 28), child: _adCard(e, onClose: () => setState(() => _ads = _ads.where((a) => a['id'] != e['id']).toList())))
+        : item(e as Map<String, dynamic>);
     if (columns == 1) {
       return ListView.builder(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-        itemCount: people.length,
-        itemBuilder: (_, i) => FocusColumn(padding: EdgeInsets.zero, child: KeyedSubtree(key: ValueKey(people[i]['id']), child: item(people[i]))),
+        itemCount: entries.length,
+        itemBuilder: (_, i) => FocusColumn(padding: EdgeInsets.zero, child: KeyedSubtree(key: ValueKey((entries[i] as Map)['id']), child: entry(entries[i]))),
       );
     }
     return GridView.builder(
       padding: const EdgeInsets.all(24),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: columns, crossAxisSpacing: 24, childAspectRatio: 0.62),
-      itemCount: people.length,
-      itemBuilder: (_, i) => KeyedSubtree(key: ValueKey(people[i]['id']), child: item(people[i])),
+      itemCount: entries.length,
+      itemBuilder: (_, i) => KeyedSubtree(key: ValueKey((entries[i] as Map)['id']), child: entry(entries[i])),
     );
   }
 }

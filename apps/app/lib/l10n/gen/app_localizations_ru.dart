@@ -1478,4 +1478,55 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get cardAiOther => 'Написано AI по ответам в анкете';
+
+  @override
+  String get adLabel => 'Реклама';
+
+  @override
+  String get adTestLabel => 'Тестовая реклама';
+
+  @override
+  String get adHide => 'Скрыть';
+
+  @override
+  String get featNoAds => 'Без рекламы';
+
+  @override
+  String get writeFirst => 'Написать';
+
+  @override
+  String get writeFirstTitle => 'Написать первым';
+
+  @override
+  String get writeFirstHint =>
+      'Человек увидит сообщение и решит, отвечать ли. До 5 человек в день. VIP.';
+
+  @override
+  String get writeFirstSent =>
+      'Сообщение отправлено. Если ответят, откроется чат.';
+
+  @override
+  String get requestsTitle => 'Тебе написали первыми';
+
+  @override
+  String requestsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count сообщений ждут ответа',
+      few: '$count сообщения ждут ответа',
+      one: '$count сообщение ждёт ответа',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reply => 'Ответить';
+
+  @override
+  String get decline => 'Отклонить';
+
+  @override
+  String get featMessageFirst =>
+      'Написать первым, без взаимного лайка (5 в день)';
 }

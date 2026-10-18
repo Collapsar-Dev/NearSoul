@@ -65,7 +65,7 @@ const TABLES = [
   'notifications', 'invite_redemptions', 'invites', 'feedback', 'ratings', 'user_locations', 'nearby_sessions',
   'nearby_alerts', 'nearby_later', 'pair_outcomes', 'daily_sets', 'personality_cards', 'layer_overrides',
   'soul_profiles', 'engine_answers', 'photos', 'profile_interests', 'profiles', 'consents', 'device_tokens',
-  'sessions', 'auth_codes', 'soul_messages', 'soul_insights', 'soul_sessions', 'user_data_keys', 'safety_events', 'data_export_jobs', 'entitlements', 'billing_events', 'users', 'admin_users', 'match_config', 'media',
+  'sessions', 'auth_codes', 'message_requests', 'soul_messages', 'soul_insights', 'soul_sessions', 'user_data_keys', 'safety_events', 'data_export_jobs', 'entitlements', 'billing_events', 'users', 'admin_users', 'match_config', 'media',
 ];
 
 export async function resetDb(ctx: TestCtx): Promise<void> {

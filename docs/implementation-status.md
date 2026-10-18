@@ -5,7 +5,7 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 ## Evidence (commands run on 2026-10-16)
 | Command | Result |
 |---|---|
-| `cd apps/api && npx jest` | 23 suites, 242 tests passed (engine unit + property + golden snapshot tests; integration tests on real Postgres) |
+| `cd apps/api && npx jest` | 26 suites, 248 tests passed (engine unit + property + golden snapshot tests; integration tests on real Postgres) |
 | Browser check of Settings → «О чём уведомлять» | toggle saved (notify_prefs), browser timezone synced to the server |
 | Web Push round trip (headless Chromium 151) | subscribe via web/push.js → server PushService → Google push service → service worker shows the localized notification with the right deep link |
 | GitHub Actions CI (run 38901751005) | API, Flutter (web + APK), Windows, macOS green; Linux desktop fixed (libsecret) |
@@ -38,6 +38,11 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 | Swipe + feed on Today (CR-20) | TESTED in headless Chromium (412×915): drag right shows the «НРАВИТСЯ» stamp, release likes and shows the next card; List view scrolls through all 14 remaining people by touch-drag and wheel |
 | Subscription levels (CR-18) | TESTED | Soul+/Gold/VIP, test activation, tier-sized daily sets with same-day top-up, Liked you, rewind, VIP profile count; app: Subscription screen, Liked you, Undo snackbar, upsells. Live check: photo upload of a 4032×3024 JPEG on Render works |
 | M9 Payments & ops | IN PROGRESS | PAY-001..003 TESTED (RevenueCat webhook, entitlements, paywall sheet; store products not set up yet). ACC-002 data export TESTED. ANL-001 consent-gated server analytics TESTED (needs POSTHOG_KEY) |
+
+## Founder feedback 2026-10-18, round 3
+- Ads as cards (CR-25) for Free/Soul+, none for Gold/VIP ("Без рекламы" in Subscription).
+- VIP «Написать первым» (CR-26): ✉ on the card and in the profile (non-VIP see Subscription before typing), «Тебе написали первыми» in Matches.
+- 5 logo options in design/logo-options/ (all-options.png) for the founder to choose.
 
 ## Founder feedback 2026-10-18, round 2
 - Logo (ghost-soul with a heart) in icons, favicon, welcome, navigation rail.

@@ -58,7 +58,11 @@ export class LikesService {
     return { targetId: last.targetId };
   }
 
-  async act(actorId: string, targetId: string, action: 'like' | 'pass', source: 'daily' | 'nearby' | 'profile') {
+  /**
+   * The actor may approach the target (like or VIP first message): reachable, not blocked or matched, and allowed by
+   * the target's own preferences. The actor's own age filter never blocks (Today's Souls may widen it).
+   */
+  async assertCanApproach(actorId: string, targetId: string, source: 'daily' | 'nearby' | 'profile') {
     if (actorId === targetId) throw notFound();
     const reachable = await this.reachable(actorId, targetId, source);
     if (!reachable) throw notFound();
@@ -67,8 +71,6 @@ export class LikesService {
     const b = subjects.get(targetId);
     if (!a || !b) throw notFound();
     const facts = await this.subjects.pairFacts(actorId, [targetId], 0);
-    // The actor's own age preference never blocks a like they chose to give: Today's Souls may widen it (flexible
-    // fallback). The other person's preferences are still enforced in full (their consent).
     const actor = { ...a.eligibility, ageMin: 18, ageMax: 200 };
     const e = eligibility(actor, b.eligibility, {
       mode: source === 'nearby' ? 'nearby' : 'daily',
@@ -79,6 +81,11 @@ export class LikesService {
     // Nearby likes stay valid after the window ends (the alert happened while both were open).
     const ok = e.eligible || (source === 'nearby' && !e.eligible && e.reason === 'NOT_OPEN');
     if (!ok) throw notFound();
+    return { a, b };
+  }
+
+  async act(actorId: string, targetId: string, action: 'like' | 'pass', source: 'daily' | 'nearby' | 'profile') {
+    const { a, b } = await this.assertCanApproach(actorId, targetId, source);
     if (action === 'like') await this.checkDailyLimit(actorId);
 
     const existing = await this.prisma.like.findUnique({ where: { actorId_targetId: { actorId, targetId } } });

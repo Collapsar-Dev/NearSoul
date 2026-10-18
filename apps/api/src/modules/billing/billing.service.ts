@@ -21,6 +21,10 @@ export interface TierFeatures {
   seeLikes: boolean;
   rewind: boolean;
   seePersonaCount: boolean;
+  /** Sponsored cards in Today's Souls (CR-25): free and Soul+ only. */
+  showAds: boolean;
+  /** VIP: write to someone before a mutual like (CR-26). */
+  messageFirst: boolean;
 }
 
 export const UNLIMITED_DAILY_CAP = 300;
@@ -33,6 +37,8 @@ export function tierFeatures(tier: Tier): TierFeatures {
     seeLikes: rank >= 2,
     rewind: rank >= 2,
     seePersonaCount: rank >= 3,
+    showAds: rank < 2,
+    messageFirst: rank >= 3,
   };
 }
 

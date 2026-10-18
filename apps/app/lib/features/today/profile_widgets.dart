@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import '../me/paywall.dart';
+import '../../core/session.dart';
+import '../../core/api.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/widgets/common.dart';
@@ -224,12 +228,14 @@ class ProfileDetails extends StatelessWidget {
 
 /// Like / pass buttons.
 class LikePassBar extends StatelessWidget {
-  const LikePassBar({super.key, required this.onLike, required this.onPass, this.onLater, this.onInfo});
+  const LikePassBar({super.key, required this.onLike, required this.onPass, this.onLater, this.onInfo, this.onMessage});
   final Future<void> Function() onLike;
   final Future<void> Function() onPass;
   final Future<void> Function()? onLater;
   /// Opens the full profile (photos and details) without scrolling the card screen.
   final Future<void> Function()? onInfo;
+  /// VIP "write first" (CR-26); others are taken to the subscription screen.
+  final Future<void> Function()? onMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -238,6 +244,7 @@ class LikePassBar extends StatelessWidget {
       _Round(icon: Icons.close_rounded, label: l.pass, onTap: onPass, color: Theme.of(context).colorScheme.outline),
       if (onLater != null) ...[const SizedBox(width: 20), _Round(icon: Icons.schedule_rounded, label: l.later, onTap: onLater!, color: Colors.amber.shade700)],
       if (onInfo != null) ...[const SizedBox(width: 20), _Round(icon: Icons.info_outline_rounded, label: l.moreInfo, onTap: onInfo!, color: Theme.of(context).colorScheme.secondary)],
+      if (onMessage != null) ...[const SizedBox(width: 20), _Round(icon: Icons.mail_outline_rounded, label: l.writeFirst, onTap: onMessage!, color: Theme.of(context).colorScheme.tertiary)],
       const SizedBox(width: 20),
       _Round(icon: Icons.favorite_rounded, label: l.like, onTap: onLike, color: Theme.of(context).colorScheme.primary, big: true),
     ]);
@@ -480,5 +487,105 @@ class MatchPercentPill extends StatelessWidget {
         Text(context.l.matchPercent(percent), style: TextStyle(fontWeight: FontWeight.w700, color: onDark ? Colors.white : color)),
       ]),
     );
+  }
+}
+
+/// Sponsored card (CR-25): clearly labelled, same size as a person card, closable. No tracking beyond counts.
+class AdCardView extends StatelessWidget {
+  const AdCardView({super.key, required this.ad, required this.onOpen, required this.onClose, this.aspect = 4 / 5});
+  final Map<String, dynamic> ad;
+  final VoidCallback onOpen;
+  final VoidCallback onClose;
+  final double aspect;
+
+  Color _color() {
+    final hex = (ad['color'] as String? ?? '#5B6B8C').replaceFirst('#', '');
+    return Color(int.tryParse('FF$hex', radix: 16) ?? 0xFF5B6B8C);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l;
+    final base = _color();
+    return AspectRatio(
+      aspectRatio: aspect,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Container(
+          decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [base, Color.lerp(base, Colors.black, 0.45)!])),
+          padding: const EdgeInsets.all(20),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(999)),
+                child: Text(ad['isTest'] == true ? l.adTestLabel : l.adLabel, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
+              ),
+              const Spacer(),
+              IconButton(tooltip: l.adHide, icon: const Icon(Icons.close, color: Colors.white), onPressed: onClose),
+            ]),
+            const Spacer(),
+            const Icon(Icons.local_offer_outlined, color: Colors.white70, size: 40),
+            const SizedBox(height: 16),
+            Text(ad['title'] as String, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            Text(ad['body'] as String, style: const TextStyle(color: Colors.white70, fontSize: 15)),
+            const SizedBox(height: 6),
+            Text(ad['sponsor'] as String, style: const TextStyle(color: Colors.white54, fontSize: 12)),
+            const SizedBox(height: 16),
+            FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: Colors.white, foregroundColor: base),
+              onPressed: onOpen,
+              child: Text(ad['cta'] as String),
+            ),
+          ]),
+        ),
+      ),
+    );
+  }
+}
+
+/// VIP "write first" (CR-26): asks for the message and sends it; non-VIP users see the subscription levels.
+/// Returns the match id when the other side accepted right away (alpha demo profiles), otherwise null.
+Future<String?> writeFirstFlow(BuildContext context, WidgetRef ref, {required String userId, required String name}) async {
+  final l = context.l;
+  // Check the level first so nobody types a message only to hit a paywall.
+  try {
+    final status = await ref.read(apiProvider).get<Map<String, dynamic>>('/v1/billing/status');
+    if ((status['features'] as Map?)?['messageFirst'] != true) {
+      if (context.mounted) await showPaywall(context);
+      return null;
+    }
+  } catch (_) {}
+  if (!context.mounted) return null;
+  final ctl = TextEditingController();
+  final text = await showDialog<String>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(name.isEmpty ? l.writeFirstTitle : '${l.writeFirstTitle}: $name'),
+      content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+        TextField(controller: ctl, autofocus: true, maxLength: 500, maxLines: 4, minLines: 2),
+        Text(l.writeFirstHint, style: Theme.of(ctx).textTheme.bodySmall),
+      ]),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.cancel)),
+        FilledButton(onPressed: () => Navigator.pop(ctx, ctl.text.trim()), child: Text(l.send)),
+      ],
+    ),
+  );
+  if (text == null || text.isEmpty || !context.mounted) return null;
+  try {
+    final r = await ref.read(apiProvider).post<Map<String, dynamic>>('/v1/requests', {'targetId': userId, 'body': text});
+    final match = r['match'] as Map<String, dynamic>?;
+    if (context.mounted && match == null) showSnack(context, l.writeFirstSent);
+    return match?['id'] as String?;
+  } on ApiError catch (e) {
+    if (!context.mounted) return null;
+    if (e.code == 'UPGRADE_REQUIRED') {
+      await showPaywall(context);
+    } else {
+      showSnack(context, errorText(context, e));
+    }
+    return null;
   }
 }

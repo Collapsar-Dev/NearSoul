@@ -79,6 +79,9 @@ export class DiscoveryController {
     const since = new Date(Date.now() - 3 * 86_400_000).toISOString().slice(0, 10);
     const inSet = await this.prisma.dailySet.findFirst({ where: { userId: viewerId, date: { gte: since }, candidateIds: { has: targetId } } });
     if (inSet) return { allowed: true, matched: false };
+    // Someone who wrote to the viewer first (VIP, CR-26): the viewer can look before answering.
+    const request = await this.prisma.messageRequest.findFirst({ where: { fromId: targetId, toId: viewerId, status: 'pending' } });
+    if (request) return { allowed: true, matched: false };
     // Gold+ can open profiles from "Liked you" (CR-18).
     const likedMe = await this.prisma.like.findUnique({ where: { actorId_targetId: { actorId: targetId, targetId: viewerId } } });
     if (likedMe?.action === 'like' && (await this.billing.features(viewerId)).seeLikes) return { allowed: true, matched: false };
