@@ -39,7 +39,8 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
     final daily = f['dailySetSize'] as int?;
     return [
       daily == null ? l.featDailyUnlimited : l.featDaily(daily),
-      tier == 'vip' ? l.featLikeUnlimited : l.featLikeLimit(tier == 'gold' ? 100 : 50),
+      // Likes per day equal the daily set size for every level.
+      daily == null ? l.featLikeUnlimited : l.featLikeLimit(daily),
       if (f['fullReports'] == true) l.featReports,
       f['seeLikes'] == true ? l.featLikes : l.featLikesCount,
       if (f['rewind'] == true) l.featRewind,

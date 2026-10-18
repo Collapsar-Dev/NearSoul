@@ -18,7 +18,9 @@ class ProfilesShortcut extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (ref.watch(sessionProvider).me?.isPersona != true) return const SizedBox.shrink();
-    return IconButton(tooltip: context.l.profiles, icon: const Icon(Icons.switch_account_outlined), onPressed: () => context.go('/me/profiles'));
+    final label = ref.watch(sessionProvider).me?.personaLabel ?? '';
+    // Shows which profile is being filled in, and leads back to the switcher.
+    return TextButton.icon(onPressed: () => context.go('/me/profiles'), icon: const Icon(Icons.switch_account_outlined, size: 18), label: Text(context.l.profileFilling(label)));
   }
 }
 

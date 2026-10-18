@@ -2641,6 +2641,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'One step is still missing, opening it.'**
   String get stepMissing;
+
+  /// No description provided for @scanDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'First step done!'**
+  String get scanDoneTitle;
+
+  /// No description provided for @scanDoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You’ve answered all 10 questions. Next up: your result. You can answer more later in the Soul tab to make your matches sharper.'**
+  String get scanDoneBody;
+
+  /// No description provided for @scanDoneCta.
+  ///
+  /// In en, this message translates to:
+  /// **'See my result'**
+  String get scanDoneCta;
+
+  /// No description provided for @refineDoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks! Your matches and reports are now more precise.'**
+  String get refineDoneBody;
+
+  /// No description provided for @moreInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get moreInfo;
+
+  /// No description provided for @switchOrAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch or add a profile'**
+  String get switchOrAdd;
+
+  /// No description provided for @profilesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A second or third profile: separate questions, photos and dating'**
+  String get profilesSubtitle;
+
+  /// No description provided for @profileCreateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You’ll switch to the new profile right away: 10 questions, a name and a photo. You can go back any time: Me → My profiles.'**
+  String get profileCreateHint;
+
+  /// No description provided for @profileFilling.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile: {name}'**
+  String profileFilling(String name);
+
+  /// No description provided for @personGone.
+  ///
+  /// In en, this message translates to:
+  /// **'This person is no longer available.'**
+  String get personGone;
+
+  /// No description provided for @create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
 }
 
 class _AppLocalizationsDelegate

@@ -1416,4 +1416,42 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get stepMissing => 'Остался один шаг, открываем его.';
+
+  @override
+  String get scanDoneTitle => 'Первый этап пройден!';
+
+  @override
+  String get scanDoneBody =>
+      'Ты ответил(а) на все 10 вопросов. Дальше — твой результат. Остальные вопросы можно пройти позже во вкладке «Душа», чтобы подбор был точнее.';
+
+  @override
+  String get scanDoneCta => 'Смотреть результат';
+
+  @override
+  String get refineDoneBody => 'Спасибо! Подбор и отчёты стали точнее.';
+
+  @override
+  String get moreInfo => 'Подробнее';
+
+  @override
+  String get switchOrAdd => 'Сменить или добавить профиль';
+
+  @override
+  String get profilesSubtitle =>
+      'Второй и третий профиль: другая анкета, фото и знакомства';
+
+  @override
+  String get profileCreateHint =>
+      'Ты сразу перейдёшь в новый профиль: 10 вопросов, имя и фото. Вернуться в основной можно в любой момент: «Я» → «Мои профили».';
+
+  @override
+  String profileFilling(String name) {
+    return 'Профиль: $name';
+  }
+
+  @override
+  String get personGone => 'Этот человек больше недоступен.';
+
+  @override
+  String get create => 'Создать';
 }

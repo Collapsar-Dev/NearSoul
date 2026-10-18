@@ -9,8 +9,11 @@ import 'profile_widgets.dart';
 
 /// S15 candidate / match profile.
 class ProfileScreen extends ConsumerStatefulWidget {
-  const ProfileScreen({super.key, required this.userId});
+  const ProfileScreen({super.key, required this.userId, this.withActions = false});
   final String userId;
+
+  /// Opened from Today's card: show pass/like here; the choice goes back to Today, which sends it.
+  final bool withActions;
 
   @override
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
@@ -22,6 +25,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(),
+        bottomNavigationBar: widget.withActions
+            ? SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: LikePassBar(onLike: () async => context.pop('like'), onPass: () async => context.pop('pass')),
+                ),
+              )
+            : null,
         body: AsyncBody<Map<String, dynamic>>(
           future: _f,
           onRetry: () => setState(() => _f = ref.read(apiProvider).get('/v1/profiles/${widget.userId}')),

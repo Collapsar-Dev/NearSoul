@@ -1412,4 +1412,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stepMissing => 'One step is still missing, opening it.';
+
+  @override
+  String get scanDoneTitle => 'First step done!';
+
+  @override
+  String get scanDoneBody =>
+      'You’ve answered all 10 questions. Next up: your result. You can answer more later in the Soul tab to make your matches sharper.';
+
+  @override
+  String get scanDoneCta => 'See my result';
+
+  @override
+  String get refineDoneBody =>
+      'Thanks! Your matches and reports are now more precise.';
+
+  @override
+  String get moreInfo => 'More';
+
+  @override
+  String get switchOrAdd => 'Switch or add a profile';
+
+  @override
+  String get profilesSubtitle =>
+      'A second or third profile: separate questions, photos and dating';
+
+  @override
+  String get profileCreateHint =>
+      'You’ll switch to the new profile right away: 10 questions, a name and a photo. You can go back any time: Me → My profiles.';
+
+  @override
+  String profileFilling(String name) {
+    return 'Profile: $name';
+  }
+
+  @override
+  String get personGone => 'This person is no longer available.';
+
+  @override
+  String get create => 'Create';
 }

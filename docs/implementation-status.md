@@ -39,6 +39,14 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 | Subscription levels (CR-18) | TESTED | Soul+/Gold/VIP, test activation, tier-sized daily sets with same-day top-up, Liked you, rewind, VIP profile count; app: Subscription screen, Liked you, Undo snackbar, upsells. Live check: photo upload of a 4032×3024 JPEG on Render works |
 | M9 Payments & ops | IN PROGRESS | PAY-001..003 TESTED (RevenueCat webhook, entitlements, paywall sheet; store products not set up yet). ACC-002 data export TESTED. ANL-001 consent-gated server analytics TESTED (needs POSTHOG_KEY) |
 
+## Founder feedback 2026-10-18 (fixed, checked at phone size with an Android user agent)
+- Keyboard on phones: forced semantics is now desktop-only (it intercepted taps on text fields on mobile web).
+- Quick Scan ends with «Первый этап пройден!» and a «Смотреть результат» button.
+- Today's card fits the screen with ✕ / ⓘ Подробнее / ♥; the opened profile has its own ✕/♥; photos open full screen.
+- Likes per day equal the daily set size of the level (free 15, Soul+ 25, Gold 50, VIP unlimited).
+- **Bug fixed:** likes to people shown through the widened age range returned 404 and the app skipped them silently. The actor's own age filter no longer blocks a like; the app now says when a person is gone.
+- Personas are discoverable: «Сменить или добавить профиль» under the name in Me, explained menu item and create dialog, «Профиль: …» shown while the new profile is filled in.
+
 ## UX pass (2026-10-17, full new-user walkthrough at phone size)
 Fixed: gender-neutral Russian personality texts and strengths; no preset birthday + a "can't be changed later" note; «Души дня» instead of "Today’s Souls" in Russian; "Твоя карточка личности"; share level preselected (standard); explanation under "Не сейчас"; one-time swipe hint on Today; Me menu grouped (Профиль / Аккаунт / Помощь) with clear names; duplicated "до 3" removed; personal API responses are `Cache-Control: no-store`.
 Checked and fine: age range defaults to own age ±5; photo upload; match → chat → demo reply.

@@ -68,6 +68,8 @@ class _PhotoCarouselState extends State<PhotoCarousel> {
             ),
           if (widget.overlay != null) widget.overlay!,
           if (widget.tapToFlip) LayoutBuilder(builder: (context, c) => GestureDetector(behavior: HitTestBehavior.translucent, onTapUp: (d) => _tap(d, c.maxWidth))),
+          if (!widget.tapToFlip && photos.isNotEmpty)
+            Positioned.fill(child: GestureDetector(behavior: HitTestBehavior.translucent, onTap: () => showPhotoViewer(context, photos, _i))),
         ]),
       ),
     );
@@ -201,10 +203,12 @@ class ProfileDetails extends StatelessWidget {
 
 /// Like / pass buttons.
 class LikePassBar extends StatelessWidget {
-  const LikePassBar({super.key, required this.onLike, required this.onPass, this.onLater});
+  const LikePassBar({super.key, required this.onLike, required this.onPass, this.onLater, this.onInfo});
   final Future<void> Function() onLike;
   final Future<void> Function() onPass;
   final Future<void> Function()? onLater;
+  /// Opens the full profile (photos and details) without scrolling the card screen.
+  final Future<void> Function()? onInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -212,6 +216,7 @@ class LikePassBar extends StatelessWidget {
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       _Round(icon: Icons.close_rounded, label: l.pass, onTap: onPass, color: Theme.of(context).colorScheme.outline),
       if (onLater != null) ...[const SizedBox(width: 20), _Round(icon: Icons.schedule_rounded, label: l.later, onTap: onLater!, color: Colors.amber.shade700)],
+      if (onInfo != null) ...[const SizedBox(width: 20), _Round(icon: Icons.info_outline_rounded, label: l.moreInfo, onTap: onInfo!, color: Theme.of(context).colorScheme.secondary)],
       const SizedBox(width: 20),
       _Round(icon: Icons.favorite_rounded, label: l.like, onTap: onLike, color: Theme.of(context).colorScheme.primary, big: true),
     ]);
@@ -404,4 +409,30 @@ class _SwipeCardState extends State<SwipeCard> with SingleTickerProviderStateMix
       );
     });
   }
+}
+
+/// Full-screen photos: swipe between them, tap or ✕ to close.
+Future<void> showPhotoViewer(BuildContext context, List<Map<String, dynamic>> photos, int start) {
+  return showDialog(
+    context: context,
+    barrierColor: Colors.black,
+    builder: (ctx) => Dialog.fullscreen(
+      backgroundColor: Colors.black,
+      child: Stack(children: [
+        PageView.builder(
+          controller: PageController(initialPage: start),
+          itemCount: photos.length,
+          itemBuilder: (_, i) => GestureDetector(
+            onTap: () => Navigator.pop(ctx),
+            child: InteractiveViewer(child: Center(child: Image.network(photos[i]['url'] as String, fit: BoxFit.contain))),
+          ),
+        ),
+        Positioned(
+          top: 8,
+          right: 8,
+          child: SafeArea(child: IconButton(tooltip: MaterialLocalizations.of(ctx).closeButtonTooltip, icon: const Icon(Icons.close, color: Colors.white), onPressed: () => Navigator.pop(ctx))),
+        ),
+      ]),
+    ),
+  );
 }

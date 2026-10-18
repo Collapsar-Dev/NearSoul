@@ -84,6 +84,20 @@ describe('Subscription levels (CR-18): Soul+, Gold, VIP with test activation', (
     expect(after.body.personaCount).toBe(1);
   });
 
+  it('likes per day equal the daily set size of the level (free = 2 here, VIP unlimited)', async () => {
+    const ben = await onboard(ctx, 'ben@example.com', { gender: 'man', interestedIn: ['woman'] });
+    for (let i = 0; i < 4; i++) await onboard(ctx, `w${i}@example.com`);
+    await activate(ctx, ben.token, 'vip');
+    const set = await ctx.http.get('/v1/daily-set').set(bearer(ben.token)).expect(200);
+    const ids = set.body.cards.map((c: { id: string }) => c.id);
+    await activate(ctx, ben.token, 'free');
+    for (const id of ids.slice(0, 2)) await ctx.http.post('/v1/likes').set(bearer(ben.token)).send({ targetId: id, action: 'like' }).expect(200);
+    const third = await ctx.http.post('/v1/likes').set(bearer(ben.token)).send({ targetId: ids[2], action: 'like' }).expect(429);
+    expect(third.body.error).toMatchObject({ code: 'LIKE_LIMIT', details: { limit: 2 } });
+    await activate(ctx, ben.token, 'vip');
+    await ctx.http.post('/v1/likes').set(bearer(ben.token)).send({ targetId: ids[2], action: 'like' }).expect(200);
+  });
+
   it('test activation is refused outside the test version', async () => {
     const anna = await onboard(ctx, 'anna@example.com');
     process.env.APP_ENV = 'staging';

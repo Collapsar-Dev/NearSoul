@@ -35,6 +35,7 @@ class _Item {
 
 class _QuickScanScreenState extends ConsumerState<QuickScanScreen> {
   List<_Item> _items = [];
+  bool _done = false;
   List<String> _likert = [];
   final Map<String, dynamic> _answers = {};
   final Map<String, dynamic> _pending = {};
@@ -158,8 +159,40 @@ class _QuickScanScreenState extends ConsumerState<QuickScanScreen> {
       }
       return;
     }
+    // A clear finish line instead of jumping straight on (founder feedback 2026-10-18).
+    if (mounted) setState(() => _done = true);
+  }
+
+  Future<void> _continueAfterDone() async {
     await ref.read(sessionProvider.notifier).reloadMe();
     if ((widget.retake || widget.refine) && mounted) Navigator.of(context).pop(true);
+  }
+
+  Widget _doneView(BuildContext context) {
+    final l = context.l;
+    final scheme = Theme.of(context).colorScheme;
+    return Scaffold(
+      body: SafeArea(
+        child: FocusColumn(
+          child: Column(children: [
+            const Spacer(),
+            Container(
+              width: 112,
+              height: 112,
+              decoration: BoxDecoration(shape: BoxShape.circle, color: scheme.primaryContainer),
+              child: Icon(Icons.check_rounded, size: 64, color: scheme.onPrimaryContainer),
+            ),
+            const SizedBox(height: 24),
+            Text(widget.refine ? l.refineDone : l.scanDoneTitle, style: Theme.of(context).textTheme.headlineMedium, textAlign: TextAlign.center),
+            const SizedBox(height: 12),
+            Text(widget.refine ? l.refineDoneBody : l.scanDoneBody, style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
+            const Spacer(),
+            SizedBox(width: double.infinity, child: BusyButton(label: widget.refine || widget.retake ? l.done : l.scanDoneCta, icon: Icons.arrow_forward_rounded, onPressed: _continueAfterDone)),
+            const SizedBox(height: 16),
+          ]),
+        ),
+      ),
+    );
   }
 
   @override
@@ -172,6 +205,7 @@ class _QuickScanScreenState extends ConsumerState<QuickScanScreen> {
   Widget build(BuildContext context) {
     final l = context.l;
     if (_loading) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    if (_done) return _doneView(context);
     if (_error != null) return Scaffold(body: ErrorState(error: _error!, onRetry: _load));
     if (_intro) {
       return Scaffold(

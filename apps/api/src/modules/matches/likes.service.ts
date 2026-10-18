@@ -10,9 +10,6 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { SubjectsService } from '../discovery/subjects.service';
 
-export const LIKES_PER_DAY = 50;
-export const LIKES_PER_DAY_NEW = 20;
-const NEW_ACCOUNT_MS = 48 * 3_600_000;
 
 export const pair = (a: string, b: string) => (a < b ? { userLow: a, userHigh: b } : { userLow: b, userHigh: a });
 
@@ -70,7 +67,10 @@ export class LikesService {
     const b = subjects.get(targetId);
     if (!a || !b) throw notFound();
     const facts = await this.subjects.pairFacts(actorId, [targetId], 0);
-    const e = eligibility(a.eligibility, b.eligibility, {
+    // The actor's own age preference never blocks a like they chose to give: Today's Souls may widen it (flexible
+    // fallback). The other person's preferences are still enforced in full (their consent).
+    const actor = { ...a.eligibility, ageMin: 18, ageMax: 200 };
+    const e = eligibility(actor, b.eligibility, {
       mode: source === 'nearby' ? 'nearby' : 'daily',
       blockedEitherWay: facts.blocked.has(targetId),
       previouslyMatched: facts.matched.has(targetId),
@@ -151,12 +151,10 @@ export class LikesService {
   }
 
   private async checkDailyLimit(actorId: string) {
-    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: actorId }, select: { createdAt: true } });
-    // New accounts stay limited whatever the level (anti-spam); after that Gold doubles it and VIP has no daily cap.
-    const tier = await this.billing.tier(actorId);
-    const isNew = Date.now() - user.createdAt.getTime() < NEW_ACCOUNT_MS;
-    if (!isNew && tier === 'vip') return;
-    const limit = isNew ? LIKES_PER_DAY_NEW : tier === 'gold' ? LIKES_PER_DAY * 2 : LIKES_PER_DAY;
+    // Likes per day match the number of Today's Souls for the level (founder decision 2026-10-18, CR-18):
+    // free 15, Soul+ 25, Gold 50, VIP unlimited.
+    const limit = (await this.billing.features(actorId)).dailySetSize;
+    if (limit === null) return;
     const count = await this.prisma.like.count({ where: { actorId, action: 'like', createdAt: { gte: new Date(Date.now() - 86_400_000) } } });
     if (count >= limit) throw new AppError(429, 'LIKE_LIMIT', 'You’ve reached today’s like limit. New likes tomorrow.', { limit });
   }

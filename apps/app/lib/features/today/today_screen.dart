@@ -100,6 +100,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
         showSnack(context, context.l.likeLimit);
       } else if (e.status == 404) {
         setState(() => _acted.add(p['id'] as String)); // no longer available
+        showSnack(context, context.l.personGone);
       } else {
         showSnack(context, errorText(context, e));
       }
@@ -241,24 +242,36 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
         ]),
       );
     }
-    return ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 32), children: [
-      FocusColumn(
-        padding: EdgeInsets.zero,
-        child: Column(children: [
-          if (_showSwipeHint) _swipeHint(context),
-          SwipeCard(
-            key: ValueKey(p['id']),
-            onLike: () => _act(p, 'like'),
-            onPass: () => _act(p, 'pass'),
-            child: SoulCard(p: p, onTap: () => context.push('/today/profile/${p['id']}')),
-          ),
-          const SizedBox(height: 20),
-          actions,
-          const SizedBox(height: 24),
-          ProfileDetails(p: p, showPhotos: false, onReport: report, onBlock: block),
-        ]),
-      ),
-    ]);
+    // Phones: card + buttons fit the screen, no scrolling; details open with «Подробнее» or a tap on the photo.
+    Future<void> openProfile() async {
+      final choice = await context.push<String>('/today/profile/${p['id']}?act=1');
+      if (choice == 'like' || choice == 'pass') await _act(p, choice!);
+    }
+    return LayoutBuilder(builder: (context, c) {
+      final reserved = 130 + (_showSwipeHint ? 76 : 0);
+      final cardMaxHeight = (c.maxHeight - reserved).clamp(260.0, 2000.0);
+      return ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 16), children: [
+        FocusColumn(
+          padding: EdgeInsets.zero,
+          child: Column(children: [
+            if (_showSwipeHint) _swipeHint(context),
+            Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: cardMaxHeight * 0.8),
+                child: SwipeCard(
+                  key: ValueKey(p['id']),
+                  onLike: () => _act(p, 'like'),
+                  onPass: () => _act(p, 'pass'),
+                  child: SoulCard(p: p, onTap: openProfile),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            LikePassBar(onLike: () => _act(p, 'like'), onPass: () => _act(p, 'pass'), onInfo: openProfile),
+          ]),
+        ),
+      ]);
+    });
   }
 
   /// Feed: everyone left today, one under another, each with its own pass/like.

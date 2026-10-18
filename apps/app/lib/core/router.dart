@@ -96,7 +96,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         branches: [
           StatefulShellBranch(routes: [
             GoRoute(path: '/today', builder: (_, _) => const TodayScreen(), routes: [
-              GoRoute(path: 'profile/:id', builder: (_, s) => ProfileScreen(userId: s.pathParameters['id']!)),
+              GoRoute(path: 'profile/:id', builder: (_, s) => ProfileScreen(userId: s.pathParameters['id']!, withActions: s.uri.queryParameters['act'] == '1')),
             ]),
           ]),
           StatefulShellBranch(routes: [GoRoute(path: '/nearby', builder: (_, _) => const NearbyScreen())]),

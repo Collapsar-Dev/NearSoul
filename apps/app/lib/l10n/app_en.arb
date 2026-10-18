@@ -646,5 +646,23 @@
   "finishBody": "We’ve already picked people you could click with. People who fit you will see you in their Today’s Souls too.",
   "startDating": "Start meeting people",
   "startHidden": "Don’t show me yet",
-  "stepMissing": "One step is still missing, opening it."
+  "stepMissing": "One step is still missing, opening it.",
+  "scanDoneTitle": "First step done!",
+  "scanDoneBody": "You’ve answered all 10 questions. Next up: your result. You can answer more later in the Soul tab to make your matches sharper.",
+  "scanDoneCta": "See my result",
+  "refineDoneBody": "Thanks! Your matches and reports are now more precise.",
+  "moreInfo": "More",
+  "switchOrAdd": "Switch or add a profile",
+  "profilesSubtitle": "A second or third profile: separate questions, photos and dating",
+  "profileCreateHint": "You’ll switch to the new profile right away: 10 questions, a name and a photo. You can go back any time: Me → My profiles.",
+  "profileFilling": "Profile: {name}",
+  "@profileFilling": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "personGone": "This person is no longer available.",
+  "create": "Create"
 }

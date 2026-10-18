@@ -70,6 +70,13 @@ class _MeScreenState extends ConsumerState<MeScreen> {
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text('${p?['firstName'] ?? ''}${me?.age != null ? ', ${me!.age}' : ''}', style: Theme.of(context).textTheme.headlineSmall),
                       if (me?.settings['discoveryEnabled'] == false) Text(l.discoverySetting, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                      const SizedBox(height: 6),
+                      OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(minimumSize: const Size(0, 36), visualDensity: VisualDensity.compact),
+                        onPressed: () => context.push('/me/profiles'),
+                        icon: const Icon(Icons.switch_account_outlined, size: 18),
+                        label: Text(me?.personaLabel ?? l.switchOrAdd),
+                      ),
                     ]),
                   ),
                 ]),
@@ -78,7 +85,14 @@ class _MeScreenState extends ConsumerState<MeScreen> {
           ),
           for (final (title, items) in sections) ...[
             Padding(padding: const EdgeInsets.fromLTRB(16, 16, 16, 4), child: Text(title, style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.primary))),
-            for (final t in items) ListTile(leading: Icon(t.$1), title: Text(t.$2), trailing: const Icon(Icons.chevron_right), onTap: () => context.push(t.$3)),
+            for (final t in items)
+              ListTile(
+                leading: Icon(t.$1),
+                title: Text(t.$2),
+                subtitle: t.$3 == '/me/profiles' ? Text(l.profilesSubtitle) : null,
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push(t.$3),
+              ),
           ],
           const Divider(),
           ListTile(leading: const Icon(Icons.logout), title: Text(l.logout), onTap: () => ref.read(sessionProvider.notifier).signOut()),

@@ -149,6 +149,15 @@ describe('Discovery, likes, matches, chat (ENG-011/014, LIKE-001..004, CHAT-001)
     expect(prof.body.card.headline).toBeDefined();
   });
 
+  it('a person shown through the widened age range can be liked (own age filter never blocks a like)', async () => {
+    const ben = await onboard(ctx, 'ben@example.com', { gender: 'man', interestedIn: ['woman'], dob: '1995-05-05' });
+    await ctx.http.put('/v1/me/profile').set(bearer(ben.token)).send({ firstName: 'Ben', gender: 'man', interestedIn: ['woman'], intent: 'long_term', cityId: 'amsterdam', interests: ['hiking', 'coffee', 'books'], ageMin: 29, ageMax: 31 }).expect(200);
+    const anna = await onboard(ctx, 'anna@example.com', { dob: new Date(Date.UTC(new Date().getUTCFullYear() - 33, 0, 1)).toISOString().slice(0, 10) });
+    const set = await ctx.http.get('/v1/daily-set').set(bearer(ben.token)).expect(200);
+    expect(set.body.cards.map((c: { id: string }) => c.id)).toContain(anna.userId);
+    await ctx.http.post('/v1/likes').set(bearer(ben.token)).send({ targetId: anna.userId, action: 'like' }).expect(200);
+  });
+
   it('concurrent mutual likes create exactly one match', async () => {
     const a = await onboard(ctx, 'anna@example.com');
     const b = await onboard(ctx, 'ben@example.com', { gender: 'man', interestedIn: ['woman'] });

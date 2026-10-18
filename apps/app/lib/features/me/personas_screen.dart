@@ -35,10 +35,13 @@ class _PersonasScreenState extends ConsumerState<PersonasScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(title),
-        content: TextField(controller: ctl, autofocus: true, maxLength: 30, decoration: InputDecoration(labelText: context.l.profileLabel)),
+        content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          TextField(controller: ctl, autofocus: true, maxLength: 30, decoration: InputDecoration(labelText: context.l.profileLabel)),
+          if (initial == null) Text(context.l.profileCreateHint, style: Theme.of(context).textTheme.bodySmall),
+        ]),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: Text(context.l.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(ctx, ctl.text.trim()), child: Text(context.l.save)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, ctl.text.trim()), child: Text(initial == null ? context.l.create : context.l.save)),
         ],
       ),
     );
@@ -104,7 +107,7 @@ class _PersonasScreenState extends ConsumerState<PersonasScreen> {
                 ),
               const SizedBox(height: 8),
               if (items.length < max)
-                OutlinedButton.icon(onPressed: _add, icon: const Icon(Icons.person_add_alt_outlined), label: Text(l.profileAdd))
+                FilledButton.icon(onPressed: _add, icon: const Icon(Icons.person_add_alt_outlined), label: Text(l.profileAdd))
               else
                 Text(l.profileMax(max), style: Theme.of(context).textTheme.bodySmall),
               if (AppConfig.isAlpha) const SizedBox(height: 24),

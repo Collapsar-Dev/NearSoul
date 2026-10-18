@@ -14,8 +14,11 @@ import 'l10n/gen/app_localizations.dart';
 void main() {
   usePathUrlStrategy(); // PLAT-003: path URLs on web (no #)
   runApp(const ProviderScope(child: NearSoulApp()));
-  // Web: always build the semantics tree so screen readers (and browser automation) see real elements (§5.7, §16.4).
-  if (kIsWeb) SemanticsBinding.instance.ensureSemantics();
+  // Desktop web: always build the semantics tree so screen readers (and browser automation) see real elements (§5.7, §16.4).
+  // Not on phones: forced semantics makes taps on text fields land on the semantics layer, so the keyboard sometimes
+  // doesn't open. Mobile screen readers still turn semantics on through Flutter's accessibility placeholder.
+  final phone = defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android;
+  if (kIsWeb && !phone) SemanticsBinding.instance.ensureSemantics();
 }
 
 class NearSoulApp extends ConsumerStatefulWidget {
