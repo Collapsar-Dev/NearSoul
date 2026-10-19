@@ -1620,7 +1620,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mapEmpty =>
-      'None of your matches is on the map yet. When a match turns on «Show me», they appear here.';
+      'None of your matches is on the map yet. When a match turns on “Show me”, they appear here.';
 
   @override
   String get mapNoLocation => 'Allow location to see how far your matches are.';
@@ -1839,7 +1839,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String matchTheirType(String name, String type) {
-    return '$name is «$type»';
+    return '$name is “$type”';
   }
 
   @override

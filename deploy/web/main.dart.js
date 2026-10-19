@@ -131804,7 +131804,7 @@ if(B.c.dC(l.a.a).length<2){s=1
 break}o=p.b
 n=t.N
 s=3
-return A.m(m.gaq().Y($.aD(),t.Z).fd("/v1/feedback",A.a_(["category",m.w,"text",B.c.dC(l.a.a),"appVersion","0.1.0+ab8f34f","platform",A.o(o).w.b,"screen",A.bD0(o).b.gdN()],n,n),t.z),$async$$0)
+return A.m(m.gaq().Y($.aD(),t.Z).fd("/v1/feedback",A.a_(["category",m.w,"text",B.c.dC(l.a.a),"appVersion","0.1.0+ec710af","platform",A.o(o).w.b,"screen",A.bD0(o).b.gdN()],n,n),t.z),$async$$0)
 case 3:if(o.e==null){s=1
 break}A.c3(o,p.c.gahL())
 A.cW(o).cU(null)
@@ -131977,7 +131977,7 @@ return A.cc(s,new A.cd(A.c5(r,n,n,B.A,!1),560,B.ad,n),n,n)}}
 A.zk.prototype={
 kR(a,b){var s=null,r=A.a2(a,B.m,t.J)
 r.toString
-return A.cc(A.cw(s,s,s,!0,!0,s,s,1,s,s,s,!1,s,!1,s,s,s,s,!0,s,s,s,s,s,A.k(r.gTg(),s,s,s,s,s,s,s),s,s,s,1,s,!0),new A.cd(A.c5(A.b([B.W,A.k("NearSoul",s,s,s,A.o(a).ok.f,s,s,s),A.k(r.gYE(),s,s,s,s,s,s,s),B.W,A.k(r.apT("0.1.0+ab8f34f"),s,s,s,s,s,s,s),A.k(r.ahk("alpha"),s,s,s,s,s,s,s),B.W,A.k(r.gajL(),s,s,s,A.o(a).ok.Q,s,s,s),B.W,A.dl(B.anN,s,s,new A.amu(a),s,s)],t.p),s,s,B.A,!1),560,B.ad,s),s,s)}}
+return A.cc(A.cw(s,s,s,!0,!0,s,s,1,s,s,s,!1,s,!1,s,s,s,s,!0,s,s,s,s,s,A.k(r.gTg(),s,s,s,s,s,s,s),s,s,s,1,s,!0),new A.cd(A.c5(A.b([B.W,A.k("NearSoul",s,s,s,A.o(a).ok.f,s,s,s),A.k(r.gYE(),s,s,s,s,s,s,s),B.W,A.k(r.apT("0.1.0+ec710af"),s,s,s,s,s,s,s),A.k(r.ahk("alpha"),s,s,s,s,s,s,s),B.W,A.k(r.gajL(),s,s,s,A.o(a).ok.Q,s,s,s),B.W,A.dl(B.anN,s,s,new A.amu(a),s,s)],t.p),s,s,B.A,!1),560,B.ad,s),s,s)}}
 A.amu.prototype={
 $0(){return A.bPI("NearSoul",this.a)},
 $S:0}
@@ -137392,7 +137392,7 @@ akP(a){return"\u2248 "+a+" m"},
 akO(a){return"\u2248 "+a+" km"},
 akY(a){return"updated "+a+" min ago"},
 akX(a){return"updated "+a+" h ago"},
-gakM(){return"None of your matches is on the map yet. When a match turns on \xabShow me\xbb, they appear here."},
+gakM(){return"None of your matches is on the map yet. When a match turns on \u201cShow me\u201d, they appear here."},
 gakQ(){return"Allow location to see how far your matches are."},
 gakL(){return"Allow"},
 gakR(){return"Pick a place (test)"},
@@ -137454,7 +137454,7 @@ gafb(){return"you checked their link"},
 gaeY(){return"Someone checked compatibility with you \ud83d\udcab"},
 al8(a){return"You and "+a+" like each other"},
 gal5(){return"You two in a nutshell"},
-al7(a,b){return a+" is \xab"+b+"\xbb"},
+al7(a,b){return a+" is \u201c"+b+"\u201d"},
 gal4(){return"How to start"},
 gal6(){return"Tap one: it goes into the message box, you decide when to send."},
 ga0e(){return"Continue with Apple"},

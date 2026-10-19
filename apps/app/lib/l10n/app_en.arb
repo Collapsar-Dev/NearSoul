@@ -779,7 +779,7 @@
       }
     }
   },
-  "mapEmpty": "None of your matches is on the map yet. When a match turns on «Show me», they appear here.",
+  "mapEmpty": "None of your matches is on the map yet. When a match turns on “Show me”, they appear here.",
   "mapNoLocation": "Allow location to see how far your matches are.",
   "mapAllow": "Allow",
   "mapPickPlace": "Pick a place (test)",
@@ -892,7 +892,7 @@
     }
   },
   "matchMiniReport": "You two in a nutshell",
-  "matchTheirType": "{name} is «{type}»",
+  "matchTheirType": "{name} is “{type}”",
   "@matchTheirType": {
     "placeholders": {
       "name": {

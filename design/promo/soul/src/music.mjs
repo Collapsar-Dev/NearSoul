@@ -1,16 +1,17 @@
 // Original background track for the NearSoul promo (no samples, no third-party audio): warm soul-pop at 96 BPM.
 // node music.mjs out.wav seconds dropAt
 import { writeFileSync } from 'node:fs';
-const [, , out = 'music.wav', secArg = '29', dropArg = '2.5'] = process.argv;
+const [, , out = 'music.wav', secArg = '29', dropArg = '2.5', bpmArg = '96', style = 'pop'] = process.argv;
 const SR = 44100, DUR = +secArg, N = Math.floor(SR * DUR), DROP = +dropArg;
 const L = new Float32Array(N), R = new Float32Array(N);
-const BPM = 96, BEAT = 60 / BPM, BAR = BEAT * 4;
+const BPM = +bpmArg, BEAT = 60 / BPM, BAR = BEAT * 4;
 // Shift the musical grid so the drop lands exactly on a downbeat.
 const PHASE = DROP % BAR;
 const midi = (m) => 440 * 2 ** ((m - 69) / 12);
 // Am – F – C – G (one chord per bar), voiced around middle C
-const CHORDS = [[57, 60, 64, 69], [53, 57, 60, 65], [48, 55, 60, 64], [55, 59, 62, 67]];
-const BASS = [45, 41, 48, 43];
+// pop: Am – F – C – G · rnb: Am7 – Fmaj7 – Dm7 – Em7 (smoother, more sensual)
+const CHORDS = style === 'rnb' ? [[57, 60, 64, 67], [53, 57, 60, 64], [50, 53, 57, 60], [52, 55, 59, 62]] : [[57, 60, 64, 69], [53, 57, 60, 65], [48, 55, 60, 64], [55, 59, 62, 67]];
+const BASS = style === 'rnb' ? [45, 41, 38, 40] : [45, 41, 48, 43];
 let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647) * 2 - 1;
 const add = (i, l, r) => { if (i >= 0 && i < N) { L[i] += l; R[i] += r; } };
 const env = (t, a, d, s, rel, len) => (t < a ? t / a : t < a + d ? 1 - (1 - s) * ((t - a) / d) : t < len ? s : Math.max(0, s * (1 - (t - len) / rel)));

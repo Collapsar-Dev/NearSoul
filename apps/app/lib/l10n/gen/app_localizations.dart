@@ -2975,7 +2975,7 @@ abstract class AppLocalizations {
   /// No description provided for @mapEmpty.
   ///
   /// In en, this message translates to:
-  /// **'None of your matches is on the map yet. When a match turns on «Show me», they appear here.'**
+  /// **'None of your matches is on the map yet. When a match turns on “Show me”, they appear here.'**
   String get mapEmpty;
 
   /// No description provided for @mapNoLocation.
@@ -3353,7 +3353,7 @@ abstract class AppLocalizations {
   /// No description provided for @matchTheirType.
   ///
   /// In en, this message translates to:
-  /// **'{name} is «{type}»'**
+  /// **'{name} is “{type}”'**
   String matchTheirType(String name, String type);
 
   /// No description provided for @matchHowToStart.
