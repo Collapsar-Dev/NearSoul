@@ -2207,7 +2207,7 @@ abstract class AppLocalizations {
   /// No description provided for @themeSystem.
   ///
   /// In en, this message translates to:
-  /// **'System'**
+  /// **'Auto'**
   String get themeSystem;
 
   /// No description provided for @themeLight.

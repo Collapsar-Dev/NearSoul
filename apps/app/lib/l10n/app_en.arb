@@ -525,7 +525,7 @@
     }
   },
   "appearance": "Appearance",
-  "themeSystem": "System",
+  "themeSystem": "Auto",
   "themeLight": "Light",
   "themeDark": "Dark",
   "paletteNeutral": "Neutral",

@@ -131804,7 +131804,7 @@ if(B.c.dC(l.a.a).length<2){s=1
 break}o=p.b
 n=t.N
 s=3
-return A.m(m.gaq().Y($.aD(),t.Z).fd("/v1/feedback",A.a_(["category",m.w,"text",B.c.dC(l.a.a),"appVersion","0.1.0+6b8a262","platform",A.o(o).w.b,"screen",A.bD0(o).b.gdN()],n,n),t.z),$async$$0)
+return A.m(m.gaq().Y($.aD(),t.Z).fd("/v1/feedback",A.a_(["category",m.w,"text",B.c.dC(l.a.a),"appVersion","0.1.0+ab8f34f","platform",A.o(o).w.b,"screen",A.bD0(o).b.gdN()],n,n),t.z),$async$$0)
 case 3:if(o.e==null){s=1
 break}A.c3(o,p.c.gahL())
 A.cW(o).cU(null)
@@ -131977,7 +131977,7 @@ return A.cc(s,new A.cd(A.c5(r,n,n,B.A,!1),560,B.ad,n),n,n)}}
 A.zk.prototype={
 kR(a,b){var s=null,r=A.a2(a,B.m,t.J)
 r.toString
-return A.cc(A.cw(s,s,s,!0,!0,s,s,1,s,s,s,!1,s,!1,s,s,s,s,!0,s,s,s,s,s,A.k(r.gTg(),s,s,s,s,s,s,s),s,s,s,1,s,!0),new A.cd(A.c5(A.b([B.W,A.k("NearSoul",s,s,s,A.o(a).ok.f,s,s,s),A.k(r.gYE(),s,s,s,s,s,s,s),B.W,A.k(r.apT("0.1.0+6b8a262"),s,s,s,s,s,s,s),A.k(r.ahk("alpha"),s,s,s,s,s,s,s),B.W,A.k(r.gajL(),s,s,s,A.o(a).ok.Q,s,s,s),B.W,A.dl(B.anN,s,s,new A.amu(a),s,s)],t.p),s,s,B.A,!1),560,B.ad,s),s,s)}}
+return A.cc(A.cw(s,s,s,!0,!0,s,s,1,s,s,s,!1,s,!1,s,s,s,s,!0,s,s,s,s,s,A.k(r.gTg(),s,s,s,s,s,s,s),s,s,s,1,s,!0),new A.cd(A.c5(A.b([B.W,A.k("NearSoul",s,s,s,A.o(a).ok.f,s,s,s),A.k(r.gYE(),s,s,s,s,s,s,s),B.W,A.k(r.apT("0.1.0+ab8f34f"),s,s,s,s,s,s,s),A.k(r.ahk("alpha"),s,s,s,s,s,s,s),B.W,A.k(r.gajL(),s,s,s,A.o(a).ok.Q,s,s,s),B.W,A.dl(B.anN,s,s,new A.amu(a),s,s)],t.p),s,s,B.A,!1),560,B.ad,s),s,s)}}
 A.amu.prototype={
 $0(){return A.bPI("NearSoul",this.a)},
 $S:0}
@@ -137263,7 +137263,7 @@ YF(a){return"Test version: no emails are sent. Your code is "+a+"."},
 N0(a){return"More like: "+a},
 ga_g(){return"In between"},
 gadn(){return"Appearance"},
-gaoO(){return"System"},
+gaoO(){return"Auto"},
 gaoN(){return"Light"},
 gaoM(){return"Dark"},
 gamx(){return"Neutral"},
@@ -137791,7 +137791,7 @@ YF(a){return"\u0422\u0435\u0441\u0442\u043e\u0432\u0430\u044f \u0432\u0435\u0440
 N0(a){return"\u0421\u043a\u043e\u0440\u0435\u0435: "+a},
 ga_g(){return"\u0413\u0434\u0435-\u0442\u043e \u043f\u043e\u0441\u0435\u0440\u0435\u0434\u0438\u043d\u0435"},
 gadn(){return"\u041e\u0444\u043e\u0440\u043c\u043b\u0435\u043d\u0438\u0435"},
-gaoO(){return"\u041a\u0430\u043a \u0432 \u0441\u0438\u0441\u0442\u0435\u043c\u0435"},
+gaoO(){return"\u0410\u0432\u0442\u043e"},
 gaoN(){return"\u0421\u0432\u0435\u0442\u043b\u0430\u044f"},
 gaoM(){return"\u0422\u0451\u043c\u043d\u0430\u044f"},
 gamx(){return"\u041d\u0435\u0439\u0442\u0440\u0430\u043b\u044c\u043d\u0430\u044f"},

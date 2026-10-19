@@ -191,6 +191,8 @@ const CODES: Record<string, L> = {
 };
 
 /** Renders a code like `SHARED_VALUE:adventure` into localized text. */
+const lowerFirst = (t: string) => (t.length > 1 && t[1] === t[1]!.toLowerCase() ? t[0]!.toLowerCase() + t.slice(1) : t);
+
 export function codeText(code: string, locale: Locale, ctx: { name?: string; interests?: Record<string, L> } = {}): string {
   const [key, arg] = code.split(':') as [string, string | undefined];
   const tpl = CODES[key];
@@ -199,7 +201,8 @@ export function codeText(code: string, locale: Locale, ctx: { name?: string; int
   if (key === 'SHARED_VALUE' && arg) x = tr(VALUE[arg] ?? { en: arg, ru: arg }, locale);
   if ((key === 'SHARED_CARE_LANGUAGE' || key === 'TIP_SHOW_CARE') && arg) x = tr(CARE[arg] ?? { en: arg, ru: arg }, locale);
   if (key === 'SIMILAR_WEEKENDS' && arg) x = tr(WEEKEND[arg] ?? { en: arg, ru: arg }, locale);
-  if (key === 'SHARED_INTEREST' && arg) x = ctx.interests?.[arg] ? tr(ctx.interests[arg], locale) : arg;
+  // Mid-sentence: "You both enjoy coffee", not "Coffee" (keeps acronyms like "IT" as they are).
+  if (key === 'SHARED_INTEREST' && arg) x = ctx.interests?.[arg] ? lowerFirst(tr(ctx.interests[arg], locale)) : arg;
   return tr(tpl, locale).replace('{x}', x).replace(/\{name\}/g, ctx.name ?? '');
 }
 

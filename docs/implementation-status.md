@@ -39,6 +39,12 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 | Subscription levels (CR-18) | TESTED | Soul+/Gold/VIP, test activation, tier-sized daily sets with same-day top-up, Liked you, rewind, VIP profile count; app: Subscription screen, Liked you, Undo snackbar, upsells. Live check: photo upload of a 4032×3024 JPEG on Render works |
 | M9 Payments & ops | IN PROGRESS | PAY-001..003 TESTED (RevenueCat webhook, entitlements, paywall sheet; store products not set up yet). ACC-002 data export TESTED. ANL-001 consent-gated server analytics TESTED (needs POSTHOG_KEY) |
 
+## 2026-10-19: full re-check + SEO + promo video (CR-34)
+- Re-check: 10 screens × 3 sizes (412×915 phone, 820×1180 tablet, 1440×900 desktop) + welcome: Today (cards/grid, verified badges), Nearby, Map, Soul (share card), Matches, Chat, Me, Photo check, Subscription, Settings. Fixed: «Как в системе» wrapped in 3 lines (→ «Авто»); interest names capitalised mid-sentence («нравится Кофе» → «кофе»).
+- SEO: meta/OG/Twitter/JSON-LD in `web/index.html`, `/robots.txt`, `/sitemap.xml`, `__PUBLIC_URL__` rewrite, `x-robots-tag: noindex` while `EMAIL_PROVIDER` is screen/console. Verified with curl.
+- Promo: `design/promo/nearsoul-promo-soul.mp4` (11 scenes rendered from HTML + real app screenshots, ffmpeg push-in + crossfades), frames in `design/promo/soul/`. Plan: `docs/marketing/seo-and-launch.md`.
+- Commands: `npm run lint` ✓, `npm test` 29 suites / 263 ✓, `flutter analyze` ✓, `flutter test` 7 ✓.
+
 ## 2026-10-19: social sign-in (CR-33)
 - API: `GET /v1/auth/providers`, `POST /v1/auth/social/{google|apple|vk}`; RS256 id_token verification against Google/Apple JWKS (issuer, audience, expiry, nonce), VK ID code exchange + user_info; link/create by verified email only; table `auth_identities`. Env `GOOGLE_CLIENT_IDS`, `APPLE_CLIENT_IDS`, `VK_CLIENT_ID` (optional; render.yaml has them as `sync: false`).
 - App: Welcome screen buttons Apple / Google / VK ID + divider + «Продолжить с email»; web popups via `web/social.js` + `web/auth/callback.html`; without keys a tap says «скоро»; native builds point to email for now.
