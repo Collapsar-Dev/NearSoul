@@ -25,6 +25,9 @@
 | 10 | Провайдер карт (MapTiler / Stadia / Mapbox) или свои тайлы | OSM запрещает массовое использование своих серверов | бесплатный тариф для старта | URL тайлов в `/v1/tiles` | 🔴 если карта включена |
 | 11 | Sentry | ошибки клиента и сервера | бесплатный тариф | (добавить) | 🟠 |
 | 12 | PostHog EU | продуктовая аналитика (с согласием) | бесплатный тариф | POSTHOG_KEY | 🟢 |
+| 14 | Google Cloud Console: OAuth client (Web + Android + iOS) | «Продолжить с Google» | бесплатно | GOOGLE_CLIENT_IDS | 🟠 |
+| 15 | Apple Developer: Services ID + «Sign in with Apple» | «Продолжить с Apple» (обязательно в iOS, если есть другие соцсети) | входит в $99/год | APPLE_CLIENT_IDS | 🔴 для iOS |
+| 16 | VK ID (id.vk.com): приложение Web | «Войти с VK ID» | бесплатно | VK_CLIENT_ID | 🟢 |
 | 13 | Почта поддержки и адрес для жалоб | требование магазинов и закона | — | — | 🔴 |
 
 ## 2. Конфигурация production (Render)

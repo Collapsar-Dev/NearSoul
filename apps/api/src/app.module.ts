@@ -49,6 +49,7 @@ import { MapService } from './modules/nearby/map.service';
 import { VerificationService } from './modules/profile/verification.service';
 import { SoulCheckController } from './modules/discovery/soul-check.controller';
 import { SoulCheckService } from './modules/discovery/soul-check.service';
+import { SocialAuthService } from './modules/auth/social-auth.service';
 import { TilesController } from './modules/nearby/tiles.controller';
 import { NearbyService } from './modules/nearby/nearby.service';
 import { NotificationsController } from './modules/notifications/notifications.controller';
@@ -79,7 +80,7 @@ import { StorageService } from './modules/storage/storage.service';
   providers: [
     PrismaService, RateLimiter, EmailService, AuthService, InvitesService, MeService, PersonasService, AdsService, RequestsService, EngineService, CardService,
     { provide: StorageService, useFactory: (p: PrismaService) => new StorageService(p), inject: [PrismaService] }, ProfileService, SubjectsService, ProfileViewService, DailySetService, LikesService, ChatService,
-    RealtimeGateway, PushService, NotificationsService, ReportsService, SafetyService, NearbyService, MapService, VerificationService, SoulCheckService, DemoService,
+    RealtimeGateway, PushService, NotificationsService, ReportsService, SafetyService, NearbyService, MapService, VerificationService, SoulCheckService, SocialAuthService, DemoService,
     RetentionService, AdminAuthService, AdminBootstrap, ExportService, AnalyticsService, BillingService, SoulCryptoService, SoulService,
     { provide: AiProvider, useClass: AnthropicProvider },
     { provide: APP_GUARD, useClass: AuthGuard },

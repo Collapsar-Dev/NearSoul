@@ -49,6 +49,11 @@ const EnvSchema = z.object({
   POSTHOG_KEY: z.string().optional(),
   /** Value RevenueCat sends in the Authorization header of webhooks (set in the RevenueCat dashboard). */
   REVENUECAT_WEBHOOK_AUTH: z.string().min(16).optional(),
+  // AUTH-006 social sign-in (CR-33). Comma-separated client ids: web first, then Android/iOS ids if any.
+  GOOGLE_CLIENT_IDS: z.string().optional(),
+  // Apple: the Services ID (web) first, then the iOS bundle id.
+  APPLE_CLIENT_IDS: z.string().optional(),
+  VK_CLIENT_ID: z.string().optional(),
   // Web Push (VAPID). Optional: generated once and stored in app_secrets when unset.
   VAPID_PUBLIC_KEY: z.string().optional(),
   VAPID_PRIVATE_KEY: z.string().optional(),

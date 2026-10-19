@@ -1848,4 +1848,35 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get matchTapStarter =>
       'Tap one: it goes into the message box, you decide when to send.';
+
+  @override
+  String get socialApple => 'Continue with Apple';
+
+  @override
+  String get socialGoogle => 'Continue with Google';
+
+  @override
+  String get socialVk => 'Sign in with VK ID';
+
+  @override
+  String get continueEmail => 'Continue with email';
+
+  @override
+  String get or => 'or';
+
+  @override
+  String socialSoon(String name) {
+    return 'Sign in with $name is coming soon. Use email for now.';
+  }
+
+  @override
+  String get socialNative =>
+      'In the app, sign in with email for now. Google, Apple and VK work on the website.';
+
+  @override
+  String get socialPopupBlocked =>
+      'Your browser blocked the sign-in window. Allow pop-ups and try again.';
+
+  @override
+  String get socialFailed => 'Sign-in didn\'t work. Please try again.';
 }

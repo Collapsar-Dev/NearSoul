@@ -3367,6 +3367,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap one: it goes into the message box, you decide when to send.'**
   String get matchTapStarter;
+
+  /// No description provided for @socialApple.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Apple'**
+  String get socialApple;
+
+  /// No description provided for @socialGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get socialGoogle;
+
+  /// No description provided for @socialVk.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with VK ID'**
+  String get socialVk;
+
+  /// No description provided for @continueEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with email'**
+  String get continueEmail;
+
+  /// No description provided for @or.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get or;
+
+  /// No description provided for @socialSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with {name} is coming soon. Use email for now.'**
+  String socialSoon(String name);
+
+  /// No description provided for @socialNative.
+  ///
+  /// In en, this message translates to:
+  /// **'In the app, sign in with email for now. Google, Apple and VK work on the website.'**
+  String get socialNative;
+
+  /// No description provided for @socialPopupBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Your browser blocked the sign-in window. Allow pop-ups and try again.'**
+  String get socialPopupBlocked;
+
+  /// No description provided for @socialFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in didn\'t work. Please try again.'**
+  String get socialFailed;
 }
 
 class _AppLocalizationsDelegate

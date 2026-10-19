@@ -59,6 +59,16 @@ services:
         value: https://nearsoul-alpha.onrender.com
       - key: ADMIN_BOOTSTRAP_EMAIL
         sync: false # optional, your email: the first admin's password + TOTP link appear once in the deploy log
+      # Social sign-in (CR-33), all optional: buttons say "coming soon" until a client id is set.
+      # Google Cloud Console → OAuth client (Web), authorized redirect: https://<site>/auth/callback.html
+      - key: GOOGLE_CLIENT_IDS
+        sync: false
+      # Apple Developer → Services ID with "Sign in with Apple", return URL: https://<site>/auth/callback.html
+      - key: APPLE_CLIENT_IDS
+        sync: false
+      # id.vk.com → app (Web), trusted redirect: https://<site>/auth/callback.html
+      - key: VK_CLIENT_ID
+        sync: false
       - key: AI_ENABLED
         value: "false" # set to true after adding ANTHROPIC_API_KEY
       - key: ANTHROPIC_API_KEY

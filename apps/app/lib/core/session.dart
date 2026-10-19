@@ -83,6 +83,18 @@ class SessionNotifier extends Notifier<SessionState> {
     unawaited(ref.read(pushProvider).refresh().catchError((_) {}));
   }
 
+  /// CR-33: finish a Google / Apple / VK sign-in with the token or code the provider gave the browser.
+  Future<void> socialSignIn(String provider, Map<String, dynamic> payload, {String? inviteCode}) async {
+    final data = await _api.post<Map<String, dynamic>>('/v1/auth/social/$provider', {
+      ...payload,
+      'platform': 'web',
+      if (inviteCode != null && inviteCode.isNotEmpty) 'inviteCode': inviteCode,
+    });
+    await _api.setTokens(data);
+    await reloadMe();
+    unawaited(ref.read(pushProvider).refresh().catchError((_) {}));
+  }
+
   Future<Me> reloadMe() async {
     var json = await _api.get<Map<String, dynamic>>('/v1/me');
     // Keep the server-side locale (used for push texts and demo replies) in sync with the app language.

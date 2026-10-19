@@ -138,6 +138,7 @@ model User {
   personas           User[]              @relation("personas")
   photoVerifications PhotoVerification[]
   soulLink           SoulLink?
+  identities         AuthIdentity[]
   soulChecksOwned    SoulCheck[]         @relation("soulChecksOwned")
   soulChecksMade     SoulCheck[]         @relation("soulChecksMade")
   /// CR-30: set when a moderator (or the alpha auto-check) approved a selfie verification.
@@ -551,6 +552,21 @@ model Rating {
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("ratings")
+}
+
+/// CR-33: a Google / Apple / VK account linked to a user (AUTH-006). Linked by verified email only.
+model AuthIdentity {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  provider  String // google | apple | vk
+  subject   String
+  userId    String   @map("user_id") @db.Uuid
+  email     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, subject])
+  @@index([userId])
+  @@map("auth_identities")
 }
 
 /// CR-31: a personal link anyone can open to check compatibility with the owner (friends, a crush), Gen Z sharing.

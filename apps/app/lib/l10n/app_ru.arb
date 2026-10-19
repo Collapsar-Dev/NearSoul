@@ -545,5 +545,14 @@
   "matchMiniReport": "Вы двое — коротко",
   "matchTheirType": "{name} — «{type}»",
   "matchHowToStart": "С чего начать",
-  "matchTapStarter": "Нажми на тему: она появится в поле сообщения, отправишь сам(а)."
+  "matchTapStarter": "Нажми на тему: она появится в поле сообщения, отправишь сам(а).",
+  "socialApple": "Продолжить с Apple",
+  "socialGoogle": "Продолжить с Google",
+  "socialVk": "Войти с VK ID",
+  "continueEmail": "Продолжить с email",
+  "or": "или",
+  "socialSoon": "Вход через {name} скоро появится. Пока войди по email.",
+  "socialNative": "В приложении пока входи по email. Google, Apple и VK работают на сайте.",
+  "socialPopupBlocked": "Браузер заблокировал окно входа. Разреши всплывающие окна и попробуй ещё раз.",
+  "socialFailed": "Не получилось войти. Попробуй ещё раз."
 }

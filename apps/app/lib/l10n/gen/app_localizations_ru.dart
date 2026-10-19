@@ -1857,4 +1857,35 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get matchTapStarter =>
       'Нажми на тему: она появится в поле сообщения, отправишь сам(а).';
+
+  @override
+  String get socialApple => 'Продолжить с Apple';
+
+  @override
+  String get socialGoogle => 'Продолжить с Google';
+
+  @override
+  String get socialVk => 'Войти с VK ID';
+
+  @override
+  String get continueEmail => 'Продолжить с email';
+
+  @override
+  String get or => 'или';
+
+  @override
+  String socialSoon(String name) {
+    return 'Вход через $name скоро появится. Пока войди по email.';
+  }
+
+  @override
+  String get socialNative =>
+      'В приложении пока входи по email. Google, Apple и VK работают на сайте.';
+
+  @override
+  String get socialPopupBlocked =>
+      'Браузер заблокировал окно входа. Разреши всплывающие окна и попробуй ещё раз.';
+
+  @override
+  String get socialFailed => 'Не получилось войти. Попробуй ещё раз.';
 }

@@ -98,24 +98,31 @@ export class AuthService {
       });
       throw invalid;
     }
-    let user = await this.prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      if (env().INVITE_ONLY && !input.inviteCode) throw badRequest('INVITE_REQUIRED', 'NearSoul is invite-only right now. Please enter your invite code.');
-      user = await this.prisma.$transaction(async (tx) => {
-        const created = await tx.user.create({
-          data: {
-            email,
-            role: env().APP_ENV === 'alpha' ? 'tester' : 'user',
-            invitesLeft: env().INVITE_ONLY ? 3 : 0,
-          },
-        });
-        if (env().INVITE_ONLY && input.inviteCode) await this.invites.redeem(tx, input.inviteCode, created.id);
-        return created;
-      });
-      this.analytics.track(user.id, 'account_created', { platform: input.platform ?? 'unknown' });
-    }
+    const user = (await this.prisma.user.findUnique({ where: { email } })) ?? (await this.createUser(email, input.inviteCode, input.platform));
     await this.prisma.authCode.update({ where: { id: record.id }, data: { usedAt: new Date() } });
-    const tokens = await this.issue(user.id, randomUUID(), input.deviceId, input.platform);
+    return this.signedIn(user, input.deviceId, input.platform);
+  }
+
+  /** New account for a verified email (email code or a social provider). Respects invite-only mode. */
+  async createUser(email: string, inviteCode?: string, platform?: string) {
+    if (env().INVITE_ONLY && !inviteCode) throw badRequest('INVITE_REQUIRED', 'NearSoul is invite-only right now. Please enter your invite code.');
+    const user = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.user.create({
+        data: {
+          email,
+          role: env().APP_ENV === 'alpha' ? 'tester' : 'user',
+          invitesLeft: env().INVITE_ONLY ? 3 : 0,
+        },
+      });
+      if (env().INVITE_ONLY && inviteCode) await this.invites.redeem(tx, inviteCode, created.id);
+      return created;
+    });
+    this.analytics.track(user.id, 'account_created', { platform: platform ?? 'unknown' });
+    return user;
+  }
+
+  async signedIn(user: { id: string; status: string; dob: Date | null }, deviceId?: string, platform?: string) {
+    const tokens = await this.issue(user.id, randomUUID(), deviceId, platform);
     return { tokens, user: { id: user.id, isNew: user.status === 'onboarding' && !user.dob } };
   }
 

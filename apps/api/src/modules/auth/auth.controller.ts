@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post, Req, Res } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { z } from 'zod';
 import { env } from '../../config/env';
@@ -6,6 +6,7 @@ import { CurrentUser, Public, type AuthUser } from '../../common/auth';
 import { AppError } from '../../common/errors';
 import { parse } from '../../common/zod';
 import { AuthService, REFRESH_TTL_MS, type TokenPair } from './auth.service';
+import { SocialAuthService } from './social-auth.service';
 
 const REFRESH_COOKIE = 'ns_refresh';
 const emailSchema = z.string().trim().email().max(254);
@@ -34,7 +35,7 @@ function tokenResponse(req: Request, res: Response, t: TokenPair) {
 
 @Controller('v1/auth')
 export class AuthController {
-  constructor(private readonly auth: AuthService) {}
+  constructor(private readonly auth: AuthService, private readonly social: SocialAuthService) {}
 
   @Public()
   @Post('code')
@@ -60,6 +61,36 @@ export class AuthController {
       body,
     );
     const { tokens, user } = await this.auth.verify(input, req.ip ?? 'unknown');
+    return { ...tokenResponse(req, res, tokens), user };
+  }
+
+  /** CR-33: which social sign-in buttons are live (public client ids only). */
+  @Public()
+  @Get('providers')
+  providers() {
+    return this.social.providers();
+  }
+
+  @Public()
+  @Post('social/:provider')
+  @HttpCode(200)
+  async socialSignIn(@Param('provider') provider: string, @Body() body: unknown, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const p = parse(z.enum(['google', 'apple', 'vk']), provider);
+    const input = parse(
+      z.object({
+        idToken: z.string().max(5000).optional(),
+        nonce: z.string().max(200).optional(),
+        code: z.string().max(2000).optional(),
+        codeVerifier: z.string().max(200).optional(),
+        deviceId: z.string().max(200).optional(),
+        redirectUri: z.string().url().max(500).optional(),
+        clientDeviceId: z.string().max(100).optional(),
+        platform: z.enum(['web', 'android', 'ios', 'windows', 'macos', 'linux']).optional(),
+        inviteCode: z.string().trim().toUpperCase().max(16).optional(),
+      }).strict(),
+      body,
+    );
+    const { tokens, user } = await this.social.signIn(p, input, req.ip ?? 'unknown');
     return { ...tokenResponse(req, res, tokens), user };
   }
 

@@ -14,7 +14,7 @@ export function configureApp(app: INestApplication): void {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", "'wasm-unsafe-eval'", 'https://www.gstatic.com'],
+          scriptSrc: ["'self'", "'wasm-unsafe-eval'", 'https://www.gstatic.com', 'https://appleid.cdn-apple.com'],
           styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
           imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
           // blob:/data: — the web image picker reads the chosen photo through a blob: URL before upload.

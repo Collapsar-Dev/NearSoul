@@ -904,5 +904,21 @@
     }
   },
   "matchHowToStart": "How to start",
-  "matchTapStarter": "Tap one: it goes into the message box, you decide when to send."
+  "matchTapStarter": "Tap one: it goes into the message box, you decide when to send.",
+  "socialApple": "Continue with Apple",
+  "socialGoogle": "Continue with Google",
+  "socialVk": "Sign in with VK ID",
+  "continueEmail": "Continue with email",
+  "or": "or",
+  "socialSoon": "Sign in with {name} is coming soon. Use email for now.",
+  "@socialSoon": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "socialNative": "In the app, sign in with email for now. Google, Apple and VK work on the website.",
+  "socialPopupBlocked": "Your browser blocked the sign-in window. Allow pop-ups and try again.",
+  "socialFailed": "Sign-in didn't work. Please try again."
 }

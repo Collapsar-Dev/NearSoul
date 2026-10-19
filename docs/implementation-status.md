@@ -39,6 +39,11 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 | Subscription levels (CR-18) | TESTED | Soul+/Gold/VIP, test activation, tier-sized daily sets with same-day top-up, Liked you, rewind, VIP profile count; app: Subscription screen, Liked you, Undo snackbar, upsells. Live check: photo upload of a 4032×3024 JPEG on Render works |
 | M9 Payments & ops | IN PROGRESS | PAY-001..003 TESTED (RevenueCat webhook, entitlements, paywall sheet; store products not set up yet). ACC-002 data export TESTED. ANL-001 consent-gated server analytics TESTED (needs POSTHOG_KEY) |
 
+## 2026-10-19: social sign-in (CR-33)
+- API: `GET /v1/auth/providers`, `POST /v1/auth/social/{google|apple|vk}`; RS256 id_token verification against Google/Apple JWKS (issuer, audience, expiry, nonce), VK ID code exchange + user_info; link/create by verified email only; table `auth_identities`. Env `GOOGLE_CLIENT_IDS`, `APPLE_CLIENT_IDS`, `VK_CLIENT_ID` (optional; render.yaml has them as `sync: false`).
+- App: Welcome screen buttons Apple / Google / VK ID + divider + «Продолжить с email»; web popups via `web/social.js` + `web/auth/callback.html`; without keys a tap says «скоро»; native builds point to email for now.
+- Tests: `test/social-auth.e2e-spec.ts` (forged signature, wrong audience/issuer, expired, wrong nonce, unverified email, Apple linking, VK exchange + web cookie).
+
 ## 2026-10-19: photo verification, compatibility links, match moment (CR-30…32)
 - API: `GET/POST /v1/me/verification` (pose + selfie), `GET /admin/v1/verifications`, `POST /admin/v1/verifications/:id/decide`; `GET /v1/me/soul-link`, `GET /v1/me/soul-checks`, `GET /v1/soul-links/:code`, `POST /v1/soul-links/:code/check`. Tables `photo_verifications`, `soul_links`, `soul_checks`, column `users.verified_at`. Public profile has `verified`. New notification types `verification_result`, `soul_check`.
 - App: Me → «Подтвердить фото» (pose card, front camera), blue check on cards/profiles/Me; Soul → gradient card «Насколько ты совместим(а) с…?» with story card (RepaintBoundary → PNG → share sheet or download) and link sharing; `/c/:code` check screen with animated percent; full-screen match celebration with mini report and tap-to-draft starters.

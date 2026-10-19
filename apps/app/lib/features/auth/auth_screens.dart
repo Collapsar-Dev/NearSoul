@@ -8,6 +8,7 @@ import '../../core/responsive.dart';
 import '../../core/router.dart';
 import '../../core/session.dart';
 import '../../core/widgets/common.dart';
+import '../../core/platform/social_stub.dart' if (dart.library.js_interop) '../../core/platform/social_web.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -90,10 +91,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 ),
             ]),
             const SizedBox(height: 24),
-            SizedBox(width: double.infinity, child: FilledButton(onPressed: () => context.push('/auth/email'), child: Text(l.getStarted))),
-            const SizedBox(height: 8),
+            const SocialButtons(),
+            const SizedBox(height: 10),
+            SizedBox(width: double.infinity, child: FilledButton.icon(onPressed: () => context.push('/auth/email'), icon: const Icon(Icons.mail_outline), label: Text(l.continueEmail))),
             TextButton(onPressed: () => context.push('/auth/email'), child: Text(l.haveAccount)),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
           ]),
         ),
       ),
@@ -332,3 +334,100 @@ class BlockedScreen extends ConsumerWidget {
     );
   }
 }
+
+/// CR-33: Sign in with Apple, Google and VK ID (best practice: Apple shown with equal prominence when other
+/// social logins exist). Buttons whose keys aren't configured yet explain that instead of failing.
+class SocialButtons extends ConsumerStatefulWidget {
+  const SocialButtons({super.key});
+
+  @override
+  ConsumerState<SocialButtons> createState() => _SocialButtonsState();
+}
+
+class _SocialButtonsState extends ConsumerState<SocialButtons> {
+  Map<String, dynamic> _providers = const {};
+  String? _busy;
+
+  @override
+  void initState() {
+    super.initState();
+    ref.read(apiProvider).get<Map<String, dynamic>>('/v1/auth/providers').then((p) {
+      if (!mounted) return;
+      setState(() => _providers = p);
+      if (p['apple'] != null) preloadApple();
+    }).catchError((_) {});
+  }
+
+  Future<void> _go(String provider, String name) async {
+    final l = context.l;
+    final cfg = _providers[provider] as Map?;
+    if (!socialSupported) return showSnack(context, l.socialNative);
+    if (cfg == null) return showSnack(context, l.socialSoon(name));
+    setState(() => _busy = provider);
+    try {
+      final payload = await socialAuthorize(provider, cfg['clientId'] as String);
+      await ref.read(sessionProvider.notifier).socialSignIn(provider, payload, inviteCode: ref.read(inviteCodeProvider));
+    } on ApiError catch (e) {
+      if (mounted) showSnack(context, errorText(context, e));
+    } catch (e) {
+      final msg = e.toString();
+      if (mounted && !msg.contains('cancelled') && !msg.contains('popup_closed')) showSnack(context, msg.contains('popup_blocked') ? l.socialPopupBlocked : l.socialFailed);
+    } finally {
+      if (mounted) setState(() => _busy = null);
+    }
+  }
+
+  Widget _button({required String provider, required String name, required Widget icon, required String label, required Color bg, required Color fg, Color? border}) => SizedBox(
+        width: double.infinity,
+        child: OutlinedButton(
+          style: OutlinedButton.styleFrom(backgroundColor: bg, foregroundColor: fg, side: BorderSide(color: border ?? bg), minimumSize: const Size.fromHeight(50)),
+          onPressed: _busy != null ? null : () => _go(provider, name),
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            if (_busy == provider) SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2, color: fg)) else icon,
+            const SizedBox(width: 10),
+            Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          ]),
+        ),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return Column(children: [
+      _button(provider: 'apple', name: 'Apple', icon: Icon(Icons.apple, color: dark ? Colors.black : Colors.white), label: l.socialApple, bg: dark ? Colors.white : Colors.black, fg: dark ? Colors.black : Colors.white),
+      const SizedBox(height: 8),
+      _button(
+        provider: 'google',
+        name: 'Google',
+        icon: const Text('G', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF4285F4))),
+        label: l.socialGoogle,
+        bg: Colors.white,
+        fg: const Color(0xFF1F1F1F),
+        border: const Color(0xFFDADCE0),
+      ),
+      const SizedBox(height: 8),
+      _button(
+        provider: 'vk',
+        name: 'VK',
+        icon: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(5)),
+          child: const Text('VK', style: TextStyle(color: Color(0xFF0077FF), fontWeight: FontWeight.w900, fontSize: 13)),
+        ),
+        label: l.socialVk,
+        bg: const Color(0xFF0077FF),
+        fg: Colors.white,
+      ),
+      Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Row(children: [
+          const Expanded(child: Divider()),
+          Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: Text(l.or, style: Theme.of(context).textTheme.bodySmall)),
+          const Expanded(child: Divider()),
+        ]),
+      ),
+    ]);
+  }
+}
+
