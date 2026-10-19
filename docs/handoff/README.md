@@ -9,6 +9,8 @@
 | 3 | [Technical Specification](03-technical-specification.md) | разработчик, агент, QA | Точные контракты: API, база данных, формулы движка, лимиты, переменные окружения, тесты |
 | 4 | [Production Readiness](04-production-readiness.md) | менеджер, основатель, DevOps | Что обязательно сделать и настроить перед настоящим запуском, с аккаунтами и чек-листом |
 
+**Полный production PRD (EN, v4.0):** [`docs/prd-production/NearSoul-PRD-v4-production.md`](../prd-production/NearSoul-PRD-v4-production.md) — iOS/Android, desktop web, mobile web.
+
 ## Как этим пользоваться
 
 **Менеджеру:** читать 1 → 4. Документ 1 описывает продукт и статус, документ 4 даёт список работ, денег и аккаунтов до запуска.
