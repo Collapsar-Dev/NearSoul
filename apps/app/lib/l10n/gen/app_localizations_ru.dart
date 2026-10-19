@@ -1395,7 +1395,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String refineBody(int count) {
-    return 'Ещё $count вопросов: чем больше ответов, тем точнее подбор и отчёты.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Ещё $count вопросов',
+      few: 'Ещё $count вопроса',
+      one: 'Ещё $count вопрос',
+    );
+    return '$_temp0: чем больше ответов, тем точнее подбор и отчёты.';
   }
 
   @override
@@ -1456,8 +1463,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create => 'Создать';
 
   @override
-  String matchPercent(int percent) {
-    return '$percent% совпадение';
+  String matchPercent(int n) {
+    return '$n% совпадение';
   }
 
   @override
@@ -1642,4 +1649,212 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get mapYou => 'Ты';
+
+  @override
+  String get verifiedBadge => 'Фото проверены';
+
+  @override
+  String get verifyMenu => 'Подтвердить фото';
+
+  @override
+  String get verifyMenuSub => 'Синяя галочка: одно селфи, 30 секунд';
+
+  @override
+  String get verifyDone => 'Фото подтверждены';
+
+  @override
+  String get verifyDoneBody =>
+      'Рядом с твоим именем видна синяя галочка. Это значит, что на фото действительно ты.';
+
+  @override
+  String get verifyTitle => 'Проверка фото';
+
+  @override
+  String get verifyHeadline => 'Покажи, что это правда ты';
+
+  @override
+  String get verifyIntro =>
+      'Сделай одно селфи, повторив жест ниже. Мы сравним его с фото профиля и поставим синюю галочку.';
+
+  @override
+  String get verifyPoseLabel => 'Жест на сегодня';
+
+  @override
+  String get verifyStep1 =>
+      'Лицом к камере, при хорошем свете, без тёмных очков';
+
+  @override
+  String get verifyStep2 => 'Повтори жест так, чтобы его было хорошо видно';
+
+  @override
+  String get verifyStep3 => 'На фото профиля должно быть видно твоё лицо';
+
+  @override
+  String get verifyTake => 'Сделать селфи';
+
+  @override
+  String get verifyPrivacy =>
+      'Селфи никто не увидит, оно удаляется сразу после проверки. Мы не создаём биометрических шаблонов лица.';
+
+  @override
+  String get verifyAlphaNote =>
+      'Тестовая версия: проверка одобряется автоматически.';
+
+  @override
+  String get verifyPending => 'Проверяем селфи';
+
+  @override
+  String get verifyPendingBody =>
+      'Обычно это занимает меньше суток. Мы сообщим.';
+
+  @override
+  String get verifyApproved => 'Фото подтверждены ✓';
+
+  @override
+  String get verifyRejected => 'Проверка фото не прошла';
+
+  @override
+  String get verifyTryAgain =>
+      'Попробуй ещё раз при хорошем свете и с хорошо видным жестом.';
+
+  @override
+  String get posePeace => 'Покажи знак мира ✌️ у лица';
+
+  @override
+  String get poseThumb => 'Покажи большой палец вверх';
+
+  @override
+  String get poseThree => 'Покажи три пальца';
+
+  @override
+  String get poseWave => 'Помаши рукой в камеру';
+
+  @override
+  String get poseEar => 'Дотронься до уха';
+
+  @override
+  String get poseChin => 'Подопри подбородок рукой';
+
+  @override
+  String get checkShareText =>
+      'Насколько мы совместимы? Проверь наши души в NearSoul ✨';
+
+  @override
+  String get checkLinkCopied => 'Ссылка скопирована: вставь её куда угодно';
+
+  @override
+  String get checkCardTitle => 'Насколько ты совместим(а) с…?';
+
+  @override
+  String get checkCardBody =>
+      'Отправь ссылку друзьям, крашу или в общий чат. Они отвечают на 10 вопросов, и вы оба видите совместимость — по науке, а не по звёздам.';
+
+  @override
+  String get checkStory => 'Сторис для Instagram';
+
+  @override
+  String get checkShareLink => 'Поделиться ссылкой';
+
+  @override
+  String get checkWho => 'Кто проверял';
+
+  @override
+  String get checkSaved => 'Сохранено: выложи в сторис';
+
+  @override
+  String get checkShareStory => 'Поделиться в сторис';
+
+  @override
+  String get storyMySoul => 'МОЙ ТИП ДУШИ';
+
+  @override
+  String get storyAsk => 'Насколько мы совместимы? 👀';
+
+  @override
+  String get checkTitle => 'Проверка совместимости';
+
+  @override
+  String get checkOwnLink =>
+      'Это твоя ссылка. Отправь её друзьям и узнай, кто тебе подходит больше всех.';
+
+  @override
+  String checkInvite(String name) {
+    return 'Ты и $name: насколько вы совместимы?';
+  }
+
+  @override
+  String get checkHow =>
+      'По ответам на 10 коротких вопросов: характер, ценности и как вы любите проводить время. Твои ответы никто не увидит.';
+
+  @override
+  String get checkGo => 'Проверить совместимость';
+
+  @override
+  String get checkPrivacy =>
+      'Вы оба увидите только процент и почему. Это не матч и не открывает чат.';
+
+  @override
+  String checkYouAnd(String name) {
+    return 'Ты и $name';
+  }
+
+  @override
+  String checkVerdict(String level) {
+    String _temp0 = intl.Intl.selectLogic(level, {
+      'high': 'Редкое совпадение душ 🔥',
+      'good': 'Вы правда на одной волне ✨',
+      'other': 'Разные — и это может быть интересно 🌗',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get checkYou => 'Ты';
+
+  @override
+  String get checkWhy => 'Почему вы совпадаете';
+
+  @override
+  String checkMore(int n) {
+    return '…и ещё $n общих черт — узнайте вместе';
+  }
+
+  @override
+  String get checkShareMine => 'Отправить свою ссылку другим';
+
+  @override
+  String get checkNone =>
+      'Пока никто не проверял. Поделись ссылкой и узнай, кто тебе подходит больше всех.';
+
+  @override
+  String get checkSomeone => 'Кто-то';
+
+  @override
+  String get checkTheyChecked => 'проверил(а) по твоей ссылке';
+
+  @override
+  String get checkYouChecked => 'ты проверил(а) по ссылке';
+
+  @override
+  String get checkNotif => 'Кто-то проверил совместимость с тобой 💫';
+
+  @override
+  String matchWith(String name) {
+    return 'Ты и $name понравились друг другу';
+  }
+
+  @override
+  String get matchMiniReport => 'Вы двое — коротко';
+
+  @override
+  String matchTheirType(String name, String type) {
+    return '$name — «$type»';
+  }
+
+  @override
+  String get matchHowToStart => 'С чего начать';
+
+  @override
+  String get matchTapStarter =>
+      'Нажми на тему: она появится в поле сообщения, отправишь сам(а).';
 }

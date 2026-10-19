@@ -22,6 +22,7 @@ class Me {
   int? get age => json['age'] as int?;
   String? get archetype => json['archetype'] as String?;
   int get invitesLeft => (json['invitesLeft'] as int?) ?? 0;
+  bool get verified => json['verified'] == true;
   Map<String, dynamic> get settings => (json['settings'] as Map).cast<String, dynamic>();
   Map<String, dynamic> get onboarding => (json['onboarding'] as Map).cast<String, dynamic>();
   Map<String, dynamic> get consents => (json['consents'] as Map).cast<String, dynamic>();

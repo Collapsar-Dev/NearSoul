@@ -232,6 +232,8 @@ async function main() {
     // Every 6th new demo person has a second profile (same person, different answers).
     if (i >= 48 && i % 6 === 0 && g !== 'non_binary') await createDemo(i, r, g, name, ru ? BIOS_RU[(i + 1) % BIOS_RU.length]! : BIOS[(i + 1) % BIOS.length]!, age, user.id);
   }
+  // CR-30: about 60% of demo people carry the verified badge (deterministic by id, so reruns don't change it).
+  await prisma.$executeRawUnsafe(`UPDATE users SET verified_at = now() WHERE is_demo AND verified_at IS NULL AND get_byte(decode(md5(id::text), 'hex'), 0) % 5 < 3`);
   await prisma.$disconnect();
   console.log(created ? `Seeded ${created} demo profiles.` : 'Demo profiles already complete.');
 }

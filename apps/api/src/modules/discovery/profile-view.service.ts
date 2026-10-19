@@ -64,6 +64,8 @@ export class ProfileViewService {
             difference: showDifference ? codeText(compat.frictions[0]!, locale) : null,
           }
         : null,
+      // CR-30: a moderator compared a fresh selfie with these photos.
+      verified: !!user.verifiedAt,
       isDemo: target.isDemo,
     };
   }

@@ -39,6 +39,13 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 | Subscription levels (CR-18) | TESTED | Soul+/Gold/VIP, test activation, tier-sized daily sets with same-day top-up, Liked you, rewind, VIP profile count; app: Subscription screen, Liked you, Undo snackbar, upsells. Live check: photo upload of a 4032×3024 JPEG on Render works |
 | M9 Payments & ops | IN PROGRESS | PAY-001..003 TESTED (RevenueCat webhook, entitlements, paywall sheet; store products not set up yet). ACC-002 data export TESTED. ANL-001 consent-gated server analytics TESTED (needs POSTHOG_KEY) |
 
+## 2026-10-19: photo verification, compatibility links, match moment (CR-30…32)
+- API: `GET/POST /v1/me/verification` (pose + selfie), `GET /admin/v1/verifications`, `POST /admin/v1/verifications/:id/decide`; `GET /v1/me/soul-link`, `GET /v1/me/soul-checks`, `GET /v1/soul-links/:code`, `POST /v1/soul-links/:code/check`. Tables `photo_verifications`, `soul_links`, `soul_checks`, column `users.verified_at`. Public profile has `verified`. New notification types `verification_result`, `soul_check`.
+- App: Me → «Подтвердить фото» (pose card, front camera), blue check on cards/profiles/Me; Soul → gradient card «Насколько ты совместим(а) с…?» with story card (RepaintBoundary → PNG → share sheet or download) and link sharing; `/c/:code` check screen with animated percent; full-screen match celebration with mini report and tap-to-draft starters.
+- Fixed: Today's Souls empty on the second day for small pools (CR-32 refill); "Ещё 1 вопросов" plural.
+- Checked in headless Chromium at 412 px: match screen, Soul card, story card, link check result, verification screen.
+- Commands: `npm run lint` ✓, `npx tsc --noEmit` ✓, `npm test` 28 suites / 259 ✓, `flutter analyze` ✓.
+
 ## Responsive check 2026-10-18 (412 px phone, 820 px tablet, 1440 px desktop)
 - Checked Today (cards, list, ads, break), Nearby, Map, Matches, Soul, Me, Subscription. Fixed: with the alpha base of 200 every level showed "200 a day"; paid levels now always give more (Soul+ ×1.25, Gold ×1.5, VIP up to 500; production stays 15 / 25 / 50 / unlimited). Test added in `tiers.e2e-spec.ts`.
 

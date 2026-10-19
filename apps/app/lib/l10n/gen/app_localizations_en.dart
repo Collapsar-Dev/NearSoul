@@ -1391,7 +1391,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String refineBody(int count) {
-    return '$count more questions: the more you answer, the better your matches and reports.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count more questions',
+      one: '$count more question',
+    );
+    return '$_temp0: the more you answer, the better your matches and reports.';
   }
 
   @override
@@ -1453,8 +1459,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create => 'Create';
 
   @override
-  String matchPercent(int percent) {
-    return '$percent% match';
+  String matchPercent(int n) {
+    return '$n% match';
   }
 
   @override
@@ -1635,4 +1641,211 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mapYou => 'You';
+
+  @override
+  String get verifiedBadge => 'Photos verified';
+
+  @override
+  String get verifyMenu => 'Verify my photos';
+
+  @override
+  String get verifyMenuSub => 'Get the blue check: one selfie, 30 seconds';
+
+  @override
+  String get verifyDone => 'Your photos are verified';
+
+  @override
+  String get verifyDoneBody =>
+      'People see the blue check next to your name. It shows you are the person in your photos.';
+
+  @override
+  String get verifyTitle => 'Photo check';
+
+  @override
+  String get verifyHeadline => 'Show it\'s really you';
+
+  @override
+  String get verifyIntro =>
+      'Take one selfie copying the pose below. We compare it with your profile photos and add a blue check to your profile.';
+
+  @override
+  String get verifyPoseLabel => 'Today\'s pose';
+
+  @override
+  String get verifyStep1 => 'Face the camera in good light, no sunglasses';
+
+  @override
+  String get verifyStep2 => 'Copy the pose so it is clearly visible';
+
+  @override
+  String get verifyStep3 => 'Make sure your profile photos show your face';
+
+  @override
+  String get verifyTake => 'Take a selfie';
+
+  @override
+  String get verifyPrivacy =>
+      'The selfie is never shown to anyone and is deleted right after the check. We don\'t create face templates.';
+
+  @override
+  String get verifyAlphaNote =>
+      'Test version: the check is approved automatically.';
+
+  @override
+  String get verifyPending => 'We\'re checking your selfie';
+
+  @override
+  String get verifyPendingBody =>
+      'This usually takes less than a day. We\'ll let you know.';
+
+  @override
+  String get verifyApproved => 'Your photos are verified ✓';
+
+  @override
+  String get verifyRejected => 'The photo check didn\'t pass';
+
+  @override
+  String get verifyTryAgain =>
+      'Try again with good light and the pose clearly visible.';
+
+  @override
+  String get posePeace => 'Show a peace sign next to your face';
+
+  @override
+  String get poseThumb => 'Give a thumbs up';
+
+  @override
+  String get poseThree => 'Show three fingers';
+
+  @override
+  String get poseWave => 'Wave at the camera';
+
+  @override
+  String get poseEar => 'Touch your ear';
+
+  @override
+  String get poseChin => 'Rest your chin on your hand';
+
+  @override
+  String get checkShareText =>
+      'How compatible are we? Check our souls on NearSoul ✨';
+
+  @override
+  String get checkLinkCopied => 'Link copied: paste it anywhere';
+
+  @override
+  String get checkCardTitle => 'How compatible are you with…?';
+
+  @override
+  String get checkCardBody =>
+      'Send your link to friends, a crush or your group chat. They answer 10 questions and you both see your compatibility, based on science, not stars.';
+
+  @override
+  String get checkStory => 'Story for Instagram';
+
+  @override
+  String get checkShareLink => 'Share my link';
+
+  @override
+  String get checkWho => 'Who checked';
+
+  @override
+  String get checkSaved => 'Saved: post it to your story';
+
+  @override
+  String get checkShareStory => 'Share to story';
+
+  @override
+  String get storyMySoul => 'MY SOUL TYPE';
+
+  @override
+  String get storyAsk => 'How compatible are we? 👀';
+
+  @override
+  String get checkTitle => 'Compatibility check';
+
+  @override
+  String get checkOwnLink =>
+      'This is your own link. Send it to friends and see who fits you best.';
+
+  @override
+  String checkInvite(String name) {
+    return 'You and $name: how compatible are you?';
+  }
+
+  @override
+  String get checkHow =>
+      'Based on your answers to 10 short questions: character, values and how you like to spend time. Nobody sees your answers.';
+
+  @override
+  String get checkGo => 'Check compatibility';
+
+  @override
+  String get checkPrivacy =>
+      'You both see only the percent and why. It isn\'t a match and doesn\'t open a chat.';
+
+  @override
+  String checkYouAnd(String name) {
+    return 'You and $name';
+  }
+
+  @override
+  String checkVerdict(String level) {
+    String _temp0 = intl.Intl.selectLogic(level, {
+      'high': 'A rare match of souls 🔥',
+      'good': 'You really click ✨',
+      'other': 'Different, and that can be interesting 🌗',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get checkYou => 'You';
+
+  @override
+  String get checkWhy => 'Why you click';
+
+  @override
+  String checkMore(int n) {
+    return '…and $n more things in common to find out together';
+  }
+
+  @override
+  String get checkShareMine => 'Send my link to others';
+
+  @override
+  String get checkNone =>
+      'Nobody has checked yet. Share your link and see who fits you best.';
+
+  @override
+  String get checkSomeone => 'Someone';
+
+  @override
+  String get checkTheyChecked => 'checked with your link';
+
+  @override
+  String get checkYouChecked => 'you checked their link';
+
+  @override
+  String get checkNotif => 'Someone checked compatibility with you 💫';
+
+  @override
+  String matchWith(String name) {
+    return 'You and $name like each other';
+  }
+
+  @override
+  String get matchMiniReport => 'You two in a nutshell';
+
+  @override
+  String matchTheirType(String name, String type) {
+    return '$name is «$type»';
+  }
+
+  @override
+  String get matchHowToStart => 'How to start';
+
+  @override
+  String get matchTapStarter =>
+      'Tap one: it goes into the message box, you decide when to send.';
 }

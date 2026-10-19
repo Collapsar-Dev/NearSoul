@@ -196,6 +196,25 @@ class DemoBadge extends StatelessWidget {
       );
 }
 
+/// CR-30: blue check for people whose selfie matched their photos.
+class VerifiedBadge extends StatelessWidget {
+  const VerifiedBadge({super.key, this.size = 22, this.onDark = false});
+  final double size;
+  final bool onDark;
+
+  @override
+  Widget build(BuildContext context) => Tooltip(
+        message: context.l.verifiedBadge,
+        child: Semantics(
+          label: context.l.verifiedBadge,
+          child: Container(
+            decoration: onDark ? const BoxDecoration(color: Colors.white, shape: BoxShape.circle) : null,
+            child: Icon(Icons.verified, size: size, color: const Color(0xFF1D9BF0)),
+          ),
+        ),
+      );
+}
+
 /// The NearSoul mark: a friendly soul (ghost) holding a heart. Decorative next to the wordmark.
 class NsLogo extends ConsumerWidget {
   const NsLogo({super.key, this.size = 28});

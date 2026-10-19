@@ -12,6 +12,9 @@ import '../../core/widgets/common.dart';
 import 'safety_actions.dart';
 
 /// S25 chat: realtime, optimistic sends with idempotent retry (E4), starters from the pair report.
+/// A starter picked on the match screen, put into the message box when the chat opens (not sent automatically).
+final pendingChatDrafts = <String, String>{};
+
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key, required this.matchId, this.embedded = false});
   final String matchId;
@@ -50,6 +53,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    _input.text = pendingChatDrafts.remove(widget.matchId) ?? '';
     _load();
     // E21: REST polling fallback when the realtime socket is unavailable (proxies, flaky networks).
     _poll = Timer.periodic(const Duration(seconds: 10), (_) {

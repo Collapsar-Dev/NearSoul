@@ -122,11 +122,22 @@ export class DailySetService {
       picked = await this.candidates(viewer, seen, widen, step === 2, cfg);
       if (picked.length >= size) break;
     }
-    const added = rankDailySet(
-      picked.map(({ s, c }) => ({ id: s.id, score: c.score, archetype: s.profile!.archetype, lastActiveAt: s.lastActiveAt.toISOString(), createdAt: s.createdAt.toISOString(), isDemo: s.isDemo })),
-      now.toISOString(),
-      size,
-    );
+    const rank = (list: { s: Subject; c: CompatResult }[], n: number) =>
+      rankDailySet(
+        list.map(({ s, c }) => ({ id: s.id, score: c.score, archetype: s.profile!.archetype, lastActiveAt: s.lastActiveAt.toISOString(), createdAt: s.createdAt.toISOString(), isDemo: s.isDemo })),
+        now.toISOString(),
+        n,
+      );
+    const added = rank(picked, size);
+    if (added.length < size) {
+      // Small pool (a new city, the alpha): people shown on earlier days but never liked or passed may come back,
+      // after everyone new. Liked and passed people still never repeat.
+      const acted = await this.prisma.like.findMany({ where: { actorId: userId }, select: { targetId: true } });
+      const notAgain = new Set([...keep, ...acted.map((a) => a.targetId), ...added]);
+      const again = await this.candidates(viewer, notAgain, flexible ? ageSteps[ageSteps.length - 1]! : 0, flexible, cfg);
+      added.push(...rank(again, size - added.length));
+      picked = [...picked, ...again];
+    }
     const ids = [...keep, ...added];
     await this.prisma.dailySet.upsert({
       where: { userId_date: { userId, date } },

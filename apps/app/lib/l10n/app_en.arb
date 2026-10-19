@@ -633,7 +633,7 @@
   "menuPhotos": "Photos",
   "menuInterests": "Interests and bio",
   "refineTitle": "Refine your profile",
-  "refineBody": "{count} more questions: the more you answer, the better your matches and reports.",
+  "refineBody": "{count, plural, one{{count} more question} other{{count} more questions}}: the more you answer, the better your matches and reports.",
   "refineDone": "Profile refined",
   "@refineBody": {
     "placeholders": {
@@ -792,5 +792,117 @@
       }
     }
   },
-  "mapYou": "You"
+  "mapYou": "You",
+  "verifiedBadge": "Photos verified",
+  "verifyMenu": "Verify my photos",
+  "verifyMenuSub": "Get the blue check: one selfie, 30 seconds",
+  "verifyDone": "Your photos are verified",
+  "verifyDoneBody": "People see the blue check next to your name. It shows you are the person in your photos.",
+  "verifyTitle": "Photo check",
+  "verifyHeadline": "Show it's really you",
+  "verifyIntro": "Take one selfie copying the pose below. We compare it with your profile photos and add a blue check to your profile.",
+  "verifyPoseLabel": "Today's pose",
+  "verifyStep1": "Face the camera in good light, no sunglasses",
+  "verifyStep2": "Copy the pose so it is clearly visible",
+  "verifyStep3": "Make sure your profile photos show your face",
+  "verifyTake": "Take a selfie",
+  "verifyPrivacy": "The selfie is never shown to anyone and is deleted right after the check. We don't create face templates.",
+  "verifyAlphaNote": "Test version: the check is approved automatically.",
+  "verifyPending": "We're checking your selfie",
+  "verifyPendingBody": "This usually takes less than a day. We'll let you know.",
+  "verifyApproved": "Your photos are verified ✓",
+  "verifyRejected": "The photo check didn't pass",
+  "verifyTryAgain": "Try again with good light and the pose clearly visible.",
+  "posePeace": "Show a peace sign next to your face",
+  "poseThumb": "Give a thumbs up",
+  "poseThree": "Show three fingers",
+  "poseWave": "Wave at the camera",
+  "poseEar": "Touch your ear",
+  "poseChin": "Rest your chin on your hand",
+  "checkShareText": "How compatible are we? Check our souls on NearSoul ✨",
+  "checkLinkCopied": "Link copied: paste it anywhere",
+  "checkCardTitle": "How compatible are you with…?",
+  "checkCardBody": "Send your link to friends, a crush or your group chat. They answer 10 questions and you both see your compatibility, based on science, not stars.",
+  "checkStory": "Story for Instagram",
+  "checkShareLink": "Share my link",
+  "checkWho": "Who checked",
+  "checkSaved": "Saved: post it to your story",
+  "checkShareStory": "Share to story",
+  "storyMySoul": "MY SOUL TYPE",
+  "storyAsk": "How compatible are we? 👀",
+  "checkTitle": "Compatibility check",
+  "checkOwnLink": "This is your own link. Send it to friends and see who fits you best.",
+  "checkInvite": "You and {name}: how compatible are you?",
+  "@checkInvite": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "checkHow": "Based on your answers to 10 short questions: character, values and how you like to spend time. Nobody sees your answers.",
+  "checkGo": "Check compatibility",
+  "checkPrivacy": "You both see only the percent and why. It isn't a match and doesn't open a chat.",
+  "checkYouAnd": "You and {name}",
+  "@checkYouAnd": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "checkVerdict": "{level, select, high{A rare match of souls 🔥} good{You really click ✨} other{Different, and that can be interesting 🌗}}",
+  "@checkVerdict": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "checkYou": "You",
+  "checkWhy": "Why you click",
+  "checkMore": "…and {n} more things in common to find out together",
+  "@checkMore": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "checkShareMine": "Send my link to others",
+  "checkNone": "Nobody has checked yet. Share your link and see who fits you best.",
+  "checkSomeone": "Someone",
+  "checkTheyChecked": "checked with your link",
+  "checkYouChecked": "you checked their link",
+  "checkNotif": "Someone checked compatibility with you 💫",
+  "matchWith": "You and {name} like each other",
+  "@matchWith": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "matchPercent": "{n}% match",
+  "@matchPercent": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "matchMiniReport": "You two in a nutshell",
+  "matchTheirType": "{name} is «{type}»",
+  "@matchTheirType": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "matchHowToStart": "How to start",
+  "matchTapStarter": "Tap one: it goes into the message box, you decide when to send."
 }

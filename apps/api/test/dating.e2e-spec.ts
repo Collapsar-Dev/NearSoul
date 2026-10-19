@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import sharp from 'sharp';
 import { bearer, createTestApp, onboard, passGateAndScan, quickScanAnswers, resetDb, signIn, testJpeg, type TestCtx } from './helpers/app';
 
-const PUBLIC_KEYS = ['activity', 'age', 'archetype', 'bio', 'card', 'city', 'compatibility', 'distanceBand', 'firstName', 'heightCm', 'id', 'interests', 'intent', 'isDemo', 'jobTitle', 'photos'].sort();
+const PUBLIC_KEYS = ['activity', 'age', 'archetype', 'bio', 'card', 'city', 'compatibility', 'distanceBand', 'firstName', 'heightCm', 'id', 'interests', 'intent', 'isDemo', 'jobTitle', 'photos', 'verified'].sort();
 const FORBIDDEN = /"(email|dob|lat|lng|h3Cell|cell|distance_m|distanceM|score|answers|traits|hiddenByModeration|status|role|profile)"\s*:/;
 
 describe('Profile & photos (PROF-001..002)', () => {
@@ -302,3 +302,28 @@ describe('Reports (RPT-001..003)', () => {
     process.env.PAYWALL_ENABLED = 'false';
   });
 });
+
+describe('Today’s Souls refill in a small pool', () => {
+  let ctx: TestCtx;
+  beforeAll(async () => {
+    ctx = await createTestApp();
+  });
+  afterAll(async () => ctx.app.close());
+  beforeEach(async () => resetDb(ctx));
+
+  it('people shown yesterday but never acted on come back; liked and passed people never do', async () => {
+    const a = await onboard(ctx, 'anna@example.com');
+    const b = await onboard(ctx, 'ben@example.com', { gender: 'man', interestedIn: ['woman'] });
+    const c = await onboard(ctx, 'carl@example.com', { gender: 'man', interestedIn: ['woman'] });
+    const d = await onboard(ctx, 'dan@example.com', { gender: 'man', interestedIn: ['woman'] });
+    const first = await ctx.http.get('/v1/daily-set').set(bearer(a.token)).expect(200);
+    expect(first.body.cards.map((x: { id: string }) => x.id).sort()).toEqual([b.userId, c.userId, d.userId].sort());
+    await ctx.http.post('/v1/likes').set(bearer(a.token)).send({ targetId: b.userId, action: 'like', source: 'daily' }).expect(200);
+    await ctx.http.post('/v1/likes').set(bearer(a.token)).send({ targetId: c.userId, action: 'pass', source: 'daily' }).expect(200);
+    // move yesterday's set back one day
+    await ctx.prisma.dailySet.updateMany({ where: { userId: a.userId }, data: { date: new Date(Date.now() - 2 * 86_400_000).toISOString().slice(0, 10) } });
+    const next = await ctx.http.get('/v1/daily-set').set(bearer(a.token)).expect(200);
+    expect(next.body.cards.map((x: { id: string }) => x.id)).toEqual([d.userId]);
+  });
+});
+

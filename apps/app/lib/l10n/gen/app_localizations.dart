@@ -2603,7 +2603,7 @@ abstract class AppLocalizations {
   /// No description provided for @refineBody.
   ///
   /// In en, this message translates to:
-  /// **'{count} more questions: the more you answer, the better your matches and reports.'**
+  /// **'{count, plural, one{{count} more question} other{{count} more questions}}: the more you answer, the better your matches and reports.'**
   String refineBody(int count);
 
   /// No description provided for @refineDone.
@@ -2711,8 +2711,8 @@ abstract class AppLocalizations {
   /// No description provided for @matchPercent.
   ///
   /// In en, this message translates to:
-  /// **'{percent}% match'**
-  String matchPercent(int percent);
+  /// **'{n}% match'**
+  String matchPercent(int n);
 
   /// No description provided for @moreReasons.
   ///
@@ -3013,6 +3013,360 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You'**
   String get mapYou;
+
+  /// No description provided for @verifiedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos verified'**
+  String get verifiedBadge;
+
+  /// No description provided for @verifyMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify my photos'**
+  String get verifyMenu;
+
+  /// No description provided for @verifyMenuSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Get the blue check: one selfie, 30 seconds'**
+  String get verifyMenuSub;
+
+  /// No description provided for @verifyDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Your photos are verified'**
+  String get verifyDone;
+
+  /// No description provided for @verifyDoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'People see the blue check next to your name. It shows you are the person in your photos.'**
+  String get verifyDoneBody;
+
+  /// No description provided for @verifyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo check'**
+  String get verifyTitle;
+
+  /// No description provided for @verifyHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Show it\'s really you'**
+  String get verifyHeadline;
+
+  /// No description provided for @verifyIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Take one selfie copying the pose below. We compare it with your profile photos and add a blue check to your profile.'**
+  String get verifyIntro;
+
+  /// No description provided for @verifyPoseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s pose'**
+  String get verifyPoseLabel;
+
+  /// No description provided for @verifyStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'Face the camera in good light, no sunglasses'**
+  String get verifyStep1;
+
+  /// No description provided for @verifyStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy the pose so it is clearly visible'**
+  String get verifyStep2;
+
+  /// No description provided for @verifyStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure your profile photos show your face'**
+  String get verifyStep3;
+
+  /// No description provided for @verifyTake.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a selfie'**
+  String get verifyTake;
+
+  /// No description provided for @verifyPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'The selfie is never shown to anyone and is deleted right after the check. We don\'t create face templates.'**
+  String get verifyPrivacy;
+
+  /// No description provided for @verifyAlphaNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Test version: the check is approved automatically.'**
+  String get verifyAlphaNote;
+
+  /// No description provided for @verifyPending.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'re checking your selfie'**
+  String get verifyPending;
+
+  /// No description provided for @verifyPendingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This usually takes less than a day. We\'ll let you know.'**
+  String get verifyPendingBody;
+
+  /// No description provided for @verifyApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Your photos are verified ✓'**
+  String get verifyApproved;
+
+  /// No description provided for @verifyRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'The photo check didn\'t pass'**
+  String get verifyRejected;
+
+  /// No description provided for @verifyTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again with good light and the pose clearly visible.'**
+  String get verifyTryAgain;
+
+  /// No description provided for @posePeace.
+  ///
+  /// In en, this message translates to:
+  /// **'Show a peace sign next to your face'**
+  String get posePeace;
+
+  /// No description provided for @poseThumb.
+  ///
+  /// In en, this message translates to:
+  /// **'Give a thumbs up'**
+  String get poseThumb;
+
+  /// No description provided for @poseThree.
+  ///
+  /// In en, this message translates to:
+  /// **'Show three fingers'**
+  String get poseThree;
+
+  /// No description provided for @poseWave.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave at the camera'**
+  String get poseWave;
+
+  /// No description provided for @poseEar.
+  ///
+  /// In en, this message translates to:
+  /// **'Touch your ear'**
+  String get poseEar;
+
+  /// No description provided for @poseChin.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest your chin on your hand'**
+  String get poseChin;
+
+  /// No description provided for @checkShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'How compatible are we? Check our souls on NearSoul ✨'**
+  String get checkShareText;
+
+  /// No description provided for @checkLinkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied: paste it anywhere'**
+  String get checkLinkCopied;
+
+  /// No description provided for @checkCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How compatible are you with…?'**
+  String get checkCardTitle;
+
+  /// No description provided for @checkCardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Send your link to friends, a crush or your group chat. They answer 10 questions and you both see your compatibility, based on science, not stars.'**
+  String get checkCardBody;
+
+  /// No description provided for @checkStory.
+  ///
+  /// In en, this message translates to:
+  /// **'Story for Instagram'**
+  String get checkStory;
+
+  /// No description provided for @checkShareLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Share my link'**
+  String get checkShareLink;
+
+  /// No description provided for @checkWho.
+  ///
+  /// In en, this message translates to:
+  /// **'Who checked'**
+  String get checkWho;
+
+  /// No description provided for @checkSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved: post it to your story'**
+  String get checkSaved;
+
+  /// No description provided for @checkShareStory.
+  ///
+  /// In en, this message translates to:
+  /// **'Share to story'**
+  String get checkShareStory;
+
+  /// No description provided for @storyMySoul.
+  ///
+  /// In en, this message translates to:
+  /// **'MY SOUL TYPE'**
+  String get storyMySoul;
+
+  /// No description provided for @storyAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'How compatible are we? 👀'**
+  String get storyAsk;
+
+  /// No description provided for @checkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Compatibility check'**
+  String get checkTitle;
+
+  /// No description provided for @checkOwnLink.
+  ///
+  /// In en, this message translates to:
+  /// **'This is your own link. Send it to friends and see who fits you best.'**
+  String get checkOwnLink;
+
+  /// No description provided for @checkInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'You and {name}: how compatible are you?'**
+  String checkInvite(String name);
+
+  /// No description provided for @checkHow.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on your answers to 10 short questions: character, values and how you like to spend time. Nobody sees your answers.'**
+  String get checkHow;
+
+  /// No description provided for @checkGo.
+  ///
+  /// In en, this message translates to:
+  /// **'Check compatibility'**
+  String get checkGo;
+
+  /// No description provided for @checkPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'You both see only the percent and why. It isn\'t a match and doesn\'t open a chat.'**
+  String get checkPrivacy;
+
+  /// No description provided for @checkYouAnd.
+  ///
+  /// In en, this message translates to:
+  /// **'You and {name}'**
+  String checkYouAnd(String name);
+
+  /// No description provided for @checkVerdict.
+  ///
+  /// In en, this message translates to:
+  /// **'{level, select, high{A rare match of souls 🔥} good{You really click ✨} other{Different, and that can be interesting 🌗}}'**
+  String checkVerdict(String level);
+
+  /// No description provided for @checkYou.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get checkYou;
+
+  /// No description provided for @checkWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Why you click'**
+  String get checkWhy;
+
+  /// No description provided for @checkMore.
+  ///
+  /// In en, this message translates to:
+  /// **'…and {n} more things in common to find out together'**
+  String checkMore(int n);
+
+  /// No description provided for @checkShareMine.
+  ///
+  /// In en, this message translates to:
+  /// **'Send my link to others'**
+  String get checkShareMine;
+
+  /// No description provided for @checkNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody has checked yet. Share your link and see who fits you best.'**
+  String get checkNone;
+
+  /// No description provided for @checkSomeone.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone'**
+  String get checkSomeone;
+
+  /// No description provided for @checkTheyChecked.
+  ///
+  /// In en, this message translates to:
+  /// **'checked with your link'**
+  String get checkTheyChecked;
+
+  /// No description provided for @checkYouChecked.
+  ///
+  /// In en, this message translates to:
+  /// **'you checked their link'**
+  String get checkYouChecked;
+
+  /// No description provided for @checkNotif.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone checked compatibility with you 💫'**
+  String get checkNotif;
+
+  /// No description provided for @matchWith.
+  ///
+  /// In en, this message translates to:
+  /// **'You and {name} like each other'**
+  String matchWith(String name);
+
+  /// No description provided for @matchMiniReport.
+  ///
+  /// In en, this message translates to:
+  /// **'You two in a nutshell'**
+  String get matchMiniReport;
+
+  /// No description provided for @matchTheirType.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is «{type}»'**
+  String matchTheirType(String name, String type);
+
+  /// No description provided for @matchHowToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'How to start'**
+  String get matchHowToStart;
+
+  /// No description provided for @matchTapStarter.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap one: it goes into the message box, you decide when to send.'**
+  String get matchTapStarter;
 }
 
 class _AppLocalizationsDelegate

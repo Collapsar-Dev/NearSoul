@@ -10,6 +10,8 @@ import '../features/me/paywall.dart';
 import '../features/me/personas_screen.dart';
 import '../features/nearby/nearby_screen.dart';
 import '../features/nearby/map_screen.dart';
+import '../features/me/verification_screen.dart';
+import '../features/soul/soul_check_screens.dart';
 import '../features/onboarding/onboarding_screens.dart';
 import '../features/onboarding/quick_scan_screen.dart';
 import '../features/onboarding/reveal_screen.dart';
@@ -27,6 +29,9 @@ class InviteCode extends Notifier<String?> {
 }
 
 final inviteCodeProvider = NotifierProvider<InviteCode, String?>(InviteCode.new);
+
+/// CR-31: a /c/{code} compatibility link opened before the person could check (signed out or no answers yet).
+final pendingCheckProvider = NotifierProvider<InviteCode, String?>(InviteCode.new);
 
 /// The next onboarding route for a signed-in user (null when onboarding is done).
 String? onboardingRoute(Me me) {
@@ -60,6 +65,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       final session = ref.read(sessionProvider);
       final path = state.uri.path;
       if (path.startsWith('/invite/') || path == '/download') return null;
+      if (path.startsWith('/c/')) {
+        // Remember the link; it opens again as soon as the 10 questions are done.
+        final me = session.me;
+        if (session.phase == Phase.signedIn && me != null && (me.isActive || me.onboarding['quickScan'] == true)) return null;
+        ref.read(pendingCheckProvider.notifier).set(path.substring(3));
+      }
       // Keep the original deep link while the session loads, then return to it (PLAT-003).
       if (session.phase == Phase.loading) return path == '/splash' ? null : '/splash?from=${Uri.encodeComponent(state.uri.toString())}';
       final from = path == '/splash' ? state.uri.queryParameters['from'] : null;
@@ -70,6 +81,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       final me = session.me!;
       final next = onboardingRoute(me);
       // An unfinished extra profile can still open the profile switcher to go back (CR-17).
+      final pending = ref.read(pendingCheckProvider);
+      if (pending != null && (me.isActive || me.onboarding['quickScan'] == true)) {
+        ref.read(pendingCheckProvider.notifier).set(null);
+        return '/c/$pending';
+      }
       if (next != null) return path == next || (path == '/me/profiles' && me.isPersona) ? null : next;
       if (from != null && !publicPaths.contains(Uri.parse(from).path) && !from.startsWith('/onboarding') && from != '/splash') return from;
       if (path == '/splash' || publicPaths.contains(path) || path.startsWith('/onboarding') || path == '/blocked') return '/today';
@@ -83,6 +99,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/auth/code', builder: (_, s) => CodeScreen(email: s.uri.queryParameters['email'] ?? '')),
       GoRoute(path: '/invite/:code', builder: (_, s) => InviteLandingScreen(code: s.pathParameters['code']!)),
       GoRoute(path: '/blocked', builder: (_, _) => const BlockedScreen()),
+      GoRoute(path: '/c/:code', builder: (_, s) => SoulCheckScreen(code: s.pathParameters['code']!)),
       GoRoute(path: '/onboarding/dob', builder: (_, _) => const DobScreen()),
       GoRoute(path: '/onboarding/consents', builder: (_, _) => const ConsentsScreen()),
       GoRoute(path: '/onboarding/scan', builder: (_, _) => const QuickScanScreen()),
@@ -119,6 +136,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             GoRoute(path: '/me', builder: (_, _) => const MeScreen(), routes: [
               GoRoute(path: 'edit', builder: (_, _) => const EditProfileScreen()),
               GoRoute(path: 'photos', builder: (_, _) => const PhotosScreen(onboarding: false)),
+              GoRoute(path: 'verify', builder: (_, _) => const VerificationScreen()),
               GoRoute(path: 'interests', builder: (_, _) => const InterestsScreen(onboarding: false)),
               GoRoute(path: 'settings', builder: (_, _) => const SettingsScreen()),
               GoRoute(path: 'profiles', builder: (_, _) => const PersonasScreen()),

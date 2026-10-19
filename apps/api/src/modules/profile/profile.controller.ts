@@ -6,6 +6,7 @@ import { CurrentUser, RequireGate, type AuthUser } from '../../common/auth';
 import { parse } from '../../common/zod';
 import { NAME_RE } from './text-safety';
 import { ProfileService } from './profile.service';
+import { VerificationService } from './verification.service';
 
 const GENDER = z.enum(['woman', 'man', 'non_binary']);
 const ProfileSchema = z.object({
@@ -25,7 +26,7 @@ const ProfileSchema = z.object({
 @Controller('v1')
 @RequireGate('age')
 export class ProfileController {
-  constructor(private readonly profiles: ProfileService) {}
+  constructor(private readonly profiles: ProfileService, private readonly verification: VerificationService) {}
 
   @Get('me/profile')
   get(@CurrentUser() user: AuthUser) {
@@ -58,5 +59,17 @@ export class ProfileController {
   @HttpCode(204)
   async remove(@CurrentUser() user: AuthUser, @Param('id', new ParseUUIDPipe()) id: string) {
     await this.profiles.deletePhoto(user.id, id);
+  }
+
+  /** CR-30: today's pose and the person's verification state. */
+  @Get('me/verification')
+  verificationStatus(@CurrentUser() user: AuthUser) {
+    return this.verification.status(user.id);
+  }
+
+  @Post('me/verification')
+  @UseInterceptors(FileInterceptor('selfie', { storage: memoryStorage(), limits: { fileSize: 10 * 1024 * 1024, files: 1 } }))
+  verify(@CurrentUser() user: AuthUser, @Body() body: { pose?: string }, @UploadedFile() file?: Express.Multer.File) {
+    return this.verification.submit(user.id, String(body?.pose ?? ''), file);
   }
 }

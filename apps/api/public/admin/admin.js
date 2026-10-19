@@ -96,6 +96,20 @@ const tabs = {
       $('#out').textContent = r.links.join('\n');
     };
   },
+  // CR-30: compare the selfie (with the asked pose) against the profile photos. The selfie is deleted on decision.
+  async verifications() {
+    const POSE = { peace: '✌️ peace sign', thumb_up: '👍 thumb up', three_fingers: '3 fingers', wave: '👋 wave', touch_ear: 'touching an ear', chin: 'hand under chin' };
+    const rows = await api('/verifications');
+    view.innerHTML = `<h1>Photo checks</h1><p class="muted">Approve only if the selfie shows the asked pose and clearly the same person as the profile photos.</p>
+      ${rows.map((v) => `<div class="card"><p><strong>Pose:</strong> ${esc(POSE[v.pose] || v.pose)} · <span class="muted">${new Date(v.createdAt).toLocaleString()}</span></p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">${v.selfie ? `<img src="${esc(v.selfie)}" alt="selfie" style="height:220px;border:3px solid #3b82f6;border-radius:8px">` : ''}${v.photos.map((u) => `<img src="${esc(u)}" alt="profile photo" style="height:220px;border-radius:8px">`).join('')}</div>
+        <p><button class="primary" data-ok="${v.id}">Approve</button>
+        <select data-why="${v.id}"><option value="not_matching">not the same person</option><option value="pose_missing">pose missing</option><option value="unclear">unclear photo</option><option value="not_a_person">not a person</option></select>
+        <button data-no="${v.id}">Reject</button></p></div>`).join('') || '<p class="muted">Nothing to check.</p>'}`;
+    const decide = (id, approve, reason) => api(`/verifications/${id}/decide`, { method: 'POST', body: JSON.stringify(approve ? { approve } : { approve, reason }) }).then(() => tabs.verifications());
+    view.querySelectorAll('[data-ok]').forEach((b) => (b.onclick = () => decide(b.dataset.ok, true)));
+    view.querySelectorAll('[data-no]').forEach((b) => (b.onclick = () => decide(b.dataset.no, false, view.querySelector(`[data-why="${b.dataset.no}"]`).value)));
+  },
   async users() {
     view.innerHTML = `<h1>Users</h1><div class="card"><label>Find by email <input id="em" type="email"></label><button class="primary" id="find">Find</button><div id="res"></div></div>`;
     $('#find').onclick = async () => {

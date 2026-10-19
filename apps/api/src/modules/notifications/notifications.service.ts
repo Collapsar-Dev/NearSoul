@@ -5,7 +5,7 @@ import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { localTime, pushDecision, REMINDER_TYPES } from './push-policy';
 import { PushService } from './push.service';
 
-export type NotificationType = 'new_match' | 'new_message' | 'daily_set_ready' | 'nearby_alert' | 'open_ending' | 'report_update' | 'message_request';
+export type NotificationType = 'new_match' | 'new_message' | 'daily_set_ready' | 'nearby_alert' | 'open_ending' | 'report_update' | 'message_request' | 'verification_result' | 'soul_check';
 
 type PushLocale = 'en' | 'ru';
 
@@ -37,6 +37,14 @@ const PUSH_TEXT: Record<NotificationType, Record<PushLocale, { title: string; bo
   message_request: {
     en: { title: 'NearSoul', body: 'Someone wrote to you first ✉️' },
     ru: { title: 'NearSoul', body: 'Тебе написали первыми ✉️' },
+  },
+  soul_check: {
+    en: { title: 'NearSoul', body: 'Someone checked your compatibility 💫' },
+    ru: { title: 'NearSoul', body: 'Кто-то проверил совместимость с тобой 💫' },
+  },
+  verification_result: {
+    en: { title: 'NearSoul', body: 'Your photo check is done.' },
+    ru: { title: 'NearSoul', body: 'Проверка фото завершена.' },
   },
 };
 

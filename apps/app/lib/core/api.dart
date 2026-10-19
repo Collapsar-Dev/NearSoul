@@ -123,8 +123,8 @@ class Api {
   Future<T> patch<T>(String path, [Object? body]) => _wrap(() => dio.patch(path, data: body ?? {}));
   Future<T> delete<T>(String path) => _wrap(() => dio.delete(path));
 
-  Future<Map<String, dynamic>> upload(String path, String field, List<int> bytes, String filename) {
-    final form = FormData.fromMap({field: MultipartFile.fromBytes(bytes, filename: filename)});
+  Future<Map<String, dynamic>> upload(String path, String field, List<int> bytes, String filename, {Map<String, String> fields = const {}}) {
+    final form = FormData.fromMap({...fields, field: MultipartFile.fromBytes(bytes, filename: filename)});
     return _wrap(() => dio.post(path, data: form));
   }
 }

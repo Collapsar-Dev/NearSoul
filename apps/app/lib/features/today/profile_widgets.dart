@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import '../matches/match_celebration.dart';
 import '../me/paywall.dart';
 import '../../core/session.dart';
 import '../../core/api.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme.dart';
-import 'package:go_router/go_router.dart';
 import '../../core/widgets/common.dart';
 import '../onboarding/reveal_screen.dart';
 
@@ -111,6 +111,7 @@ class SoulCard extends StatelessWidget {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Row(children: [
                   Flexible(child: Text('${p['firstName']}, ${p['age']}', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w700, color: Colors.white), overflow: TextOverflow.ellipsis)),
+                  if (p['verified'] == true) ...[const SizedBox(width: 6), const VerifiedBadge(onDark: true)],
                   if (p['isDemo'] == true) ...[const SizedBox(width: 8), const DemoBadge()],
                 ]),
                 if (place != null) Text(place, style: const TextStyle(color: Colors.white70)),
@@ -160,7 +161,9 @@ class ProfileDetails extends StatelessWidget {
       if (showPhotos) PhotoCarousel(photos: (p['photos'] as List).cast<Map<String, dynamic>>()),
       const SizedBox(height: 16),
       Row(children: [
-        Expanded(child: Text('${p['firstName']}, ${p['age']}', style: Theme.of(context).textTheme.headlineSmall)),
+        Flexible(child: Text('${p['firstName']}, ${p['age']}', style: Theme.of(context).textTheme.headlineSmall)),
+        if (p['verified'] == true) ...[const SizedBox(width: 6), const VerifiedBadge()],
+        const Spacer(),
         if (p['isDemo'] == true) const DemoBadge(),
         if (onReport != null || onBlock != null)
           PopupMenuButton<String>(
@@ -298,41 +301,8 @@ class _RoundState extends State<_Round> {
 }
 
 /// S23 match moment.
-Future<void> showMatchDialog(BuildContext context, {required Map<String, dynamic> person, required String matchId, required bool nearby}) {
-  final l = context.l;
-  return showDialog(
-    context: context,
-    builder: (ctx) => Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.favorite, size: 56, color: Theme.of(ctx).colorScheme.primary),
-          const SizedBox(height: 12),
-          Text(l.itsMatch, style: Theme.of(ctx).textTheme.headlineMedium),
-          if (nearby) ...[const SizedBox(height: 8), Text(l.bothNearby, textAlign: TextAlign.center)],
-          const SizedBox(height: 16),
-          if ((person['photos'] as List).isNotEmpty)
-            CircleAvatar(radius: 48, backgroundImage: NetworkImage(((person['photos'] as List).first as Map)['url'] as String)),
-          const SizedBox(height: 8),
-          Text(person['firstName'] as String, style: Theme.of(ctx).textTheme.titleLarge),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: () {
-                Navigator.pop(ctx);
-                context.go('/matches/$matchId');
-              },
-              child: Text(l.sayHi),
-            ),
-          ),
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.keepExploring)),
-        ]),
-      ),
-    ),
-  );
-}
+Future<void> showMatchDialog(BuildContext context, {required Map<String, dynamic> person, required String matchId, required bool nearby}) =>
+    Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(fullscreenDialog: true, builder: (_) => MatchCelebration(person: person, matchId: matchId, nearby: nearby)));
 
 /// Tinder-style swipe on a Today card: drag right to like, left to pass. Buttons below stay for keyboard,
 /// screen readers and anyone who prefers tapping.

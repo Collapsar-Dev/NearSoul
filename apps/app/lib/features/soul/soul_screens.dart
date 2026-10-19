@@ -9,6 +9,7 @@ import '../onboarding/quick_scan_screen.dart';
 import '../onboarding/reveal_screen.dart';
 import '../shell.dart';
 import 'soul_talk_screens.dart';
+import 'soul_check_screens.dart';
 import '../me/paywall.dart';
 
 /// S27/S28 Soul tab: who you are.
@@ -52,6 +53,12 @@ class _SoulScreenState extends ConsumerState<SoulScreen> {
             ]),
             const SizedBox(height: 16),
             Wrap(spacing: 8, runSpacing: 8, alignment: WrapAlignment.center, children: [for (final s in (r['strengths'] as List).cast<String>()) Chip(avatar: const Icon(Icons.star_rounded, size: 18), label: Text(s))]),
+            // CR-31: share your soul and let anyone check compatibility with you.
+            SoulLinkCard(
+              archetypeName: ((r['archetype'] as Map)['name'] ?? '') as String,
+              archetypeLine: ((r['archetype'] as Map)['line'] ?? '') as String,
+              strengths: (r['strengths'] as List).cast<String>(),
+            ),
             if (((data[2] as Map)['refineRemaining'] as int? ?? 0) > 0) ...[
               Card(
                 margin: const EdgeInsets.only(top: 12),

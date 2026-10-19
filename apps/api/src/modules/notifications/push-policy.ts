@@ -4,7 +4,7 @@ import type { NotificationType } from './notifications.service';
 export const REMINDER_TYPES: ReadonlySet<NotificationType> = new Set(['daily_set_ready', 'open_ending']);
 /** Messages in active conversations still arrive during quiet hours (NOTIF-001). */
 const QUIET_HOURS_EXEMPT: ReadonlySet<NotificationType> = new Set(['new_message']);
-export const NOTIFICATION_TYPES: readonly NotificationType[] = ['new_match', 'new_message', 'daily_set_ready', 'nearby_alert', 'open_ending', 'report_update', 'message_request'];
+export const NOTIFICATION_TYPES: readonly NotificationType[] = ['new_match', 'new_message', 'daily_set_ready', 'nearby_alert', 'open_ending', 'report_update', 'message_request', 'verification_result', 'soul_check'];
 const QUIET_FROM = 23;
 const QUIET_TO = 8;
 

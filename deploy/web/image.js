@@ -47,3 +47,46 @@ window.nearsoulSetIcon = function (href) {
   }
   link.href = href;
 };
+
+// CR-31: share a story image or a link (lib/core/platform/share_web.dart). Uses the phone's share sheet when the
+// browser supports it (Instagram, Telegram, WhatsApp…), otherwise downloads the image / copies the link.
+(function () {
+  window.nearsoulShare = {
+    image: async (bytes, filename, text) => {
+      const file = new File([bytes], filename, { type: 'image/png' });
+      try {
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], text });
+          return 'shared';
+        }
+      } catch (e) {
+        if (e && e.name === 'AbortError') return 'cancelled';
+      }
+      const url = URL.createObjectURL(file);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      return 'downloaded';
+    },
+    link: async (text, url) => {
+      try {
+        if (navigator.share) {
+          await navigator.share({ text, url });
+          return 'shared';
+        }
+      } catch (e) {
+        if (e && e.name === 'AbortError') return 'cancelled';
+      }
+      try {
+        await navigator.clipboard.writeText(`${text} ${url}`);
+        return 'copied';
+      } catch (_) {
+        return 'failed';
+      }
+    },
+  };
+})();

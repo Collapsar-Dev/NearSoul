@@ -48,6 +48,7 @@ export class MeService {
       },
       consents,
       invitesLeft: u.invitesLeft,
+      verified: !!u.verifiedAt,
       archetype: u.soulProfile?.archetype ?? null,
       onboarding: {
         dob: !!u.dob,

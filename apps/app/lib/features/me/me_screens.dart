@@ -34,6 +34,7 @@ class _MeScreenState extends ConsumerState<MeScreen> {
         (Icons.switch_account_outlined, me?.personaLabel == null ? l.profiles : '${l.profiles} · ${me!.personaLabel}', '/me/profiles'),
         (Icons.edit_outlined, l.editProfile, '/me/edit'),
         (Icons.photo_library_outlined, l.menuPhotos, '/me/photos'),
+        (me?.verified == true ? Icons.verified : Icons.verified_outlined, me?.verified == true ? l.verifyDone : l.verifyMenu, '/me/verify'),
         (Icons.interests_outlined, l.menuInterests, '/me/interests'),
       ]),
       (l.menuAccount, [
@@ -68,7 +69,10 @@ class _MeScreenState extends ConsumerState<MeScreen> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text('${p?['firstName'] ?? ''}${me?.age != null ? ', ${me!.age}' : ''}', style: Theme.of(context).textTheme.headlineSmall),
+                      Row(children: [
+                        Flexible(child: Text('${p?['firstName'] ?? ''}${me?.age != null ? ', ${me!.age}' : ''}', style: Theme.of(context).textTheme.headlineSmall)),
+                        if (me?.verified == true) ...[const SizedBox(width: 6), const VerifiedBadge()],
+                      ]),
                       if (me?.settings['discoveryEnabled'] == false) Text(l.discoverySetting, style: TextStyle(color: Theme.of(context).colorScheme.error)),
                       const SizedBox(height: 6),
                       OutlinedButton.icon(
@@ -89,7 +93,7 @@ class _MeScreenState extends ConsumerState<MeScreen> {
               ListTile(
                 leading: Icon(t.$1),
                 title: Text(t.$2),
-                subtitle: t.$3 == '/me/profiles' ? Text(l.profilesSubtitle) : null,
+                subtitle: t.$3 == '/me/profiles' ? Text(l.profilesSubtitle) : t.$3 == '/me/verify' && me?.verified != true ? Text(l.verifyMenuSub) : null,
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => context.push(t.$3),
               ),
@@ -438,6 +442,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       'nearby_alert' => '${l.tabNearby} ✨ ${(n['payload'] as Map)['band'] ?? ''}',
       'daily_set_ready' => l.todayTitle,
       'open_ending' => l.nearbyOffTitle,
+      'soul_check' => l.checkNotif,
+      'verification_result' => (n['payload'] as Map)['status'] == 'approved' ? l.verifyApproved : l.verifyRejected,
       _ => l.notifications,
     };
   }
@@ -451,6 +457,10 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       case 'nearby_alert':
       case 'open_ending':
         context.go('/nearby');
+      case 'verification_result':
+        context.go('/me/verify');
+      case 'soul_check':
+        context.go('/soul');
       default:
         context.go('/today');
     }

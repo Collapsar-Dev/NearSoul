@@ -10,6 +10,7 @@ import { env } from '../../config/env';
 import { InvitesService } from '../invites/invites.service';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { StorageService } from '../storage/storage.service';
+import { VerificationService } from '../profile/verification.service';
 import { AdminAuthService, AdminGuard, AdminRoles, CurrentAdmin, type AdminPrincipal } from './admin.auth';
 
 const ACTIONS = ['dismiss', 'warn', 'hide', 'restore', 'remove_photo', 'suspend'] as const;
@@ -30,6 +31,7 @@ export class AdminController {
     private readonly invites: InvitesService,
     private readonly storage: StorageService,
     private readonly rt: RealtimeGateway,
+    private readonly verification: VerificationService,
   ) {}
 
   private audit(admin: AdminPrincipal, action: string, targetType: string, targetId: string, metadata?: Record<string, string>) {
@@ -47,6 +49,23 @@ export class AdminController {
   @AdminRoles('moderator', 'support')
   me(@CurrentAdmin() admin: AdminPrincipal) {
     return admin;
+  }
+
+  /** CR-30: pending selfie checks with the profile photos to compare against. */
+  @Get('verifications')
+  @AdminRoles('moderator')
+  verifications() {
+    return this.verification.queue();
+  }
+
+  @Post('verifications/:id/decide')
+  @HttpCode(200)
+  @AdminRoles('moderator')
+  async decideVerification(@CurrentAdmin() admin: AdminPrincipal, @Param('id', ParseUUIDPipe) id: string, @Body() body: unknown) {
+    const { approve, reason } = parse(z.object({ approve: z.boolean(), reason: z.enum(['not_matching', 'pose_missing', 'unclear', 'not_a_person']).optional() }).strict(), body);
+    const r = await this.verification.decide(id, approve, admin.id, reason);
+    await this.audit(admin, approve ? 'verification_approved' : 'verification_rejected', 'photo_verification', id);
+    return r;
   }
 
   @Get('queue')
