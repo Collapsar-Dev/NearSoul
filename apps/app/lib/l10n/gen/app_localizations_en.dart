@@ -1879,4 +1879,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get socialFailed => 'Sign-in didn\'t work. Please try again.';
+
+  @override
+  String breakBodyDeep(int part) {
+    return 'Go deeper: Deep Personality, part $part of 4 (about 4 minutes). Your matches get more precise.';
+  }
+
+  @override
+  String get breakBodyCheck =>
+      'You\'ve answered everything. Now find out which of your friends fits you best: send them your compatibility link.';
 }

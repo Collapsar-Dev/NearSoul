@@ -1554,7 +1554,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String breakBody(int count) {
-    return 'Ты посмотрел(а) уже $count человек. Ответь на несколько вопросов о себе — и следующие «Души дня» подойдут тебе ещё точнее.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'человек',
+      many: 'человек',
+      few: 'человека',
+      one: 'человека',
+    );
+    return 'Ты посмотрел(а) уже $count $_temp0. Ответь на несколько вопросов о себе — и следующие «Души дня» подойдут тебе ещё точнее.';
   }
 
   @override
@@ -1888,4 +1896,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get socialFailed => 'Не получилось войти. Попробуй ещё раз.';
+
+  @override
+  String breakBodyDeep(int part) {
+    return 'Загляни глубже: тест личности, часть $part из 4 (около 4 минут). Подбор станет точнее.';
+  }
+
+  @override
+  String get breakBodyCheck =>
+      'Ты ответил(а) на всё. Теперь узнай, кто из друзей подходит тебе больше всех: отправь им ссылку на проверку совместимости.';
 }

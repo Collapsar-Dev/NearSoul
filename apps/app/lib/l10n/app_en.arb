@@ -920,5 +920,14 @@
   },
   "socialNative": "In the app, sign in with email for now. Google, Apple and VK work on the website.",
   "socialPopupBlocked": "Your browser blocked the sign-in window. Allow pop-ups and try again.",
-  "socialFailed": "Sign-in didn't work. Please try again."
+  "socialFailed": "Sign-in didn't work. Please try again.",
+  "breakBodyDeep": "Go deeper: Deep Personality, part {part} of 4 (about 4 minutes). Your matches get more precise.",
+  "@breakBodyDeep": {
+    "placeholders": {
+      "part": {
+        "type": "int"
+      }
+    }
+  },
+  "breakBodyCheck": "You've answered everything. Now find out which of your friends fits you best: send them your compatibility link."
 }

@@ -39,6 +39,12 @@ Updated: 2026-10-16. Statuses: NOT STARTED → IN PROGRESS → IMPLEMENTED → T
 | Subscription levels (CR-18) | TESTED | Soul+/Gold/VIP, test activation, tier-sized daily sets with same-day top-up, Liked you, rewind, VIP profile count; app: Subscription screen, Liked you, Undo snackbar, upsells. Live check: photo upload of a 4032×3024 JPEG on Render works |
 | M9 Payments & ops | IN PROGRESS | PAY-001..003 TESTED (RevenueCat webhook, entitlements, paywall sheet; store products not set up yet). ACC-002 data export TESTED. ANL-001 consent-gated server analytics TESTED (needs POSTHOG_KEY) |
 
+## 2026-10-19: Today's Souls feed re-check on all device modes (CR-35)
+- Checked feed and cards at 375×667, 412×828, 768×1024, 1024×768, 1366×768, 1440×900, 1920×1080: paging, verified badges, break after 10 («Ты посмотрел(а) уже 10 человек»), café ad with «Адреса» after 20, like/pass.
+- Fixed: buttons spilled into the next column at 1024 px (FittedBox); duplicate list keys when ads repeat; break text counted actions instead of feed position; Russian plural «человека/человек»; ad order now stable (café first).
+- Note: Gold/VIP never see ads (by design) — switch to Free in Me → Subscription to test them.
+- Commands: `npm run lint` ✓, `npm test` 29 suites / 263 ✓, `flutter analyze` ✓, `flutter test` ✓.
+
 ## 2026-10-19: full re-check + SEO + promo video (CR-34)
 - Re-check: 10 screens × 3 sizes (412×915 phone, 820×1180 tablet, 1440×900 desktop) + welcome: Today (cards/grid, verified badges), Nearby, Map, Soul (share card), Matches, Chat, Me, Photo check, Subscription, Settings. Fixed: «Как в системе» wrapped in 3 lines (→ «Авто»); interest names capitalised mid-sentence («нравится Кофе» → «кофе»).
 - SEO: meta/OG/Twitter/JSON-LD in `web/index.html`, `/robots.txt`, `/sitemap.xml`, `__PUBLIC_URL__` rewrite, `x-robots-tag: noindex` while `EMAIL_PROVIDER` is screen/console. Verified with curl.

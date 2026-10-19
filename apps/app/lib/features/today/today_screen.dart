@@ -12,6 +12,7 @@ import '../matches/safety_actions.dart';
 import '../me/paywall.dart';
 import '../shell.dart';
 import 'profile_widgets.dart';
+import '../soul/soul_check_screens.dart' show shareSoulLink;
 
 /// S17 Today's Souls: a small curated daily set (ENG-014).
 class TodayScreen extends ConsumerStatefulWidget {
@@ -30,8 +31,9 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   final Set<String> _initiallyActed = {};
   bool _loadingMore = false;
   static const _page = 30;
-  /// "Know yourself" break card after every 50 people (founder request 2026-10-18).
+  /// "Know yourself" break card after the first 10 people, then after every 50 (founder requests 2026-10-18/19).
   static const _breakEvery = 50;
+  static bool _isBreakAt(int n) => n == 10 || (n > 0 && n % _breakEvery == 0);
   final Set<int> _breaksShownAt = {};
   Object? _error;
   final Set<String> _acted = {};
@@ -99,10 +101,20 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   }
 
   /// Card mode: after every N people decided today, one ad sits in the stack until closed or swiped away.
-  bool get _adDue => _ads.isNotEmpty && _doneCount > 0 && _doneCount % _adEvery == 0 && _doneCount % _breakEvery != 0 && !_adsShownAt.contains(_doneCount);
+  bool get _adDue => _ads.isNotEmpty && _doneCount > 0 && _doneCount % _adEvery == 0 && !_isBreakAt(_doneCount) && !_adsShownAt.contains(_doneCount);
+
+  /// Ads run in order (the café partner first) over the ad slots, skipping slots used by breaks.
+  Map<String, dynamic> _adFor(int n) {
+    var slots = 0;
+    for (var k = _adEvery; k <= n; k += _adEvery) {
+      if (!_isBreakAt(k)) slots++;
+    }
+    return _ads[(slots - 1).clamp(0, 1 << 30) % _ads.length];
+  }
 
   /// Gentle "keep discovering yourself" nudge: after a few cards, at most once a day, while questions remain.
   int _refineRemaining = 0;
+  int? _nextDeepPart;
   bool _nudgeDismissedToday = true;
   static const _nudgeKey = 'ns_refine_nudge_day';
   String get _today => DateTime.now().toIso8601String().substring(0, 10);
@@ -126,7 +138,14 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   Future<void> _loadRefine() async {
     try {
       final pr = await ref.read(apiProvider).get<Map<String, dynamic>>('/v1/engine/progress');
-      if (mounted) setState(() => _refineRemaining = (pr['refineRemaining'] as int?) ?? 0);
+      final parts = ((pr['deepParts'] as List?) ?? const []).cast<Map<String, dynamic>>();
+      final next = parts.where((d) => (d['answered'] as int) < (d['total'] as int)).firstOrNull;
+      if (mounted) {
+        setState(() {
+          _refineRemaining = (pr['refineRemaining'] as int?) ?? 0;
+          _nextDeepPart = next?['part'] as int?;
+        });
+      }
     } catch (_) {}
   }
 
@@ -260,9 +279,9 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     }
   }
 
-  bool get _breakDue => _refineRemaining > 0 && _doneCount > 0 && _doneCount % _breakEvery == 0 && !_breaksShownAt.contains(_doneCount);
+  bool get _breakDue => _doneCount > 0 && _isBreakAt(_doneCount) && !_breaksShownAt.contains(_doneCount);
 
-  Widget _breakCard(BuildContext context, {required VoidCallback onDone}) {
+  Widget _breakCard(BuildContext context, {required VoidCallback onDone, int? seen}) {
     final l = context.l;
     final scheme = Theme.of(context).colorScheme;
     return AspectRatio(
@@ -279,7 +298,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
           const SizedBox(height: 20),
           Text(l.breakTitle, style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),
           const SizedBox(height: 10),
-          Text(l.breakBody(_doneCount), textAlign: TextAlign.center),
+          Text(_refineRemaining > 0 ? l.breakBody(seen ?? _doneCount) : _nextDeepPart != null ? l.breakBodyDeep(_nextDeepPart!) : l.breakBodyCheck, textAlign: TextAlign.center),
           const Spacer(),
           SizedBox(
             width: double.infinity,
@@ -287,10 +306,13 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
               onPressed: () async {
                 onDone();
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const QuickScanScreen(refine: true)));
+                if (_refineRemaining == 0 && _nextDeepPart == null) return shareSoulLink(context, ref);
+                await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => _refineRemaining > 0 ? const QuickScanScreen(refine: true) : QuickScanScreen(questionnaire: 'deep_$_nextDeepPart'),
+                ));
                 await _loadRefine();
               },
-              child: Text(l.breakGo),
+              child: Text(_refineRemaining == 0 && _nextDeepPart == null ? l.checkShareLink : l.breakGo),
             ),
           ),
           const SizedBox(height: 8),
@@ -516,7 +538,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
 
   /// Feed: everyone left today, one under another, each with its own pass/like.
   Widget _adInStack(BuildContext context) {
-    final ad = _ads[(_doneCount ~/ _adEvery - 1) % _ads.length];
+    final ad = _adFor(_doneCount);
     void done() => setState(() => _adsShownAt.add(_doneCount));
     return LayoutBuilder(builder: (context, c) {
       final cardMaxHeight = (c.maxHeight - 40).clamp(260.0, 2000.0);
@@ -538,20 +560,24 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     for (var i = 0; i < people.length; i++) {
       entries.add(people[i]);
       final n = i + 1;
-      if (_refineRemaining > 0 && n % _breakEvery == 0 && !_breaksShownAt.contains(-n)) {
+      if (_isBreakAt(n) && !_breaksShownAt.contains(-n)) {
         entries.add({'break': n, 'id': 'break-$n'});
-      } else if (_ads.isNotEmpty && n % _adEvery == 0) {
-        entries.add(_ads[(n ~/ _adEvery - 1) % _ads.length]);
+      } else if (_ads.isNotEmpty && n % _adEvery == 0 && !_isBreakAt(n)) {
+        // The same ad can repeat further down: give each placement its own key.
+        entries.add({..._adFor(n), 'key': 'ad-$n'});
       }
     }
     Widget item(Map<String, dynamic> p) => Column(mainAxisSize: MainAxisSize.min, children: [
           SoulCard(p: p, onTap: () => _openProfile(p)),
           const SizedBox(height: 10),
-          LikePassBar(onLike: () => _act(p, 'like'), onPass: () => _act(p, 'pass'), onInfo: () => _openProfile(p), onMessage: () => _writeFirst(p)),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: LikePassBar(onLike: () => _act(p, 'like'), onPass: () => _act(p, 'pass'), onInfo: () => _openProfile(p), onMessage: () => _writeFirst(p)),
+          ),
           const SizedBox(height: 28),
         ]);
     Widget entry(Object e) => e is Map<String, dynamic> && e.containsKey('break')
-        ? Padding(padding: const EdgeInsets.only(bottom: 28), child: _breakCard(context, onDone: () => setState(() => _breaksShownAt.add(-(e['break'] as int)))))
+        ? Padding(padding: const EdgeInsets.only(bottom: 28), child: _breakCard(context, seen: e['break'] as int, onDone: () => setState(() => _breaksShownAt.add(-(e['break'] as int)))))
         : e is Map<String, dynamic> && e.containsKey('sponsor')
         ? Padding(padding: const EdgeInsets.only(bottom: 28), child: _adCard(e, onClose: () => setState(() => _ads = _ads.where((a) => a['id'] != e['id']).toList())))
         : item(e as Map<String, dynamic>);
@@ -561,7 +587,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
         itemCount: entries.length,
         itemBuilder: (_, i) {
           if (i >= entries.length - 4) WidgetsBinding.instance.addPostFrameCallback((_) => _maybeLoadMore(force: true));
-          return FocusColumn(padding: EdgeInsets.zero, child: KeyedSubtree(key: ValueKey((entries[i] as Map)['id']), child: entry(entries[i])));
+          return FocusColumn(padding: EdgeInsets.zero, child: KeyedSubtree(key: ValueKey((entries[i] as Map)['key'] ?? (entries[i] as Map)['id']), child: entry(entries[i])));
         },
       );
     }
@@ -571,7 +597,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       itemCount: entries.length,
       itemBuilder: (_, i) {
         if (i >= entries.length - 6) WidgetsBinding.instance.addPostFrameCallback((_) => _maybeLoadMore(force: true));
-        return KeyedSubtree(key: ValueKey((entries[i] as Map)['id']), child: entry(entries[i]));
+        return KeyedSubtree(key: ValueKey((entries[i] as Map)['key'] ?? (entries[i] as Map)['id']), child: entry(entries[i]));
       },
     );
   }

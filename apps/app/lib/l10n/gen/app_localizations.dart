@@ -3421,6 +3421,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign-in didn\'t work. Please try again.'**
   String get socialFailed;
+
+  /// No description provided for @breakBodyDeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Go deeper: Deep Personality, part {part} of 4 (about 4 minutes). Your matches get more precise.'**
+  String breakBodyDeep(int part);
+
+  /// No description provided for @breakBodyCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve answered everything. Now find out which of your friends fits you best: send them your compatibility link.'**
+  String get breakBodyCheck;
 }
 
 class _AppLocalizationsDelegate

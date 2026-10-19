@@ -12,6 +12,9 @@ import '../../core/widgets/common.dart';
 /// Bright Gen Z gradient used for celebratory moments (compatibility result, story card, match).
 const nsGlow = LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFFFF5E8E), Color(0xFFB04DFF), Color(0xFF5B6CFF)]);
 
+/// Shares the person's compatibility link (share sheet, or copies it).
+Future<void> shareSoulLink(BuildContext context, WidgetRef ref) => _shareLinkFlow(context, ref);
+
 Future<void> _shareLinkFlow(BuildContext context, WidgetRef ref) async {
   final l = context.l;
   try {
