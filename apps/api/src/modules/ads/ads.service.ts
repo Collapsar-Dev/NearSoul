@@ -16,7 +16,7 @@ export class AdsService {
 
   async forViewer(userId: string, locale: 'en' | 'ru') {
     if (!(await this.billing.features(userId)).showAds) return { ads: [], every: 10 };
-    const rows = await this.prisma.adCard.findMany({ where: { active: true }, orderBy: [{ createdAt: 'asc' }, { id: 'asc' }], take: 10 });
+    const rows = await this.prisma.adCard.findMany({ where: { active: true }, orderBy: { id: 'asc' }, take: 10 });
     return {
       every: 10,
       ads: rows.map((a) => ({
