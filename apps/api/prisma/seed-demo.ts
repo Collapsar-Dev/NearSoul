@@ -5,6 +5,7 @@
  */
 import { PrismaClient, type Prisma } from '@prisma/client';
 import sharp from 'sharp';
+import { avatarSvg } from './avatar';
 import { randomUUID } from 'node:crypto';
 import { QUICK_SCAN_ITEMS, scoreProfile, type Answers } from '../src/engine';
 import { templateCard } from '../src/modules/ai/card.service';
@@ -66,46 +67,11 @@ const BIOS = [
   'Board games, sunsets on the IJ and terrible puns.',
   'Yoga in the morning, jazz at night.',
 ];
-const PALETTES = [['#E8636F', '#3B3B98'], ['#F2A65A', '#4C5B8F'], ['#6BC3A5', '#2E3A59'], ['#B48EDB', '#1F2A44'], ['#F07F9A', '#5B4B8A'], ['#7FB5E6', '#33446B']];
 
-const SKIN = ['#F2D3BD', '#E8B996', '#C98E6B', '#A26B4C', '#7A4B32', '#F5DCCB'];
-const HAIR = ['#2B1D14', '#4A2E1F', '#7A4A2A', '#B07A44', '#D9B26F', '#1C1C1C', '#8E8E8E', '#A23B2C'];
-const CLOTHES = ['#3F4A5A', '#4F6F5F', '#7A6248', '#5E4BA8', '#B5485A', '#2E6F8E', '#C2853D', '#555B6E'];
 
-/** Illustrated, clearly fictional portrait (never a real person): head, hair, shoulders, simple face. */
+/** Illustrated, clearly fictional portrait (never a photo of a real person), see prisma/avatar.ts (CR-37). */
 async function avatar(gender: 'woman' | 'man' | 'non_binary', r: () => number, variant: number): Promise<Buffer> {
-  const [c1, c2] = PALETTES[Math.floor(r() * PALETTES.length)]!;
-  const skin = SKIN[Math.floor(r() * SKIN.length)]!;
-  const hair = HAIR[Math.floor(r() * HAIR.length)]!;
-  const cloth = CLOTHES[Math.floor(r() * CLOTHES.length)]!;
-  const long = gender === 'woman' ? r() < 0.8 : gender === 'non_binary' ? r() < 0.5 : false;
-  const beard = gender === 'man' && r() < 0.35;
-  const glasses = r() < 0.25;
-  const curly = r() < 0.25;
-  const shapes = Array.from({ length: 5 }, () => {
-    const x = Math.round(r() * 800), y = Math.round(r() * 700), s = 60 + Math.round(r() * 150);
-    return `<circle cx="${x}" cy="${y}" r="${s}" fill="#fff" opacity="${(0.05 + r() * 0.1).toFixed(2)}"/>`;
-  }).join('');
-  const backHair = long ? `<path d="M250 420 C230 600 250 760 300 820 L500 820 C550 760 570 600 550 420 Z" fill="${hair}"/>` : '';
-  const topHair = curly
-    ? Array.from({ length: 9 }, (_, i) => `<circle cx="${290 + i * 28}" cy="${300 + (i % 2) * 18}" r="46" fill="${hair}"/>`).join('')
-    : `<path d="M262 430 C250 300 330 240 400 240 C470 240 550 300 538 430 C520 360 470 330 400 330 C330 330 280 360 262 430 Z" fill="${hair}"/>`;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000">
-    <defs><linearGradient id="g" x1="0" y1="0" x2="${variant}" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs>
-    <rect width="800" height="1000" fill="url(#g)"/>${shapes}
-    ${backHair}
-    <path d="M150 1000 C160 820 270 740 400 740 C530 740 640 820 650 1000 Z" fill="${cloth}"/>
-    <rect x="360" y="610" width="80" height="150" rx="30" fill="${skin}"/>
-    <ellipse cx="400" cy="460" rx="140" ry="170" fill="${skin}"/>
-    ${topHair}
-    ${beard ? `<path d="M262 470 C262 600 330 655 400 655 C470 655 538 600 538 470 C525 555 475 590 400 590 C325 590 275 555 262 470 Z" fill="${hair}"/><path d="M350 535 Q400 515 450 535 Q400 528 350 535 Z" fill="${hair}" stroke="${hair}" stroke-width="10"/>` : ''}
-    <ellipse cx="350" cy="470" rx="12" ry="15" fill="#2a2a2a"/><ellipse cx="450" cy="470" rx="12" ry="15" fill="#2a2a2a"/>
-    ${glasses ? `<circle cx="350" cy="470" r="34" fill="none" stroke="#222" stroke-width="7"/><circle cx="450" cy="470" r="34" fill="none" stroke="#222" stroke-width="7"/><line x1="384" y1="470" x2="416" y2="470" stroke="#222" stroke-width="7"/>` : ''}
-    <path d="M360 548 Q400 ${variant ? 575 : 565} 440 548" stroke="${beard ? '#f2d6c4' : '#7a3b2e'}" stroke-width="8" fill="none" stroke-linecap="round"/>
-    <ellipse cx="320" cy="515" rx="20" ry="11" fill="#ff8fa3" opacity="0.35"/><ellipse cx="480" cy="515" rx="20" ry="11" fill="#ff8fa3" opacity="0.35"/>
-    <text x="760" y="110" font-family="Arial, sans-serif" font-size="30" fill="#fff" opacity="0.75" text-anchor="end">DEMO PROFILE</text>
-  </svg>`;
-  return sharp(Buffer.from(svg)).webp({ quality: 80 }).toBuffer();
+  return sharp(Buffer.from(avatarSvg(gender, r, variant))).webp({ quality: 82 }).toBuffer();
 }
 
 /** Spreads names so neighbours in the feed rarely share one (plain `i % n` repeated with the language stride). */
@@ -178,7 +144,7 @@ async function main() {
   }
 
   // One-time upgrade of older demos: illustrated portraits instead of letters, plus job and height.
-  const AVATAR_VERSION = '7';
+  const AVATAR_VERSION = '9';
   const marker = await prisma.appSecret.findUnique({ where: { key: 'demo_avatar_version' } });
   if (marker?.value !== AVATAR_VERSION) {
     const old = await prisma.user.findMany({ where: { isDemo: true }, include: { photos: true, profile: { select: { gender: true } } } });
