@@ -1888,4 +1888,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get breakBodyCheck =>
       'You\'ve answered everything. Now find out which of your friends fits you best: send them your compatibility link.';
+
+  @override
+  String get paletteViolet => 'Violet';
 }

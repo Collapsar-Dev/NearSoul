@@ -144,7 +144,7 @@ async function main() {
   }
 
   // One-time upgrade of older demos: illustrated portraits instead of letters, plus job and height.
-  const AVATAR_VERSION = '9';
+  const AVATAR_VERSION = '10';
   const marker = await prisma.appSecret.findUnique({ where: { key: 'demo_avatar_version' } });
   if (marker?.value !== AVATAR_VERSION) {
     const old = await prisma.user.findMany({ where: { isDemo: true }, include: { photos: true, profile: { select: { gender: true } } } });

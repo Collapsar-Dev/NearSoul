@@ -6,6 +6,7 @@ import '../../core/api.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme.dart';
 import '../../core/widgets/common.dart';
+import '../../core/widgets/glass.dart';
 import '../onboarding/reveal_screen.dart';
 
 /// Photo carousel with page dots.
@@ -99,13 +100,16 @@ class SoulCard extends StatelessWidget {
         tapToFlip: true,
         onCenterTap: onTap,
         photos: (p['photos'] as List).cast<Map<String, dynamic>>(),
+        // Liquid Glass caption floating over the photo (CR-39).
         overlay: Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(18, 48, 18, 18),
-            decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black87])),
+          left: 10,
+          right: 10,
+          bottom: 10,
+          child: Glass(
+            onPhoto: true,
+            radius: 24,
+            blur: 16,
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
             child: DefaultTextStyle(
               style: const TextStyle(color: Colors.white),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -272,13 +276,27 @@ class _RoundState extends State<_Round> {
   @override
   Widget build(BuildContext context) {
     final size = widget.big ? 72.0 : 60.0;
+    final iconColor = widget.big ? Colors.white : widget.color;
+    // Liquid Glass round buttons; the like button is a violet-pink gradient (CR-39).
     return Semantics(
       button: true,
       label: widget.label,
-      child: Material(
-        color: Theme.of(context).colorScheme.surface,
-        shape: CircleBorder(side: BorderSide(color: widget.color.withValues(alpha: 0.4), width: 2)),
-        elevation: 2,
+      child: Container(
+        decoration: widget.big
+            ? BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFFFF7AB2), Color(0xFF7C5CFC)]),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.6), width: 1.2),
+                boxShadow: [BoxShadow(color: const Color(0xFF7C5CFC).withValues(alpha: 0.45), blurRadius: 22, offset: const Offset(0, 8))],
+              )
+            : null,
+        child: widget.big ? _ink(size, iconColor) : Glass(shape: BoxShape.circle, blur: 12, child: _ink(size, iconColor)),
+      ),
+    );
+  }
+
+  Widget _ink(double size, Color iconColor) => Material(
+        type: MaterialType.transparency,
         child: InkWell(
           customBorder: const CircleBorder(),
           onTap: _busy
@@ -288,16 +306,14 @@ class _RoundState extends State<_Round> {
                   try {
                     await widget.onTap();
                   } catch (e) {
-                    if (context.mounted) showSnack(context, errorText(context, e));
+                    if (mounted) showSnack(context, errorText(context, e));
                   } finally {
                     if (mounted) setState(() => _busy = false);
                   }
                 },
-          child: SizedBox(width: size, height: size, child: Icon(widget.icon, color: widget.color, size: size * 0.45)),
+          child: SizedBox(width: size, height: size, child: Icon(widget.icon, color: iconColor, size: size * 0.45)),
         ),
-      ),
-    );
-  }
+      );
 }
 
 /// S23 match moment.

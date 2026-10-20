@@ -1905,4 +1905,7 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get breakBodyCheck =>
       'Ты ответил(а) на всё. Теперь узнай, кто из друзей подходит тебе больше всех: отправь им ссылку на проверку совместимости.';
+
+  @override
+  String get paletteViolet => 'Фиолетовая';
 }

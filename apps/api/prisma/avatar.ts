@@ -6,12 +6,13 @@ export type Gender = 'woman' | 'man' | 'non_binary';
 type R = () => number;
 
 const pick = <T>(r: R, list: readonly T[]): T => list[Math.floor(r() * list.length)]!;
-const BG = [['#FFB8C6', '#8E7CF0'], ['#FFD39B', '#F27A8A'], ['#9EE6D0', '#5C8DF6'], ['#C7B8FF', '#FF9EC4'], ['#FFC9A8', '#7FA8F5'], ['#B8F0E0', '#C792EA'], ['#FFE3A3', '#5FC3C9'], ['#F6B5E8', '#6E7BF2']] as const;
+// One family of soft lavender / pink pastels so every portrait looks like part of the same set (CR-38).
+const BG = [['#EFE6FF', '#C9B4FF'], ['#FBE3F0', '#D8C4FF'], ['#E6E0FF', '#B9A6F5'], ['#F6E8FF', '#E3B8F2'], ['#EDE9FF', '#C4CCFF'], ['#FFE7F1', '#CDB8FF']] as const;
 const SKIN = [['#FBE3D3', '#E9BFA6'], ['#F2CDB2', '#D9A587'], ['#E3B08C', '#C48D69'], ['#C98E66', '#A86F4C'], ['#9E6845', '#7F4F33'], ['#74472D', '#5A3520']] as const;
 const HAIR = [['#2A1B14', '#4A3326'], ['#3B2418', '#6B4430'], ['#6E4426', '#9C6A40'], ['#B9844A', '#E1B074'], ['#E2C27E', '#F5DFA6'], ['#151515', '#3A3A3A'], ['#8F2F2A', '#C2553F'], ['#5B4A6E', '#8A77A3']] as const;
 const IRIS = ['#5B3A1E', '#3E6B4F', '#4C78A8', '#7A5A2E', '#2E2E2E', '#6F7F8C'] as const;
 const LIPS = ['#C9606B', '#B4475A', '#D98078', '#A85162', '#E08F8F'] as const;
-const CLOTH = ['#2F3A56', '#F4F1EC', '#E85D75', '#3B7A6A', '#F2B544', '#6D5BD0', '#1F1F24', '#DCE6F2', '#C76B3D', '#4E9BD8'] as const;
+const CLOTH = ['#7B3FE4', '#5B3BB0', '#2F2A4A', '#F4F1FA', '#E8578A', '#9C7BEA', '#3D3566', '#C9B8F5'] as const;
 
 export function avatarSvg(gender: Gender, r: R, variant: number): string {
   const woman = gender === 'woman' || (gender === 'non_binary' && r() < 0.5);
@@ -23,7 +24,7 @@ export function avatarSvg(gender: Gender, r: R, variant: number): string {
   const cloth2 = pick(r, CLOTH);
   const lips = woman ? pick(r, LIPS) : skinShade;
   const glasses = r() < 0.18;
-  const freckles = r() < 0.15;
+  const freckles = false;
   const smileTeeth = r() < 0.35;
   const lookX = variant ? 3 : r() < 0.5 ? -3 : 3;
   const tilt = (r() - 0.5) * 6 + (variant ? 2 : -2);
@@ -33,12 +34,12 @@ export function avatarSvg(gender: Gender, r: R, variant: number): string {
   const beard = !woman ? pick(r, ['none', 'none', 'stubble', 'short', 'full', 'mustache'] as const) : 'none';
   const neckline = pick(r, woman ? (['crew', 'v', 'off', 'turtle'] as const) : (['crew', 'v', 'collar', 'hoodie'] as const));
   const earrings = woman && r() < 0.55;
-  const necklace = woman && neckline !== 'turtle' && r() < 0.4;
+  const necklace = false;
 
   // Clockwise outline: forehead → right cheek → chin → left cheek.
   const jaw = woman ? 'C510 600 455 652 400 654 C345 652 290 600 272 520' : 'C514 612 458 666 400 668 C342 666 286 612 268 520';
   const face = `M268 440 C268 330 330 290 400 290 C470 290 532 330 532 440 L530 520 ${jaw} Z`;
-  const bokeh = Array.from({ length: 7 }, () => `<circle cx="${Math.round(r() * 800)}" cy="${Math.round(r() * 820)}" r="${40 + Math.round(r() * 130)}" fill="#fff" opacity="${(0.07 + r() * 0.12).toFixed(2)}"/>`).join('');
+  const bokeh = Array.from({ length: 2 }, () => `<circle cx="${Math.round(r() * 800)}" cy="${Math.round(r() * 820)}" r="${40 + Math.round(r() * 130)}" fill="#fff" opacity="${(0.07 + r() * 0.12).toFixed(2)}"/>`).join('');
 
   // Hair behind the head (long styles) and on top.
   const back: Record<string, string> = {
@@ -80,12 +81,10 @@ export function avatarSvg(gender: Gender, r: R, variant: number): string {
 
   const eyeY = 470;
   const eye = (cx: number) => `
-    <path d="M${cx - 30} ${eyeY} Q${cx} ${eyeY - 24} ${cx + 30} ${eyeY} Q${cx} ${eyeY + 18} ${cx - 30} ${eyeY} Z" fill="#fff"/>
-    <circle cx="${cx + lookX}" cy="${eyeY - 2}" r="14" fill="${iris}"/><circle cx="${cx + lookX}" cy="${eyeY - 2}" r="7" fill="#151515"/>
-    <circle cx="${cx + lookX + 5}" cy="${eyeY - 8}" r="4" fill="#fff"/>
-    <path d="M${cx - 32} ${eyeY - 1} Q${cx} ${eyeY - 27} ${cx + 32} ${eyeY - 1}" stroke="#2a1d18" stroke-width="${woman ? 5 : 3.5}" fill="none" stroke-linecap="round"/>
-    ${woman ? `<path d="M${cx + 28} ${eyeY - 6} l12 -8 M${cx + 22} ${eyeY - 12} l9 -10 M${cx - 28} ${eyeY - 6} l-12 -8 M${cx - 22} ${eyeY - 12} l-9 -10" stroke="#2a1d18" stroke-width="3" stroke-linecap="round"/>` : ''}`;
-  const brow = (cx: number, dir: number) => `<path d="M${cx - 34} ${eyeY - 36 + dir * 2} Q${cx} ${eyeY - (woman ? 56 : 50)} ${cx + 34} ${eyeY - 38 - dir * 2}" stroke="${hair}" stroke-width="${woman ? 7 : 11}" fill="none" stroke-linecap="round"/>`;
+    <ellipse cx="${cx + lookX}" cy="${eyeY}" rx="12" ry="15" fill="#241a2e"/>
+    <circle cx="${cx + lookX + 4}" cy="${eyeY - 5}" r="4" fill="#fff"/>
+    ${woman ? `<path d="M${cx + 10} ${eyeY - 12} q8 -6 14 -4" stroke="#241a2e" stroke-width="4" fill="none" stroke-linecap="round"/>` : ''}`;
+  const brow = (cx: number, dir: number) => `<path d="M${cx - 34} ${eyeY - 36 + dir * 2} Q${cx} ${eyeY - (woman ? 56 : 50)} ${cx + 34} ${eyeY - 38 - dir * 2}" stroke="${hair}" stroke-width="${woman ? 6 : 9}" fill="none" stroke-linecap="round"/>`;
   const mouth = smileTeeth
     ? `<path d="M360 560 Q400 600 440 560 Q400 572 360 560 Z" fill="#fff" stroke="${lips}" stroke-width="7" stroke-linejoin="round"/>`
     : woman
@@ -102,7 +101,7 @@ export function avatarSvg(gender: Gender, r: R, variant: number): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="${variant ? 1 : 0.4}" y2="1"><stop offset="0" stop-color="${bg1}"/><stop offset="1" stop-color="${bg2}"/></linearGradient>
-    <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${hairHi}"/><stop offset="0.55" stop-color="${hair}"/></linearGradient>
+    <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${hair}"/><stop offset="1" stop-color="${hair}"/></linearGradient>
     <radialGradient id="light" cx="0.38" cy="0.32" r="0.7"><stop offset="0" stop-color="#fff" stop-opacity="0.35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
     <radialGradient id="vig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient>
   </defs>
@@ -114,7 +113,6 @@ export function avatarSvg(gender: Gender, r: R, variant: number): string {
     <ellipse cx="266" cy="490" rx="20" ry="32" fill="${skinShade}"/><ellipse cx="534" cy="490" rx="20" ry="32" fill="${skinShade}"/>
     ${earrings ? `<circle cx="262" cy="528" r="${r() < 0.5 ? 7 : 13}" fill="none" stroke="#E8C66A" stroke-width="4"/><circle cx="538" cy="528" r="${r() < 0.5 ? 7 : 13}" fill="none" stroke="#E8C66A" stroke-width="4"/>` : ''}
     <path d="${face}" fill="${skin}"/>
-    <path d="${face}" fill="url(#light)"/>
     <path d="M300 600 C340 650 460 650 500 600 C470 640 330 640 300 600 Z" fill="${skinShade}" opacity="0.35"/>
     ${beards[beard]}
     ${brow(345, 1)}${brow(455, -1)}
@@ -126,7 +124,6 @@ export function avatarSvg(gender: Gender, r: R, variant: number): string {
     ${top[style] ?? ''}
     ${glasses ? `<g fill="#ffffff22" stroke="#1d1d1d" stroke-width="6"><rect x="300" y="440" width="92" height="66" rx="${r() < 0.5 ? 30 : 12}"/><rect x="408" y="440" width="92" height="66" rx="${r() < 0.5 ? 30 : 12}"/></g><path d="M392 466 L408 466" stroke="#1d1d1d" stroke-width="6"/>` : ''}
   </g>
-  <rect width="800" height="1000" fill="url(#vig)"/>
   <text x="760" y="110" font-family="Arial, sans-serif" font-size="30" fill="#fff" opacity="0.75" text-anchor="end">DEMO PROFILE</text>
 </svg>`;
 }

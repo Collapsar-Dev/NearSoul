@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../core/config.dart';
 import '../core/responsive.dart';
 import '../core/widgets/common.dart';
+import '../core/widgets/glass.dart';
 
 /// Adaptive navigation (PRD §5.4, §5.9): bottom bar on phones, rail on tablets, extended rail on desktop.
 class AppShell extends StatelessWidget {
@@ -23,19 +24,32 @@ class AppShell extends StatelessWidget {
     final size = sizeClassOf(context);
     final alpha = AppConfig.isAlpha || AppConfig.appEnv == 'development';
     if (size == SizeClass.compact) {
+      // Liquid Glass (CR-39): a floating glass capsule instead of a flat bar.
       return Scaffold(
         body: shell,
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: shell.currentIndex,
-          onDestinationSelected: go,
-          destinations: [for (final i in items) NavigationDestination(icon: Icon(i.$1), selectedIcon: Icon(i.$2), label: i.$3)],
+        bottomNavigationBar: SafeArea(
+          minimum: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+          child: Glass(
+            radius: 34,
+            child: NavigationBar(
+              height: 64,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+              selectedIndex: shell.currentIndex,
+              onDestinationSelected: go,
+              destinations: [for (final i in items) NavigationDestination(icon: Icon(i.$1), selectedIcon: Icon(i.$2), label: i.$3)],
+            ),
+          ),
         ),
       );
     }
     final extended = MediaQuery.sizeOf(context).width >= 1280;
     return Scaffold(
       body: Row(children: [
-        NavigationRail(
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
+          child: Glass(
+            radius: 30,
+            child: NavigationRail(
           extended: extended,
           labelType: extended ? NavigationRailLabelType.none : NavigationRailLabelType.all,
           selectedIndex: shell.currentIndex,
@@ -59,8 +73,9 @@ class AppShell extends StatelessWidget {
                 )
               : null,
           destinations: [for (final i in items) NavigationRailDestination(icon: Icon(i.$1), selectedIcon: Icon(i.$2), label: Text(i.$3))],
+            ),
+          ),
         ),
-        const VerticalDivider(width: 1),
         Expanded(child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 1440), child: shell))),
       ]),
     );

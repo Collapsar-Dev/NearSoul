@@ -245,7 +245,7 @@ class AppearanceTiles extends ConsumerWidget {
     final l = context.l;
     final look = ref.watch(appearanceProvider);
     final n = ref.read(appearanceProvider.notifier);
-    final names = {NsPalette.neutral: l.paletteNeutral, NsPalette.sage: l.paletteSage, NsPalette.sand: l.paletteSand, NsPalette.coral: l.paletteCoral};
+    final names = {NsPalette.violet: l.paletteViolet, NsPalette.neutral: l.paletteNeutral, NsPalette.sage: l.paletteSage, NsPalette.sand: l.paletteSand, NsPalette.coral: l.paletteCoral};
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       ListTile(
         leading: const Icon(Icons.palette_outlined),

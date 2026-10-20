@@ -10,6 +10,7 @@ import 'core/router.dart';
 import 'core/session.dart';
 import 'core/platform/icon_stub.dart' if (dart.library.js_interop) 'core/platform/icon_web.dart';
 import 'core/theme.dart';
+import 'core/widgets/glass.dart';
 import 'l10n/gen/app_localizations.dart';
 
 void main() {
@@ -59,6 +60,8 @@ class _NearSoulAppState extends ConsumerState<NearSoulApp> {
         return resolved;
       },
       routerConfig: router,
+      // Liquid Glass (CR-39): the living background sits under every screen.
+      builder: (context, child) => LiquidBackground(child: child ?? const SizedBox.shrink()),
       // Lists and feeds can also be dragged with a mouse, like on a phone.
       scrollBehavior: const MaterialScrollBehavior().copyWith(dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.trackpad, PointerDeviceKind.stylus}),
     );

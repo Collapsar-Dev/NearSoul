@@ -3433,6 +3433,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You\'ve answered everything. Now find out which of your friends fits you best: send them your compatibility link.'**
   String get breakBodyCheck;
+
+  /// No description provided for @paletteViolet.
+  ///
+  /// In en, this message translates to:
+  /// **'Violet'**
+  String get paletteViolet;
 }
 
 class _AppLocalizationsDelegate
